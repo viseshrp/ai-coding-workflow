@@ -1,0 +1,37 @@
+Define / Clarify:
+  interview-me
+  grill-me
+  idea-refine
+
+Plan:
+  spec-driven-development
+  planning-and-task-breakdown
+  context-engineering
+  source-driven-development
+
+Critique / Lock Plan:
+  code-review-and-quality
+  code-simplification
+  source-driven-development
+  verification-before-completion
+
+Execute:
+  incremental-implementation
+  source-driven-development
+  verification-before-completion
+
+Review:
+  code-review-and-quality
+  code-simplification
+  source-driven-development
+  verification-before-completion
+
+Review Follow-up:
+  receiving-code-review
+  code-review-and-quality
+
+Follow-up Execution:
+  incremental-implementation
+  receiving-code-review
+  verification-before-completion
+  source-driven-development

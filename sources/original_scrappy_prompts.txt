@@ -1,0 +1,130 @@
+------------------------------------
+codex prompt to feed OPUS PLANNING: (a meta prompt to ask codex to create the planning prompt for opus, seeded by the interviewing/grilling output)
+
+create a prompt for claude opus to first analyze the code one more time, take this plan file we have, read and critique it, ask more questions to me about the design (all at one go), and flesh out the remaining details to the T (as in concrete files, classes, methods, variables, where these changes should go etc) independently by itself after gathering my design decisions. so the initial interviewing output plan must be made into a more detailed implementation plan. allow opus to be independent and ask it not to constrain itself to the existing plan file (except for the scope of the plan/changes of course), but use it as an initial source to get started. 
+it must ignore devops/packaging/building and test related work and only focus on the code, unless otherwise specified in the plan.
+ it must produce two results in the end as md files:
+1. a concrete implementation plan with every minor detail fleshed out absolutely thoroughly
+2. a prompt for codex to take this plan and implement it end-to-end with no interruptions.
+
+also ask opus to add these requests below to the final prompt for codex execution phases:
+-----------------------------
+IMPLEMENTATION requests :
+
+if there is a plan (only when provided by me explicitly), follow the plan exactly
+No divergence. No creativity. No architecture changes
+Just execute what is written
+
+no time-based waiting hacks
+
+keep a check on algorithmic time complexity and space complexity and use the best solution after weighing options. dont choose brute force methods or quadratic operations. write code while keeping code readibility in mind. prefer code readability over overly complicated changes to achieve best performance/time complexity.
+
+if a change requested by me reduces/makes performance worse, stop and tell me about it. give enough details like you would explain to a junior developer about it.
+
+no 3rd party libraries without explicit approval.
+if approved:
+check usages of libraries/frameworks against the correct documentation and make sure usages are grounded 100% in documentation. if documentation is poor, find the source code of the library if it is open source, clone it in a temporary folder and read it thoroughly to augment your understanding of existing documentation.  Also make sure these usages are using the latest APIs and flag the use of outdated APIs.
+
+if a 3rd party library is used in a public facing API, the user should never see library/framework specific exceptions raised. it should be custom errors/exception classes  (reuse existing classes in the codebase or create custom ones if needed), and dont chain exceptions because again, i dont want users to know. instead you can dump the trace using the logger for debugging purposes in case logging is used and available. 
+
+reuse existing code wherever possible. keep it DRY.
+
+follow separation of concerns and single responsibility principle when writing code.
+
+use proper imports. no loading files as blobs and executing the code within another block of code.
+
+no hacky retry loops.
+
+do not use assert statements in code, unless it is a test file.
+
+no changing/refactoring unrelated code unless absolutely necessary. suggestions to improve surrounding code is always welcome.
+
+changes in user-facing APIs must be backwards compatible, unless the app version is unreleased.
+
+keep ui changes local to ui code only. dont touch other code. Also, make sure to match existing style guidelines.
+
+use correct types when adding types to code. dont use 'filler' types or generic types or type-ignore comments to pass ci temporarily. Also do not add sloppy code like typing.Cast and cast types in code to satisfy type checkers
+
+do not hardcode numbers/versions and other constants. reuse existing constants or create at the right spots and reuse appropriately.
+
+All changes must be strictly cross platform and must work on both Linux and Windows. Mac is not a concern.
+
+commit often and incrementally in small increments. split large commits into sensible parts. add detailed commit messages, and explain what you are doing in detail in the commit descriptions (no limit on length - so be as detailed as you can)
+
+Always ground development work involving libraries 100% in documentation with zero assumptions.
+
+always add detailed and brief comments for code - so it enables people to understand the code without paying too much attention to it. comments must address the code and not be "meta" or address the task you are working on. cleaning up stale comments is encouraged. 
+
+Don't forget to run linter and smoke test if any on every commit. 
+
+always update the related documentation - look for the correct docs folder, back tracking from the Github Actions workflows and the Makefiles, etc. that build the docs. append to the appropriate sections OR create new ones if required. 
+
+dont write the changelog.
+
+DO NOT WRITE TESTS UNTIL EXPLICITLY ASKED.
+When you write tests, follow these instructions:
+```
+Always keep test code in separate files or folders away from production code. no comingling.
+Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes. 
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+Tests must also strictly only test one behavior per test/method.
+```
+
+ if you have questions or can't make a decision or don't have enough context or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
+
+--------------------------------
+
+OPUS REVIEW:
+
+compare the current branch against the head of main, aggregate all changes in the current branch that are newly added and do a thorough code review. compare it against any local PLAN md files in the repo root, if available,  and flag divergence and issues. After checking 100% compliance with the plan and ensuring no divergence, provide suggestions. dont make any changes you propose until i give the go ahead. this branch will be merged into main. Code review for readability, quality, backwards compatibility, performance and proper reuse of existing code, if applicable. Check for backwards compatibility. Remember that that is top priority. Also check usages of libraries/frameworks against the correct documentation and make sure usages are grounded 100% in documentation. if documentation is poor, find the source code of the library if it is open source, clone it in a temporary folder and read it thoroughly to augment your understanding of existing documentation.  Also make sure these usages are using the latest APIs and flag the use of outdated APIs. Also check usages of libraries/frameworks are justified and not unnecessary.
+
+ If the  changes in the branch touch public APIs or add new public APIs, check if they are user friendly and intuitive, if they blend well with the existing public API set and are named properly. 
+
+Surface all assumptions in the code. 
+
+surface the use of assert statements in code. this is bad.
+
+If the changes are trying to reinvent/duplicate something already there in the source code, flag it.
+
+make sure there are comments for every change that is not obvious in terms of readability. we also dont want too many bloated comment blocks. just enough  to help junior engineers understand easily.
+
+All changes must be strictly cross platform and must work on both Linux and Windows. 
+
+Tests must validate the right things (architecture, not implementation details). mark unnecessary tests that test temporary hacks or changes. 
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines (don't manually run the entire test suite. Focused tests are better)
+While reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that mutate process-global state such as environment variables, depend on private constants or private helper methods, assert exact error wording unless it is an intentional user-facing contract, encode packaging/layout assumptions that may change, or mirror production logic instead of independently specifying expected behavior. For each concern, classify whether it is a real flake risk, an acceptable contract test, or a maintainability concern, and suggest a behavior-level alternative when practical.
+Tests must also strictly only test one behavior per test/method.
+
+after analysis/review,  create 2 documents locally:
+#1 a detailed REVIEW.md doc with a review of the changes and also your suggestions right below the review.
+#2 also write a detailed WALKTHROUGH.md documenting each change with context, line by line, helping a beginner programmer review the code from scratch(without prior context). it must be detailed and thorough, so as to facilitate review without looking at the code. 
+I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. THIS IS NON NEGOTIABLE. FORMAT IT PROPERLY FOR EASY READABILITY AND TO EASE COGNITIVE OVERLOAD WHILE REVIEWING.
+
+
+
+
+-----------------------------
+
+
+SONNET CODE WALKTHROUGH:
+
+Look at the code review document. REVIEW.md
+let me know if you agree with all points or why you don't.  There is also a  WALKTHROUGH.md  document that we will use  as  a detailed supplement for the review.
+
+Our first goal is to use the REVIEW and WALKTHROUGH as supplements for our own review and review the changes in the PR (basically the diff of this branch against the main branch)
+let us review the PR one small change at a time.
+let us also create a followup list md to track a checklist of the changes that are neccessary. dont add anything yet.
+ let us walk through each section of the review, one by one, look at the corresponding code after gathering context from the WALKTHROUGH,
+Show me no-more than 5 lines of code at a time, but also make sure you logically split them into logical chunks when you show me.
+
+ then discuss and agree on the next steps with a detailed step by step plan you propose, once agreed, lets then add that to the follow-up list. 
+"Agreed" means I must explicitly type "AGREE" in all-caps.
+dont ever add anything to the followup list unless we have agreed on the exact changes that need to be implemented, fleshed out to the T.
+proceed automatically through the next review item after each agreed addition 
+if you have questions or can't make a decision or don't have enough context or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED. 
+Once we are done reviewing, go ahead and implement all the changes we agreed on as part of the follow-up list after I give you the go-ahead.
+
+---------------------------------
+CODEX FOLLOWUP:
+
+understand the context of the current PR. Read REVIEW.md WALKTHROUGH.md for context. then go on and address all items in FOLLOWUP.md while checking them off the list.
