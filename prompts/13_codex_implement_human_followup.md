@@ -1,9 +1,5 @@
 # 13 — Codex Implements Human-Approved FOLLOWUP.md
 
-Use this after the Sonnet walkthrough phase, when `FOLLOWUP.md` contains only human-approved items.
-
-No AI review loop is used after this step. I will review again manually.
-
 ## Skills
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
@@ -164,15 +160,34 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Understand the context of the current PR.
+Goal:
 
-Read:
+- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
+
+Success criteria:
+
+- only approved `FOLLOWUP.md` items are implemented,
+- each completed item is checked off only after the change and its verification are done,
+- scope stays limited to the approved follow-up work,
+- verification evidence is reported clearly,
+- no AI review loop is restarted after this phase; the workflow returns to manual review.
+
+Context to read before acting:
 
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
 - `FOLLOWUP.md`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - current branch diff against `main`.
+
+Execution posture:
+
+- understand the context of the current PR before editing,
+- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
+- treat `FOLLOWUP.md` as the execution contract for this phase,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
 Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
 

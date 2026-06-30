@@ -5,12 +5,15 @@ This zip contains separate self-contained Markdown prompts. Each prompt can be d
 ## Design decisions in this version
 
 - The repeated Codex implementation rules and Opus review checks were consolidated into one internal **Engineering Contract** section that is embedded inside the prompts that need it.
+- Each phase prompt is tuned to the target model family: GPT/Codex phases are outcome-first and operational, Opus/Sonnet phases use explicit sectioning and evidence-grounded output contracts, and GPT/Gemini/Codex critique phases keep verdicts and schemas explicit.
+- Prompt files are written to be pasted directly into the target model session. Phase-orientation notes live in the repo docs rather than as non-prompt blurbs above the prompt body.
 - The default planning output is reduced from separate `SPEC.md` + `IMPLEMENTATION_PLAN.md` into one combined `FEATURE_SPEC_AND_PLAN.md`.
 - `FEATURE_SPEC_AND_PLAN.md` still preserves your intended split: the spec/reference section is the detailed reference, and the implementation plan section is the strict execution contract with links to the spec/reference anchors.
 - `CODEX_EXECUTION_PROMPT.md` remains separate because it is the artifact pasted into Codex for implementation.
 - Skill links point to your `viseshrp/ai-skills-archive` repository.
 - No skill router is used. Skill links are included directly in the relevant prompt files.
 - Every prompt is intentionally self-contained, so some duplication remains across files.
+- Prompt `01` creates the exploration outputs and a seed Opus planning prompt, prompt `02` is the optional helper that refines that seed into the final paste-ready Opus planning prompt, and prompt `03` is the direct Opus planning prompt itself.
 
 ## Prompt files
 

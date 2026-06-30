@@ -1,7 +1,5 @@
 # 02 — Meta Prompt: Create the Opus Planning Prompt — GPT or Codex
 
-Use this when you already have an interviewing/grilling output or `DRAFT_PLAN.md`, and you want GPT/Codex to create the prompt that will be pasted into Claude Opus.
-
 ## Skills
 
 - [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
@@ -25,13 +23,43 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 ## Prompt
 
-Create a prompt for Claude Opus to perform the planning phase for this coding task.
+Create a prompt for Claude Opus to perform the planning phase for this coding task. It must be the final paste-ready prompt for the main planning phase.
 
 This is a meta prompt. Your output is the prompt that I will paste into Claude Opus.
 
-The Opus prompt you generate must be self-contained.
+Goal:
 
-The Opus prompt must tell Claude Opus to:
+- turn the current exploration outputs into the final direct-use Opus planning prompt,
+- refine and normalize the exploration-phase seed prompt when it exists,
+- preserve scope and detail while improving direct paste readiness.
+
+Success criteria:
+
+- the generated Opus prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
+- it is structured with clear sections for role, context to read, task, success criteria, constraints, required outputs, and final self-check,
+- it tells Opus not to speculate about code or files it has not read,
+- it preserves the current scope while letting Opus deepen detail inside that scope,
+- it preserves all valid task-specific detail from `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`, if present,
+- this phase outputs only the final Opus planning prompt text; it does not perform the planning work itself and it does not create `FEATURE_SPEC_AND_PLAN.md` or `CODEX_EXECUTION_PROMPT.md`.
+
+Constraints:
+
+- this is a meta phase; your output is the final prompt that I will paste into Claude Opus,
+- the Opus prompt you generate must be self-contained,
+- do not do the Opus planning work yourself,
+- do not implement code,
+- do not write tests,
+- do not introduce unrelated files or workflow changes,
+- if `INITIAL_OPUS_PLANNING_PROMPT.md` is present, treat it as the exploration-phase seed prompt and preserve its valid task-specific detail unless you are improving structure, clarity, or completeness.
+
+Context to use when available:
+
+- `DRAFT_PLAN.md`,
+- `INITIAL_OPUS_PLANNING_PROMPT.md`,
+- interviewing/grilling output,
+- relevant repository context.
+
+Required behavior for the generated Opus prompt:
 
 - analyze the code one more time,
 - take the draft plan file / interviewing output we have,
@@ -41,7 +69,13 @@ The Opus prompt must tell Claude Opus to:
 - make the initial interviewing output plan into a more detailed implementation plan,
 - be independent and not constrain itself to the existing plan file except for the scope of the plan/changes,
 - use the existing plan file only as an initial source to get started,
-- ignore DevOps/packaging/building and test-related work and focus only on the code, unless otherwise specified in the plan.
+- ignore DevOps/packaging/building and test-related work and focus only on the code, unless otherwise specified in the plan,
+- use the existing plan file as a seed artifact, not the ceiling for detail,
+- preserve all valid task-specific detail from `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`, if present,
+- if those sources differ materially, keep the more scope-conservative interpretation and tell Opus to surface the conflict to the user instead of silently choosing,
+- ask remaining design questions in one batch before finalizing artifacts,
+- ground file/class/function details in actual repository context,
+- separate confirmed facts from inferences and surface unresolved uncertainty plainly.
 
 ## Default Planning Artifact Reduction
 

@@ -1,7 +1,5 @@
 # 05 — Opus Applies Plan Critique
 
-Use this in Claude Opus after another model creates `PLAN_CRITIQUE.md` and/or `OPUS_PLAN_REVISION_REQUEST.md`.
-
 ## Skills
 
 - [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
@@ -186,13 +184,18 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Claude Opus revising the planning artifacts before implementation.
+Role:
 
-Do not implement code.
+- You are Claude Opus revising the planning artifacts before implementation.
+- Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
+- Read before answering. Do not speculate about code or files you have not inspected.
 
-Do not write tests.
+Task:
 
-Read:
+- Update the planning artifacts so they are ready for locked Codex execution.
+- Apply valid critique items without expanding scope.
+
+Context to read before answering:
 
 - `PLAN_CRITIQUE.md`, if present,
 - `OPUS_PLAN_REVISION_REQUEST.md`, if present,
@@ -201,7 +204,20 @@ Read:
 - the original draft plan/interviewing notes if available,
 - relevant repository context.
 
-Your job is to update the planning artifacts so they are ready for locked Codex execution.
+Success criteria:
+
+- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- the revised plan stays within original scope,
+- the revised Codex prompt remains strict enough to prevent divergence during execution.
+
+Constraints:
+
+- do not implement code,
+- do not write tests,
+- do not loosen the Codex prompt,
+- do not use the critique as permission to change architecture unless I explicitly approve.
+
+Working method:
 
 For each critique item:
 
@@ -211,11 +227,9 @@ For each critique item:
 4. If invalid, document why.
 5. If it would expand scope, stop and ask.
 
-Do not silently drop any critique item.
-
-Do not use the critique as permission to change architecture unless I explicitly approve.
-
-Do not loosen the Codex prompt.
+- Do not silently drop any critique item.
+- Ground plan detail in the code and context you actually inspected.
+- Preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 
 ## Required outputs
 

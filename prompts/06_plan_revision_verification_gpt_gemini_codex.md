@@ -1,7 +1,5 @@
 # 06 — Plan Revision Verification — GPT, Gemini, or Codex
 
-Use this after Opus revises the plan in response to critique. This checks whether Opus actually satisfied the previous critique before implementation begins.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -162,13 +160,23 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are verifying whether Opus correctly addressed the previous plan critique.
+Goal:
 
-Do not implement code.
+- determine whether Opus actually addressed the previous plan critique and whether the planning artifacts are now ready for Codex execution.
 
-Do not modify files unless explicitly asked.
+Success criteria:
 
-Read:
+- each prior concern is checked against the revised artifacts and linked to concrete evidence,
+- the verdict is explicit about both readiness and remaining gaps,
+- the output follows the exact structure below.
+
+Constraints:
+
+- do not implement code,
+- do not modify files unless explicitly asked,
+- if evidence is missing, say so explicitly instead of guessing.
+
+Context to review:
 
 - the previous `PLAN_CRITIQUE.md`,
 - the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
@@ -177,7 +185,19 @@ Read:
 - the updated `CODEX_EXECUTION_PROMPT.md`,
 - original draft plan/interviewing notes if available.
 
-Your job is to determine whether the revised plan/prompt satisfies all previously raised concerns.
+Working method:
+
+- if you are Codex, inspect the revised artifacts and any needed repo files in parallel before finalizing,
+- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
+- quote or clearly point to where each concern was addressed,
+- distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
+- if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
+
+Task:
+
+- determine whether the revised plan and revised Codex prompt satisfy all previously raised concerns,
+- produce `PLAN_REVISION_VERIFICATION.md`,
+- if anything remains unresolved, also produce a self-contained `OPUS_PLAN_REVISION_REQUEST.md` for the next revision pass.
 
 For each previously raised concern:
 

@@ -1,7 +1,5 @@
 # 07 — Codex Executes Locked Plan
 
-Use this only after `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md` are finalized and the plan is locked.
-
 ## Skills
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
@@ -161,40 +159,57 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Codex executing a locked implementation plan.
+Goal:
 
-Read:
+- execute the locked implementation plan end-to-end and stop only when you have a verified result or a concrete blocker.
+
+Success criteria:
+
+- only the planned changes are implemented,
+- the smallest correct changes are made,
+- required documentation updates are completed,
+- focused verification is run and reported with fresh evidence.
+
+Context to read before acting:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
 - `CODEX_EXECUTION_PROMPT.md`, if present,
 - relevant repository context.
 
-The implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` is the execution contract.
+Execution posture:
 
-The spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` is reference context.
+- act like an autonomous engineer: gather context, implement, run the smallest relevant checks, refine, then report,
+- read all likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- keep progressing until you have a verified result or one of the stop conditions below.
 
-Follow the plan exactly.
+Constraints:
 
-No divergence.
+- the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` is the execution contract,
+- the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` is reference context,
+- follow the plan exactly,
+- no divergence,
+- no creativity,
+- no architecture changes,
+- just execute what is written.
 
-No creativity.
+Stop rules:
 
-No architecture changes.
-
-Just execute what is written.
-
-Implement end-to-end with no interruptions unless:
-
-- there is a conflict in decisions,
-- a decision was not made,
-- the plan contradicts code reality,
-- following the plan would create a performance/backwards-compatibility/security/API problem,
-- you do not have enough context.
-
-If any of those happens, stop and ask. Do not assume.
+- implement end-to-end with no interruptions unless one of the following conditions is true,
+- stop and ask if there is a conflict in decisions,
+- stop and ask if a required decision was never made,
+- stop and ask if the plan contradicts code reality,
+- stop and ask if following the plan would create a performance, backwards-compatibility, security, or public-API problem,
+- stop and ask if you do not have enough context,
+- if a missing credential, external dependency, or environment precondition blocks verification, say exactly what blocked you,
+- if any of those happens, stop and ask. Do not assume.
+- otherwise do not stop at analysis.
 
 ## Execution rules
 
+- Read likely relevant files in parallel before editing when practical.
+- Prefer dedicated repo/file/edit/search tools over raw shell when available.
+- Carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked.
 - Work in small increments.
 - Commit often and incrementally in small increments if committing is allowed.
 - Split large commits into sensible parts.
@@ -206,6 +221,7 @@ If any of those happens, stop and ask. Do not assume.
 - If a command fails, paste the exact error/log back. Never paraphrase logs.
 - Update related documentation as described in the plan.
 - Do not write the changelog.
+- Keep interim narration minimal and save the full report for the final response unless blocked.
 
 ## Required final response
 

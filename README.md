@@ -220,8 +220,8 @@ This is one of the most important characteristics of the repo.
 
 ```mermaid
 flowchart TD
-    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md"]
-    B --> C["02 Meta prompt for Opus planning (optional helper)"]
+    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md (seed Opus prompt)"]
+    B --> C["02 Optional helper: refine seed into final paste-ready Opus prompt"]
     B --> D["03 Direct Opus planning"]
     C --> D
     D --> E["FEATURE_SPEC_AND_PLAN.md + CODEX_EXECUTION_PROMPT.md"]
@@ -244,7 +244,9 @@ flowchart TD
 ### Important structural notes
 
 - Prompt `02` is a helper/meta layer. It is not the same thing as the main planning phase.
-- Prompt `03` is the direct Opus planning prompt.
+- Prompt `01` creates the exploration outputs and the initial Opus planning seed prompt.
+- Prompt `02` optionally refines that seed into the final paste-ready Opus planning prompt.
+- Prompt `03` is the direct Opus planning prompt and the phase that actually performs the planning work.
 - Prompts `04` -> `05` -> `06` are the plan-locking loop.
 - Prompts `08` -> `09` -> `10` are the AI code review/fix loop.
 - Prompt `11` exists so `REVIEW.md` and `WALKTHROUGH.md` reflect the final post-fix code, not a stale earlier snapshot.
@@ -257,7 +259,7 @@ One of the fastest ways to understand this repo is to understand the artifact ch
 | Artifact | Created in | Consumed in | Purpose |
 |---|---|---|---|
 | `DRAFT_PLAN.md` | `01` | `02`, `03` | First structured articulation of the task after clarification. |
-| `INITIAL_OPUS_PLANNING_PROMPT.md` | `01` | Human handoff to Opus or comparison with `02` output | Seeds the first Opus planning pass. |
+| `INITIAL_OPUS_PLANNING_PROMPT.md` | `01` | Human handoff to Opus or refinement in `02` | Exploration-phase seed Opus planning prompt. |
 | `FEATURE_SPEC_AND_PLAN.md` | `03`, updated in `05` | `04`, `06`, `07`, `08`, `09`, `10`, `11`, `13` | Combined spec/reference plus execution contract. |
 | `CODEX_EXECUTION_PROMPT.md` | `03`, updated in `05` | `04`, `06`, `07`, `08` | End-to-end implementation prompt for Codex. |
 | `PLAN_CRITIQUE.md` | `04` | `05`, `06` | Records critique findings against the planning artifacts. |
@@ -358,8 +360,8 @@ This is the fastest file-by-file map of the prompt pack.
 |---|---|---|---|---|
 | 00 | [prompts/00_README.md](prompts/00_README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack |
 | 01 | [prompts/01_initial_exploration_gpt_codex.md](prompts/01_initial_exploration_gpt_codex.md) | GPT or Codex | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
-| 02 | [prompts/02_meta_create_opus_planning_prompt.md](prompts/02_meta_create_opus_planning_prompt.md) | GPT or Codex | You want a helper prompt that generates the Opus planning prompt | A self-contained Opus planning prompt |
-| 03 | [prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md](prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md) | Claude Opus | You are ready for the main planning pass | `FEATURE_SPEC_AND_PLAN.md`, `CODEX_EXECUTION_PROMPT.md` |
+| 02 | [prompts/02_meta_create_opus_planning_prompt.md](prompts/02_meta_create_opus_planning_prompt.md) | GPT or Codex | You want a helper prompt that turns the exploration outputs into the final paste-ready Opus planning prompt | A self-contained Opus planning prompt |
+| 03 | [prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md](prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md) | Claude Opus | You are ready for the main planning pass itself | `FEATURE_SPEC_AND_PLAN.md`, `CODEX_EXECUTION_PROMPT.md` |
 | 04 | [prompts/04_plan_critique_gpt_gemini_codex.md](prompts/04_plan_critique_gpt_gemini_codex.md) | GPT, Gemini, or Codex | The Opus plan exists and needs critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
 | 05 | [prompts/05_opus_apply_plan_critique.md](prompts/05_opus_apply_plan_critique.md) | Claude Opus | Critique exists and the planning artifacts must be revised | Updated `FEATURE_SPEC_AND_PLAN.md`, updated `CODEX_EXECUTION_PROMPT.md`, `PLAN_REVISION_SUMMARY.md` |
 | 06 | [prompts/06_plan_revision_verification_gpt_gemini_codex.md](prompts/06_plan_revision_verification_gpt_gemini_codex.md) | GPT, Gemini, or Codex | You need to verify whether the revised plan actually fixed the critique | `PLAN_REVISION_VERIFICATION.md`, optionally a new `OPUS_PLAN_REVISION_REQUEST.md` |
@@ -434,6 +436,7 @@ Why it matters:
 
 - it prevents the rest of the workflow from starting on a fuzzy task,
 - it produces the seed material that the Opus planning phase expands into a real execution contract,
+- it produces the initial Opus planning seed prompt that can either be pasted directly into Opus or refined by prompt `02`,
 - it encodes the expectation that the user goal, constraints, non-goals, and definition of done must be clear before planning hardens.
 
 Use this when:
@@ -465,7 +468,8 @@ Skills used:
 What it does:
 
 - treats the task as a meta-task,
-- generates a self-contained planning prompt for Opus,
+- generates the final paste-ready planning prompt for Opus,
+- refines the exploration-phase seed prompt from `01` when it exists,
 - carries forward the combined planning artifact policy,
 - requires that generated downstream prompts include the relevant skill links,
 - embeds the Engineering Contract into the planning/output chain.
@@ -473,7 +477,8 @@ What it does:
 Important nuance:
 
 - this is a helper layer, not the planning phase itself,
-- you use this when you want GPT/Codex to author the Opus planning prompt for you,
+- you use this when you want GPT/Codex to author or normalize the final Opus planning prompt for you,
+- it should preserve and refine the `01` seed prompt rather than competing with it,
 - if you already have or prefer a direct Opus planning prompt, `03` is the main file.
 
 Why it matters:
@@ -503,6 +508,7 @@ Skills used:
 
 What it does:
 
+- performs the planning work itself,
 - reads the draft plan and repo context,
 - critiques the starting plan,
 - asks all remaining design questions together in one batch,
@@ -934,8 +940,8 @@ This contract is a big part of the workflow's personality. If you remove it, you
 If you are starting from a vague feature or task idea, the default path is:
 
 1. Start with [prompts/01_initial_exploration_gpt_codex.md](prompts/01_initial_exploration_gpt_codex.md).
-2. If you want a helper prompt that generates the Opus planning prompt, use [prompts/02_meta_create_opus_planning_prompt.md](prompts/02_meta_create_opus_planning_prompt.md).
-3. Run the main planning pass with [prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md](prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md).
+2. If you want GPT/Codex to refine the exploration outputs into the final paste-ready Opus planning prompt, use [prompts/02_meta_create_opus_planning_prompt.md](prompts/02_meta_create_opus_planning_prompt.md).
+3. Run the main planning pass in Opus using either the direct prompt in [prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md](prompts/03_opus_planning_create_feature_spec_plan_and_codex_prompt.md) or the final Opus prompt text produced by `02`.
 4. Critique the plan with [prompts/04_plan_critique_gpt_gemini_codex.md](prompts/04_plan_critique_gpt_gemini_codex.md).
 5. Apply critique with [prompts/05_opus_apply_plan_critique.md](prompts/05_opus_apply_plan_critique.md).
 6. Verify the revised plan with [prompts/06_plan_revision_verification_gpt_gemini_codex.md](prompts/06_plan_revision_verification_gpt_gemini_codex.md).

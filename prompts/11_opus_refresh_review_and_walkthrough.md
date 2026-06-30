@@ -1,7 +1,5 @@
 # 11 — Opus Refreshes Final Review + Walkthrough Files
 
-Use this once the AI review/fix loop is complete and the code is finalized, before the Sonnet human walkthrough phase.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -162,15 +160,17 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Claude Opus refreshing the final review artifacts after the code has been finalized through the AI review/fix loop.
+Role:
 
-Do not modify production code.
+- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
+- Read before answering. Do not speculate about files or code you have not inspected.
 
-Do not modify tests.
+Task:
 
-Do not make new review findings unless you discover something severe that was missed. If you discover a severe missed issue, stop and ask before proceeding.
+- your job is to update the review and walkthrough documents so they accurately reflect the final code state,
+- preserve the existing review trail while clearly marking what was fixed during the review loop.
 
-Read:
+Context to review:
 
 - current branch diff against `main`,
 - final current code,
@@ -179,7 +179,18 @@ Read:
 - `WALKTHROUGH.md`,
 - `REVIEW_FIX_VERIFICATION.md`, if present.
 
-Your job is to update the review and walkthrough documents so they accurately reflect the final code state.
+Success criteria:
+
+- `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
+- `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
+- the refreshed artifacts are detailed, grounded, and internally consistent.
+
+Constraints:
+
+- do not modify production code,
+- do not modify tests,
+- do not make new review findings unless you discover something severe that was missed,
+- if you discover a severe missed issue, stop and ask before proceeding.
 
 ## Required output 1: refreshed `REVIEW.md`
 

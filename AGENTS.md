@@ -101,9 +101,12 @@ The numbered prompt files define the workflow order and should stay in sequence.
 1. `01_initial_exploration_gpt_codex.md`
    - Clarifies a vague idea.
    - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
+   - The Opus prompt produced here is the exploration-phase seed prompt.
 2. `02_meta_create_opus_planning_prompt.md`
-   - Generates the prompt that will be pasted into Opus.
+   - Refines or generates the final paste-ready Opus planning prompt.
+   - This phase authors prompt text only. It does not perform the planning work itself.
 3. `03_opus_planning_create_feature_spec_plan_and_codex_prompt.md`
+   - This is the direct Opus planning prompt and the main planning phase.
    - Produces `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
 4. `04_plan_critique_gpt_gemini_codex.md`
    - Critiques the locked planning artifacts.
@@ -139,7 +142,7 @@ If a new phase is added, preserve the numbered sequence and update all places th
 
 Most phase prompts follow a predictable structure:
 
-1. Title and "when to use this" context.
+1. Title and any copy-paste-safe phase context that belongs inside the prompt artifact itself.
 2. `## Skills`
 3. `## Skill Handling Rule`
 4. Optional `## Engineering Contract`
@@ -151,6 +154,7 @@ When editing a prompt:
 
 - preserve the structure unless the task explicitly changes the prompt format,
 - preserve copy-paste friendliness,
+- keep non-prompt repo-usage notes out of the prompt body unless they are part of the actual contract for the target model,
 - keep instructions concrete,
 - keep artifact names exact,
 - avoid hidden dependencies on other files beyond what the prompt explicitly names.

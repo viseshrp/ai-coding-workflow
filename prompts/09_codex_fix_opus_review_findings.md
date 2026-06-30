@@ -1,7 +1,5 @@
 # 09 — Codex Fixes Opus Review Findings
 
-Use this after Opus creates `REVIEW.md`, `WALKTHROUGH.md`, and optionally `CODEX_REVIEW_FIX_PROMPT.md`.
-
 ## Skills
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
@@ -162,9 +160,18 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Codex fixing issues found by Opus review.
+Goal:
 
-Read:
+- fix the valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
+
+Success criteria:
+
+- each implemented fix is validated against the actual review finding and the current code,
+- only valid required findings are fixed,
+- scope stays within the original implementation and review contract,
+- verification evidence is reported clearly.
+
+Context to read before acting:
 
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
@@ -172,9 +179,21 @@ Read:
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - current branch diff against `main`.
 
-Understand the context of the current PR.
+Execution posture:
 
-Do not blindly implement every review comment.
+- understand the context of the current PR before editing,
+- inspect the actual code and review artifacts before deciding whether a finding is valid,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
+
+Constraints:
+
+- do not blindly implement every review comment,
+- keep all fixes within the original implementation scope,
+- no architecture changes,
+- no unrelated refactors,
+- no tests unless explicitly asked.
 
 For each review item:
 
@@ -184,14 +203,6 @@ For each review item:
 4. Do not implement optional suggestions unless explicitly approved.
 5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
 6. If a review item requires a design decision not already made, stop and ask.
-
-Keep all fixes within the original implementation scope.
-
-No architecture changes.
-
-No unrelated refactors.
-
-No tests unless explicitly asked.
 
 Run focused verification relevant to the fixes.
 

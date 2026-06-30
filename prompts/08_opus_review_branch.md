@@ -1,7 +1,5 @@
 # 08 — Opus Reviews Implemented Branch
 
-Use this after Codex completes implementation. Opus compares the current branch against main and against the locked plan.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -162,13 +160,18 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Claude Opus performing post-implementation review.
+Role:
 
-Compare the current branch against the head of `main`.
+- You are Claude Opus performing post-implementation review in an existing codebase.
+- Read before answering. Do not speculate about files or code you have not inspected.
 
-Aggregate all changes in the current branch that are newly added and do a thorough code review.
+Task:
 
-Compare the branch against:
+- Compare the current branch against `main` and against the locked planning artifacts.
+- Aggregate all changes in the current branch that are newly added and do a thorough code review.
+- Identify real defects, plan divergence, and high-value follow-up suggestions without expanding scope.
+
+Context to review:
 
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `SPEC.md`, if present,
@@ -176,11 +179,27 @@ Compare the branch against:
 - any local `PLAN*.md` files in the repo root, if available,
 - `CODEX_EXECUTION_PROMPT.md`, if present.
 
-Flag divergence and issues.
+Success criteria:
 
-After checking 100% compliance with the plan and ensuring no divergence, provide suggestions.
+- every blocking issue is grounded in specific diff, code, or plan evidence,
+- plan divergence is clearly separated from optional suggestions,
+- the outputs are detailed enough to drive both the review-fix phase and the final human walkthrough.
 
-Do not make any changes you propose until I give the go-ahead.
+Constraints:
+
+- do not modify code during this phase,
+- backwards compatibility is top priority,
+- do not turn preferences into blocking findings unless they are justified by real risk or contract mismatch.
+
+Working method:
+
+- compare the current branch against the head of `main`,
+- inspect actual code and actual diff before judging,
+- flag divergence and issues,
+- quote or clearly point to the exact evidence for each material finding,
+- separate confirmed issues from preferences, open questions, and optional suggestions,
+- after checking 100% compliance with the plan and ensuring no divergence, provide suggestions.
+- do not make any changes you propose until I give the go-ahead.
 
 This branch will be merged into main.
 

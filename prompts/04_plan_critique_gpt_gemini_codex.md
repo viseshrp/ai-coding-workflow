@@ -1,7 +1,5 @@
 # 04 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — GPT, Gemini, or Codex
 
-Use this after Opus creates `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`, before Codex execution.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -162,22 +160,43 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are reviewing the planning artifacts before implementation.
+Goal:
 
-Do not implement code.
+- determine whether the planning artifacts are ready to lock for Codex execution.
 
-Do not modify files unless I explicitly ask.
+Success criteria:
 
-Review:
+- every material concern is grounded in specific plan text, Codex-prompt text, or concrete repo evidence,
+- blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
+- the output follows the exact artifact structure below.
+
+Constraints:
+
+- do not implement code,
+- do not modify files unless I explicitly ask,
+- critique the plan, not alternative future architectures,
+- if evidence is missing, say so explicitly instead of guessing.
+
+Context to review:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
 - `CODEX_EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
 - relevant repository context if needed.
 
-Your job is to critique the plan, not execute it.
+Working method:
 
-Check whether the plan is good enough to lock for Codex execution.
+- if you are Codex, inspect the planning artifacts and any necessary repo files in parallel before finalizing,
+- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
+- quote or clearly point to the exact passage that triggered each blocking issue,
+- separate confirmed issues, inferences, and open questions,
+- prefer concrete execution risks over generic style commentary.
+
+Task:
+
+- critique the plan, not execute it,
+- decide whether the artifacts are good enough to lock for Codex execution,
+- produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
 
 ## Review dimensions
 

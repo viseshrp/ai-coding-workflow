@@ -1,7 +1,5 @@
 # 10 — Opus Verifies Codex Review Fixes
 
-Use this after Codex fixes Opus review findings. This verifies whether Codex actually satisfied the review before repeating or ending the review loop.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -163,11 +161,17 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-You are Claude Opus verifying review fixes.
+Role:
 
-Do not modify code.
+- You are Claude Opus verifying review fixes after Codex updated the branch.
+- Read before answering. Do not speculate about files or code you have not inspected.
 
-Read:
+Task:
+
+- verify whether Codex satisfied all previously raised concerns, including the previously raised review findings,
+- decide whether the code is ready for final review-artifact refresh or needs another fix pass.
+
+Context to review:
 
 - original `REVIEW.md`,
 - original `WALKTHROUGH.md`,
@@ -176,7 +180,17 @@ Read:
 - current branch diff against `main`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present.
 
-Your job is to verify whether Codex satisfied all previously raised concerns.
+Success criteria:
+
+- each prior finding is checked against the actual changed code,
+- the status of each finding is explicit and evidence-based,
+- any newly introduced issue is surfaced instead of hidden inside a pass verdict.
+
+Constraints:
+
+- do not modify code,
+- do not assume a finding is fixed because Codex said it was fixed,
+- check actual code and actual diff.
 
 For each prior review finding:
 
@@ -185,10 +199,6 @@ For each prior review finding:
 - classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
 - explain evidence from code,
 - identify any new issues introduced by the fix.
-
-Do not assume a finding is fixed because Codex said it was fixed.
-
-Check actual code.
 
 ## Required output: `REVIEW_FIX_VERIFICATION.md`
 
