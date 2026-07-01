@@ -315,6 +315,10 @@ Create a detailed `REVIEW.md` document with:
 
 Put suggestions directly below the relevant review findings.
 
+Every valid review issue must be categorized under either `Blocking Issues` or `Non-Blocking Issues`.
+
+Use `Suggestions` only for optional improvements that are not required in the GPT review-fix pass.
+
 ## Required output 2: `WALKTHROUGH.md`
 
 Create a detailed `WALKTHROUGH.md` documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
@@ -327,7 +331,7 @@ Format it properly for easy readability and to ease cognitive overload while rev
 
 ## Required output 3: `GPT_REVIEW_FIX_PROMPT.md`
 
-Create `GPT_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for GPT to fix the valid review findings.
+Create `GPT_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for GPT to fix all valid review findings from `REVIEW.md`, including both `Blocking Issues` and `Non-Blocking Issues`.
 
 There is no separate checked-in GPT review-fix prompt file after this review step. `GPT_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
 
@@ -385,12 +389,12 @@ Inside those sections, it must instruct GPT as follows.
 
 Goal:
 
-- fix the valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
+- fix all valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
 - each implemented fix is validated against the actual review finding and the current code,
-- only valid required findings are fixed,
+- all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
 - scope stays within the original implementation and review contract,
 - backwards compatibility is preserved,
 - verification evidence is reported clearly.
@@ -414,7 +418,7 @@ Execution posture:
 Constraints:
 
 - do not blindly implement every review comment,
-- address only the valid required review findings,
+- address all valid review findings in `Blocking Issues` and `Non-Blocking Issues`,
 - do not implement optional suggestions unless explicitly approved,
 - keep all fixes within the original implementation scope,
 - preserve plan scope,
@@ -428,8 +432,8 @@ Per-review-item process:
 
 1. Verify the review item against the actual code.
 2. Determine whether it is valid.
-3. Implement required/blocking valid fixes.
-4. Do not implement optional suggestions unless explicitly approved.
+3. Implement every valid fix from `Blocking Issues` and `Non-Blocking Issues`, including minor nits that are still valid issues.
+4. Do not implement items from `Suggestions` unless explicitly approved.
 5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
 6. If a review item requires a design decision not already made, stop and ask.
 7. Check off fixes if a checklist exists.

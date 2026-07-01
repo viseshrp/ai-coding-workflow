@@ -269,7 +269,7 @@ One of the fastest ways to understand this repo is to understand the artifact ch
 | `PLAN_REVISION_VERIFICATION.md` | `03` | Human decision point before direct GPT execution | Confirms whether the plan is ready for locked execution. |
 | `REVIEW.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Formal post-implementation review document. |
 | `WALKTHROUGH.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Detailed beginner-friendly walkthrough of the change set. |
-| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix valid review findings. |
+| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix all valid review findings, including non-blocking issues. |
 | `REVIEW_FIX_VERIFICATION.md` | `05` | `06` | Confirms whether the review-fix pass actually resolved the issues. |
 | `FOLLOWUP.md` | `07` | `08` | Human-approved final follow-up checklist. |
 
@@ -797,9 +797,9 @@ If you are starting from a vague feature or task idea, the default path is:
 6. Repeat `02` -> generated `OPUS_PLAN_REVISION_REQUEST.md` pass -> `03` until the plan is truly locked.
 7. Paste the generated `GPT_EXECUTION_PROMPT.md` into GPT and execute against `FEATURE_SPEC_AND_PLAN.md`.
 8. Review with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md).
-9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action.
+9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action. That fix pass is meant to address all valid findings, including non-blocking issues and minor nits, not just the high-priority ones.
 10. Verify the fixes with [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md).
-11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done.
+11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done. `Suggestions` remain optional unless explicitly approved, but valid issues from both `Blocking Issues` and `Non-Blocking Issues` should be resolved in the fix loop.
 12. Refresh the final review docs with [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md).
 13. Run the human walkthrough with [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
 14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
@@ -844,7 +844,7 @@ Do not write tests unless they become explicitly approved later.
 8. Run [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md). If it still says the plan is weak, go back to `02` rather than pushing forward.
 9. Once the plan is locked, start a GPT execution chat and paste `GPT_EXECUTION_PROMPT.md` to implement the change against `FEATURE_SPEC_AND_PLAN.md`.
 10. After implementation, start an Opus review chat with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md). Save `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md` if fixes are needed.
-11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and make only the requested fixes.
+11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits.
 12. Run [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md). If the fixes still fail verification, loop back to `04`.
 13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
 14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items.

@@ -71,7 +71,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 9. Run `03_plan_revision_verification_gpt_gemini.md` in GPT or Gemini to verify the revision. If it still fails, go back to `02`. Repeat until the plan is actually locked.
 10. Once the plan is locked, start a fresh GPT execution chat and paste the generated `GPT_EXECUTION_PROMPT.md`. GPT should implement against the locked `FEATURE_SPEC_AND_PLAN.md`.
 11. After implementation, start a fresh Claude Opus review chat and paste `04_opus_review_branch.md`. Save `REVIEW.md`, `WALKTHROUGH.md`, and, if fixes are needed, `GPT_REVIEW_FIX_PROMPT.md`.
-12. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, start a fresh GPT fix chat and paste that generated prompt. Let GPT make only the requested review fixes.
+12. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, start a fresh GPT fix chat and paste that generated prompt. Let GPT fix all valid review findings, including non-blocking issues and minor nits, but not purely optional suggestions unless you explicitly approve them.
 13. Run `05_opus_verify_review_fixes.md` in Opus to verify the fixes. If verification fails, go back to `04`. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` -> `05` until the AI review loop is complete.
 14. Run `06_opus_refresh_review_and_walkthrough.md` in Opus so the final `REVIEW.md` and `WALKTHROUGH.md` reflect the post-fix code rather than a stale snapshot.
 15. Run `07_sonnet_human_code_walkthrough.md` in Claude Sonnet with you present. Only items you explicitly approve should go into `FOLLOWUP.md`.
@@ -102,7 +102,7 @@ Do not write tests unless they become explicitly approved later.
 6. If the critique says the plan missed edge cases such as large export size, existing permissions, or table-filter behavior, paste `OPUS_PLAN_REVISION_REQUEST.md` into Opus and save the revised planning artifacts.
 7. Paste `03_plan_revision_verification_gpt_gemini.md` into GPT or Gemini and confirm the revised plan now handles those issues. If it still fails, loop back to `02`.
 8. When the plan is locked, paste `GPT_EXECUTION_PROMPT.md` into GPT in the target repo window and let it implement the CSV export change.
-9. Paste `04_opus_review_branch.md` into Opus to review the implementation. If Opus generates `GPT_REVIEW_FIX_PROMPT.md`, paste that into a fresh GPT chat and apply only those fixes.
+9. Paste `04_opus_review_branch.md` into Opus to review the implementation. If Opus generates `GPT_REVIEW_FIX_PROMPT.md`, paste that into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits.
 10. Paste `05_opus_verify_review_fixes.md` into Opus to confirm the fix pass really addressed the findings. Repeat the review loop if needed.
 11. Paste `06_opus_refresh_review_and_walkthrough.md` into Opus, then paste `07_sonnet_human_code_walkthrough.md` into Sonnet to walk yourself through the final diff.
 12. If you explicitly approve any final cleanup item, save it in `FOLLOWUP.md`, then paste `08_gpt_implement_human_followup.md` into GPT to apply only that approved follow-up work.

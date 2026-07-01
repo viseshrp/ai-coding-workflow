@@ -171,6 +171,8 @@ Task:
 - verify whether GPT satisfied all previously raised concerns, including the previously raised review findings,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
+Treat all valid findings from both `Blocking Issues` and `Non-Blocking Issues` as required for this verification pass.
+
 Context to review:
 
 - original `REVIEW.md`,
@@ -208,7 +210,7 @@ Use this structure:
 # Review Fix Verification
 
 ## Verdict
-- All required review findings resolved: Yes/No
+- All valid blocking and non-blocking review findings resolved: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
 ## Finding-by-Finding Verification
@@ -232,4 +234,4 @@ If anything remains unresolved:
 - state that `04` is the only phase that should author `GPT_REVIEW_FIX_PROMPT.md`,
 - if the existing `GPT_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
 
-If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
+If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
