@@ -1,4 +1,4 @@
-# 06 — Opus Reviews Implemented Branch
+# 04 - Opus Reviews Implemented Branch
 
 ## Skills
 
@@ -327,7 +327,25 @@ Format it properly for easy readability and to ease cognitive overload while rev
 
 ## Required output 3: `CODEX_REVIEW_FIX_PROMPT.md`
 
-Create a self-contained prompt for Codex to fix the valid review findings.
+Create `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for Codex to fix the valid review findings.
+
+There is no separate checked-in Codex review-fix prompt file after this review step. `CODEX_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
+
+It must be self-contained.
+
+Do not generate:
+
+- a helper prompt,
+- a wrapper note around review findings,
+- a partial instruction set that expects another checked-in fix prompt file,
+- a checklist without the full direct-use Codex contract.
+
+The generated Codex prompt must use a clear title and contain these top-level sections:
+
+- `## Skills`
+- `## Skill Handling Rule`
+- `## Engineering Contract`
+- `## Prompt`
 
 The generated Codex prompt must include these skill links explicitly:
 
@@ -336,17 +354,109 @@ The generated Codex prompt must include these skill links explicitly:
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 
-The generated Codex prompt must instruct Codex to:
+The generated Codex prompt must include a `## Skill Handling Rule` that instructs Codex to:
 
-- read `REVIEW.md`,
-- read `WALKTHROUGH.md` for context,
-- understand the current PR,
+- use only the explicitly linked skills listed in the prompt,
+- treat the prompt as the contract,
+- treat locked task artifacts as the contract for execution,
+- use skills as supporting procedures only,
+- let the prompt win if a skill conflicts with it,
+- stop and ask instead of silently choosing if a conflict is material,
+- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+The generated Codex prompt must embed the full Engineering Contract above verbatim or stricter.
+
+Inside `## Prompt`, the generated Codex prompt must use clear sections for:
+
+- goal,
+- success criteria,
+- context to read before acting,
+- execution posture,
+- constraints,
+- per-review-item process,
+- focused verification,
+- required final response.
+
+Inside those sections, it must instruct Codex as follows.
+
+Goal:
+
+- fix the valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
+
+Success criteria:
+
+- each implemented fix is validated against the actual review finding and the current code,
+- only valid required findings are fixed,
+- scope stays within the original implementation and review contract,
+- backwards compatibility is preserved,
+- verification evidence is reported clearly.
+
+Context to read before acting:
+
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- `CODEX_EXECUTION_PROMPT.md`, if present,
+- current branch diff against `main`.
+
+Execution posture:
+
+- understand the context of the current PR before editing,
+- inspect the actual code and review artifacts before deciding whether a finding is valid,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
+
+Constraints:
+
+- do not blindly implement every review comment,
 - address only the valid required review findings,
-- not implement optional suggestions unless explicitly approved,
+- do not implement optional suggestions unless explicitly approved,
+- keep all fixes within the original implementation scope,
 - preserve plan scope,
 - preserve backwards compatibility,
-- follow the Engineering Contract,
-- check off fixes if a checklist exists,
+- no architecture changes,
+- no unrelated refactors,
+- no tests unless explicitly asked,
 - stop and ask on ambiguity/conflict/context gaps.
+
+Per-review-item process:
+
+1. Verify the review item against the actual code.
+2. Determine whether it is valid.
+3. Implement required/blocking valid fixes.
+4. Do not implement optional suggestions unless explicitly approved.
+5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
+6. If a review item requires a design decision not already made, stop and ask.
+7. Check off fixes if a checklist exists.
+
+Focused verification:
+
+- run focused verification relevant to the fixes,
+- if a command fails, paste the exact error/log back. Never paraphrase logs.
+
+Required final response:
+
+The generated `CODEX_REVIEW_FIX_PROMPT.md` must require this exact response structure:
+
+```markdown
+# Review Fix Summary
+
+## Review Items Fixed
+
+## Review Items Not Fixed And Why
+
+## Files Changed
+
+## Verification Evidence
+
+## Documentation Updated
+
+## Commits Created
+
+## Remaining Questions / Blockers
+```
+
+It must explicitly instruct Codex not to claim completion without fresh verification evidence.
 
 Do not modify code during this Opus review phase.

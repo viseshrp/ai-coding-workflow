@@ -1,10 +1,11 @@
-# 05 — Codex Executes Locked Plan
+# 08 - Codex Implements Human-Approved FOLLOWUP.md
 
 ## Skills
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -161,80 +162,75 @@ Suggest a behavior-level alternative when practical.
 
 Goal:
 
-- execute the locked implementation plan end-to-end and stop only when you have a verified result or a concrete blocker.
+- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
-- only the planned changes are implemented,
-- the smallest correct changes are made,
-- required documentation updates are completed,
-- focused verification is run and reported with fresh evidence.
+- only approved `FOLLOWUP.md` items are implemented,
+- each completed item is checked off only after the change and its verification are done,
+- scope stays limited to the approved follow-up work,
+- verification evidence is reported clearly,
+- no AI review loop is restarted after this phase; the workflow returns to manual review.
 
 Context to read before acting:
 
-- `FEATURE_SPEC_AND_PLAN.md`,
-- `CODEX_EXECUTION_PROMPT.md`, if present,
-- relevant repository context.
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `FOLLOWUP.md`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- current branch diff against `main`.
 
 Execution posture:
 
-- act like an autonomous engineer: gather context, implement, run the smallest relevant checks, refine, then report,
-- read all likely relevant files in parallel before editing when that shortens the loop,
+- understand the context of the current PR before editing,
+- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
+- treat `FOLLOWUP.md` as the execution contract for this phase,
+- read likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
-- keep progressing until you have a verified result or one of the stop conditions below.
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
-Constraints:
+Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
 
-- the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` is the execution contract,
-- the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` is reference context,
-- follow the plan exactly,
-- no divergence,
-- no creativity,
-- no architecture changes,
-- just execute what is written.
+`FOLLOWUP.md` is the execution contract for this phase.
 
-Stop rules:
+Go on and address all items in `FOLLOWUP.md` while checking them off the list.
 
-- implement end-to-end with no interruptions unless one of the following conditions is true,
-- stop and ask if there is a conflict in decisions,
-- stop and ask if a required decision was never made,
-- stop and ask if the plan contradicts code reality,
-- stop and ask if following the plan would create a performance, backwards-compatibility, security, or public-API problem,
-- stop and ask if you do not have enough context,
-- if a missing credential, external dependency, or environment precondition blocks verification, say exactly what blocked you,
-- if any of those happens, stop and ask. Do not assume.
-- otherwise do not stop at analysis.
+Only implement items that are explicitly present in `FOLLOWUP.md`.
 
-## Execution rules
+Do not add new follow-up items.
 
-- Read likely relevant files in parallel before editing when practical.
-- Prefer dedicated repo/file/edit/search tools over raw shell when available.
-- Carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked.
-- Work in small increments.
-- Commit often and incrementally in small increments if committing is allowed.
-- Split large commits into sensible parts.
-- Use detailed commit messages and detailed commit descriptions.
-- Do not make unrelated refactors.
-- Do not write tests unless explicitly asked.
-- Run focused linter/smoke/build checks described by the plan.
-- Run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed.
-- If a command fails, paste the exact error/log back. Never paraphrase logs.
-- Update related documentation as described in the plan.
-- Do not write the changelog.
-- Keep interim narration minimal and save the full report for the final response unless blocked.
+Do not expand scope.
+
+Do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`.
+
+Do not write tests unless `FOLLOWUP.md` explicitly asks for tests.
+
+If a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision, stop and ask.
+
+Use small, focused changes.
+
+Commit incrementally if committing is allowed.
+
+Run focused verification relevant to the follow-up items.
+
+If a command fails, paste the exact error/log back. Never paraphrase logs.
+
+Do not create a new AI review prompt.
+
+Do not ask Opus to review this phase.
+
+I will do the final review manually.
 
 ## Required final response
 
-When done, report:
-
 ```markdown
-# Codex Execution Summary
+# Human Follow-Up Implementation Summary
 
-## What Changed
+## FOLLOWUP.md Items Completed
+
+## FOLLOWUP.md Items Not Completed And Why
 
 ## Files Changed
-
-## Plan Steps Completed
 
 ## Verification Evidence
 
@@ -242,9 +238,7 @@ When done, report:
 
 ## Commits Created
 
-## Not Done / Blocked
-
-## Suggestions Not Implemented Because Out Of Scope
+## Remaining Manual Review Notes
 ```
 
 Do not claim completion without fresh verification evidence.

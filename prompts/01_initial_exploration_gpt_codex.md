@@ -324,16 +324,27 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
 Required output 2: `CODEX_EXECUTION_PROMPT.md`
 
 - create `CODEX_EXECUTION_PROMPT.md`,
-- make it a self-contained end-to-end prompt for Codex,
+- make it the final direct-use prompt that I will paste into Codex for locked execution,
+- make it self-contained,
+- do not generate a helper prompt, summary, wrapper note, partial contract, or any prompt that expects another checked-in execution prompt file,
+- there is no separate checked-in Codex execution prompt file after this planning step,
 - require it to instruct Codex to:
   1. read `FEATURE_SPEC_AND_PLAN.md`,
-  2. follow the implementation plan exactly,
-  3. use the spec/reference section only as reference,
-  4. make no architecture changes,
-  5. make no unrelated changes,
-  6. implement end-to-end with no interruptions unless a required decision was not made or a conflict appears,
-  7. stop and ask on ambiguity/conflict/context gaps,
-  8. use the full Engineering Contract below.
+  2. treat the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` as the execution contract,
+  3. treat the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` as reference context,
+  4. follow the implementation plan exactly,
+  5. make no architecture changes,
+  6. make no unrelated changes,
+  7. implement end-to-end with no interruptions unless a required decision was not made or a conflict appears,
+  8. stop and ask on ambiguity/conflict/context gaps,
+  9. use the full Engineering Contract below.
+
+The generated `CODEX_EXECUTION_PROMPT.md` must use a clear title and contain these top-level sections:
+
+- `## Skills`
+- `## Skill Handling Rule`
+- `## Engineering Contract`
+- `## Prompt`
 
 The generated Opus prompt must also require that the generated `CODEX_EXECUTION_PROMPT.md` explicitly include these skill links:
 
@@ -341,9 +352,122 @@ The generated Opus prompt must also require that the generated `CODEX_EXECUTION_
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 
+The generated `CODEX_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs Codex to:
+
+- use only the explicitly linked skills listed in the prompt,
+- treat the prompt as the contract,
+- treat locked task artifacts as the contract for execution,
+- use skills as supporting procedures only,
+- let the prompt win if a skill conflicts with it,
+- stop and ask instead of silently choosing if a conflict is material,
+- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
 The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `CODEX_EXECUTION_PROMPT.md`.
 
 The generated Codex prompt must require the following Engineering Contract verbatim or stricter:
+
+Inside `## Prompt`, the generated `CODEX_EXECUTION_PROMPT.md` must use clear sections for:
+
+- goal,
+- success criteria,
+- context to read before acting,
+- execution posture,
+- constraints,
+- stop rules,
+- execution rules,
+- required final response.
+
+Inside those sections, the generated Opus prompt must require `CODEX_EXECUTION_PROMPT.md` to instruct Codex as follows.
+
+Goal:
+
+- execute the locked implementation plan end-to-end and stop only when you have a verified result or a concrete blocker.
+
+Success criteria:
+
+- only the planned changes are implemented,
+- the smallest correct changes are made,
+- required documentation updates are completed,
+- focused verification is run and reported with fresh evidence.
+
+Context to read before acting:
+
+- `FEATURE_SPEC_AND_PLAN.md`,
+- `CODEX_EXECUTION_PROMPT.md`, if present as saved artifact context,
+- relevant repository context.
+
+Execution posture:
+
+- act like an autonomous engineer: gather context, implement, run the smallest relevant checks, refine, then report,
+- read all likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- keep progressing until you have a verified result or one of the stop conditions below.
+
+Constraints:
+
+- the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` is the execution contract,
+- the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` is reference context,
+- follow the plan exactly,
+- no divergence,
+- no creativity,
+- no architecture changes,
+- just execute what is written.
+
+Stop rules:
+
+- implement end-to-end with no interruptions unless one of the following conditions is true,
+- stop and ask if there is a conflict in decisions,
+- stop and ask if a required decision was never made,
+- stop and ask if the plan contradicts code reality,
+- stop and ask if following the plan would create a performance, backwards-compatibility, security, or public-API problem,
+- stop and ask if you do not have enough context,
+- if a missing credential, external dependency, or environment precondition blocks verification, say exactly what blocked you,
+- if any of those happens, stop and ask. Do not assume.
+- otherwise do not stop at analysis.
+
+Execution rules:
+
+- read likely relevant files in parallel before editing when practical,
+- prefer dedicated repo/file/edit/search tools over raw shell when available,
+- carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
+- work in small increments,
+- commit often and incrementally in small increments if committing is allowed,
+- split large commits into sensible parts,
+- use detailed commit messages and detailed commit descriptions,
+- do not make unrelated refactors,
+- do not write tests unless explicitly asked,
+- run focused linter/smoke/build checks described by the plan,
+- run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
+- if a command fails, paste the exact error/log back. Never paraphrase logs.
+- update related documentation as described in the plan,
+- do not write the changelog,
+- keep interim narration minimal and save the full report for the final response unless blocked.
+
+Required final response:
+
+The generated `CODEX_EXECUTION_PROMPT.md` must require this exact response structure:
+
+```markdown
+# Codex Execution Summary
+
+## What Changed
+
+## Files Changed
+
+## Plan Steps Completed
+
+## Verification Evidence
+
+## Documentation Updated
+
+## Commits Created
+
+## Not Done / Blocked
+
+## Suggestions Not Implemented Because Out Of Scope
+```
+
+It must explicitly instruct Codex not to claim completion without fresh verification evidence.
 
 ## Engineering Contract
 

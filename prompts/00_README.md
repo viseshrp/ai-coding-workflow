@@ -1,34 +1,49 @@
-# Agentic Coding Prompt Pack — Independent Phase Prompts
+# Agentic Coding Prompt Pack - Independent Phase Prompts
 
-This zip contains separate self-contained Markdown prompts. Each prompt can be dropped directly into its own phase/session without needing to reference another prompt file.
+This folder contains separate self-contained Markdown prompts. Each checked-in prompt can be pasted directly into its own workflow phase without needing to reference another checked-in prompt file.
 
 ## Design decisions in this version
 
-- The repeated Codex implementation rules and Opus review checks were consolidated into one internal **Engineering Contract** section that is embedded inside the prompts that need it.
-- Each phase prompt is tuned to the target model family: GPT/Codex phases are outcome-first and operational, Opus/Sonnet phases use explicit sectioning and evidence-grounded output contracts, and GPT/Gemini/Codex critique phases keep verdicts and schemas explicit.
-- Prompt files are written to be pasted directly into the target model session. Phase-orientation notes live in the repo docs rather than as non-prompt blurbs above the prompt body.
+- The repeated Codex implementation rules and Opus review checks were consolidated into one internal `Engineering Contract` section that is embedded inside the prompts that need it.
+- Each checked-in phase prompt is tuned to the target model family: GPT/Codex phases are outcome-first and operational, Opus/Sonnet phases use explicit sectioning and evidence-grounded output contracts, and GPT/Gemini/Codex critique phases keep verdicts and schemas explicit.
+- Prompt files are written to be pasted directly into the target model session. Phase-orientation notes live in repo docs rather than as non-prompt blurbs above the prompt body.
 - The default planning output is reduced from separate `SPEC.md` + `IMPLEMENTATION_PLAN.md` into one combined `FEATURE_SPEC_AND_PLAN.md`.
-- `FEATURE_SPEC_AND_PLAN.md` still preserves your intended split: the spec/reference section is the detailed reference, and the implementation plan section is the strict execution contract with links to the spec/reference anchors.
-- `CODEX_EXECUTION_PROMPT.md` remains separate because it is the artifact pasted into Codex for implementation.
-- Skill links point to your `viseshrp/ai-skills-archive` repository.
-- No skill router is used. Skill links are included directly in the relevant prompt files.
+- `FEATURE_SPEC_AND_PLAN.md` still preserves the intended split: the spec/reference section is the detailed reference, and the implementation plan section is the strict execution contract with links back to the spec/reference anchors.
+- `CODEX_EXECUTION_PROMPT.md` remains separate because it is the generated artifact pasted into Codex for execution.
+- No skill router is used. Skill links are included directly in the relevant prompt files and in the generated downstream artifact prompts.
 - Every prompt is intentionally self-contained, so some duplication remains across files.
 - Prompt `01` creates the exploration outputs and the final paste-ready Opus planning prompt artifact, `INITIAL_OPUS_PLANNING_PROMPT.md`.
 - The main Opus planning pass is driven by that generated artifact, not by a separate checked-in prompt file.
+- Prompt `02` critiques the planning artifacts and generates `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use Opus revision prompt when changes are needed.
+- Prompt `03` verifies the latest revision and can regenerate `OPUS_PLAN_REVISION_REQUEST.md` for another revision pass if unresolved issues remain.
+- There is no separate checked-in Opus plan-revision prompt file after the fold; the generated `OPUS_PLAN_REVISION_REQUEST.md` is the real revision-phase prompt.
+- Locked execution is driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`, not by a separate checked-in execution prompt file.
+- Prompt `04` reviews the implemented branch and generates `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use Codex fix prompt when review findings need action.
+- Prompt `05` verifies the fix pass and can regenerate `CODEX_REVIEW_FIX_PROMPT.md` for another review-fix iteration if unresolved issues remain.
+- There is no separate checked-in Codex review-fix prompt file after the fold; the generated `CODEX_REVIEW_FIX_PROMPT.md` is the real review-fix prompt.
+- Skill links point to the `viseshrp/ai-skills-archive` repository.
 
 ## Prompt files
 
 1. `01_initial_exploration_gpt_codex.md`
 2. `02_plan_critique_gpt_gemini_codex.md`
-3. `03_opus_apply_plan_critique.md`
-4. `04_plan_revision_verification_gpt_gemini_codex.md`
-5. `05_codex_execute_locked_plan.md`
-6. `06_opus_review_branch.md`
-7. `07_codex_fix_opus_review_findings.md`
-8. `08_opus_verify_review_fixes.md`
-9. `09_opus_refresh_review_and_walkthrough.md`
-10. `10_sonnet_human_code_walkthrough.md`
-11. `11_codex_implement_human_followup.md`
+3. `03_plan_revision_verification_gpt_gemini_codex.md`
+4. `04_opus_review_branch.md`
+5. `05_opus_verify_review_fixes.md`
+6. `06_opus_refresh_review_and_walkthrough.md`
+7. `07_sonnet_human_code_walkthrough.md`
+8. `08_codex_implement_human_followup.md`
+
+## Generated workflow artifacts that replace removed checked-in prompts
+
+- `INITIAL_OPUS_PLANNING_PROMPT.md`
+  - The direct-use Opus planning prompt generated by `01`.
+- `OPUS_PLAN_REVISION_REQUEST.md`
+  - The direct-use Opus plan-revision prompt generated by `02` and optionally regenerated by `03`.
+- `CODEX_EXECUTION_PROMPT.md`
+  - The direct-use Codex execution prompt generated by the Opus planning phase.
+- `CODEX_REVIEW_FIX_PROMPT.md`
+  - The direct-use Codex review-fix prompt generated by `04` and optionally regenerated by `05`.
 
 ## Skill links used
 

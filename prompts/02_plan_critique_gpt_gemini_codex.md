@@ -263,9 +263,28 @@ Use this structure:
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
-Create a self-contained prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
+Create `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
 
-This is a meta-output. The generated Opus revision prompt must include these skill links explicitly:
+There is no separate checked-in Opus revision prompt file after this critique step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the revision pass.
+
+It must be self-contained.
+
+Do not generate:
+
+- a helper prompt,
+- a meta-only instruction block,
+- a skeleton that expects another prompt file to fill in the real contract,
+- a revision summary without the full direct-use prompt.
+
+The generated Opus revision prompt must use a clear title and contain these top-level sections:
+
+- `## Skills`
+- `## Skill Handling Rule`
+- `## Default Planning Artifact Reduction`
+- `## Engineering Contract`
+- `## Prompt`
+
+The generated Opus revision prompt must include these skill links explicitly:
 
 - [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
 - [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
@@ -275,16 +294,137 @@ This is a meta-output. The generated Opus revision prompt must include these ski
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 
-The generated Opus revision prompt must instruct Opus to:
+The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
+
+- use only the explicitly linked skills listed in the prompt,
+- treat the prompt as the contract,
+- treat locked task artifacts as the contract for execution,
+- use skills as supporting procedures only,
+- let the prompt win if a skill conflicts with it,
+- stop and ask instead of silently choosing if a conflict is material,
+- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
+
+- `FEATURE_SPEC_AND_PLAN.md`
+- `CODEX_EXECUTION_PROMPT.md`
+
+It must state that:
+
+1. `FEATURE_SPEC_AND_PLAN.md` contains both a detailed spec/reference section and a concrete implementation plan section.
+2. The implementation plan section links back to relevant spec/reference anchors inside the same file instead of duplicating long explanations.
+3. The plan remains the execution contract.
+4. The spec/reference section remains the background reference.
+5. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are only a fallback if I explicitly ask or if the file becomes too large to review comfortably.
+
+The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
+
+Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
+
+- role,
+- task,
+- context to read before answering,
+- success criteria,
+- constraints,
+- working method,
+- required outputs,
+- final checks.
+
+Inside those sections, it must instruct Opus as follows.
+
+Role:
+
+- You are Claude Opus revising the planning artifacts before implementation.
+- Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
+- Read before answering. Do not speculate about code or files you have not inspected.
+
+Task:
+
+- Update the planning artifacts so they are ready for locked Codex execution.
+- Apply valid critique items without expanding scope.
+
+Context to read before answering:
+
+- `PLAN_CRITIQUE.md`, if present,
+- `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
+- current `FEATURE_SPEC_AND_PLAN.md`,
+- current `CODEX_EXECUTION_PROMPT.md`,
+- the original draft plan/interviewing notes if available,
+- relevant repository context.
+
+Success criteria:
+
+- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- the revised plan stays within original scope,
+- the revised Codex prompt remains strict enough to prevent divergence during execution,
+- no detail from the current plan artifacts, critique, or draft-plan lineage is silently dropped.
+
+Constraints:
+
+- do not implement code,
+- do not write tests,
+- do not loosen the Codex prompt,
+- do not use the critique as permission to change architecture unless I explicitly approve,
+- keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
+
+Working method:
+
+For each critique item:
+
+1. Decide whether it is valid.
+2. If valid and answerable from the repo/context, update the plan/prompt.
+3. If valid but requires my design decision, stop and ask me before updating that part.
+4. If invalid, document why.
+5. If it would expand scope, stop and ask.
+
+And also:
 
 - read `PLAN_CRITIQUE.md`,
 - read the current `FEATURE_SPEC_AND_PLAN.md`,
 - read the current `CODEX_EXECUTION_PROMPT.md`,
 - apply all valid critique items,
 - ask if a critique item requires a design decision from me,
-- update both planning artifacts,
-- keep the plan/code execution scope unchanged unless I explicitly approve scope changes,
-- preserve the Engineering Contract,
-- produce a `PLAN_REVISION_SUMMARY.md` explaining exactly what changed and which critique items were addressed.
+- do not silently drop any critique item,
+- ground plan detail in the code and context you actually inspected,
+- preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
+
+Required outputs:
+
+Update or create:
+
+- `FEATURE_SPEC_AND_PLAN.md`
+- `CODEX_EXECUTION_PROMPT.md`
+- `PLAN_REVISION_SUMMARY.md`
+
+The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use this structure:
+
+```markdown
+# Plan Revision Summary
+
+## Critique Items Addressed
+
+## Critique Items Rejected
+
+## Critique Items Requiring User Decision
+
+## Changes Made To FEATURE_SPEC_AND_PLAN.md
+
+## Changes Made To CODEX_EXECUTION_PROMPT.md
+
+## Remaining Risks
+
+## Ready For Another Critique Pass?
+
+## Ready For Codex Execution?
+```
+
+Final checks:
+
+- verify that the updated plan is still within original scope,
+- verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
+- verify that the Codex prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- verify that no test-writing is introduced unless explicitly asked,
+- verify that all skill links relevant to the generated Codex prompt remain present,
+- verify that the Engineering Contract remains intact or stricter.
 
 Do not ask Opus to implement code.

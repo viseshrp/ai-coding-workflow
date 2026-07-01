@@ -1,4 +1,4 @@
-# 04 — Plan Revision Verification — GPT, Gemini, or Codex
+# 06 - Opus Refreshes Final Review + Walkthrough Files
 
 ## Skills
 
@@ -160,87 +160,73 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Goal:
+Role:
 
-- determine whether Opus actually addressed the previous plan critique and whether the planning artifacts are now ready for Codex execution.
-
-Success criteria:
-
-- each prior concern is checked against the revised artifacts and linked to concrete evidence,
-- the verdict is explicit about both readiness and remaining gaps,
-- the output follows the exact structure below.
-
-Constraints:
-
-- do not implement code,
-- do not modify files unless explicitly asked,
-- if evidence is missing, say so explicitly instead of guessing.
-
-Context to review:
-
-- the previous `PLAN_CRITIQUE.md`,
-- the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
-- `PLAN_REVISION_SUMMARY.md`,
-- the updated `FEATURE_SPEC_AND_PLAN.md`,
-- the updated `CODEX_EXECUTION_PROMPT.md`,
-- original draft plan/interviewing notes if available.
-
-Working method:
-
-- if you are Codex, inspect the revised artifacts and any needed repo files in parallel before finalizing,
-- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
-- quote or clearly point to where each concern was addressed,
-- distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
-- if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
+- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
+- Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
 
-- determine whether the revised plan and revised Codex prompt satisfy all previously raised concerns,
-- produce `PLAN_REVISION_VERIFICATION.md`,
-- if anything remains unresolved, also produce a self-contained `OPUS_PLAN_REVISION_REQUEST.md` for the next revision pass.
+- your job is to update the review and walkthrough documents so they accurately reflect the final code state,
+- preserve the existing review trail while clearly marking what was fixed during the review loop.
 
-For each previously raised concern:
+Context to review:
 
-- quote or summarize the concern,
-- identify where it was addressed,
-- classify status as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Concern`,
-- explain your reasoning.
+- current branch diff against `main`,
+- final current code,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `REVIEW_FIX_VERIFICATION.md`, if present.
 
-## Required output: `PLAN_REVISION_VERIFICATION.md`
+Success criteria:
 
-Use this structure:
+- `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
+- `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
+- the refreshed artifacts are detailed, grounded, and internally consistent.
 
-```markdown
-# Plan Revision Verification
+Constraints:
 
-## Verdict
-- All previous concerns resolved: Yes/No
-- Ready for Codex execution: Yes/No
+- do not modify production code,
+- do not modify tests,
+- do not make new review findings unless you discover something severe that was missed,
+- if you discover a severe missed issue, stop and ask before proceeding.
 
-## Concern-by-Concern Verification
+## Required output 1: refreshed `REVIEW.md`
 
-| Concern | Status | Evidence | Remaining Action |
-|---|---|---|---|
+Update `REVIEW.md` so it reflects the final code.
 
-## Remaining Blocking Issues
+It must include:
 
-## Remaining Non-Blocking Issues
+- final verdict,
+- plan compliance,
+- backwards compatibility review,
+- public API review,
+- performance/complexity review,
+- source documentation grounding,
+- code quality/readability,
+- reuse/DRY/duplication,
+- assumptions surfaced,
+- assert usage,
+- cross-platform review,
+- test review, if applicable,
+- documentation review,
+- any remaining suggestions.
 
-## New Issues Introduced By Revision
+Clearly mark review findings that were fixed during the review loop.
 
-## Required Next Opus Revision Request
-```
+## Required output 2: refreshed `WALKTHROUGH.md`
 
-If any issue remains, also create a self-contained `OPUS_PLAN_REVISION_REQUEST.md` for the next Opus revision pass.
+Update `WALKTHROUGH.md` so it reflects the final code, not the old pre-fix code.
 
-The generated Opus revision request must include these skill links explicitly:
+Document each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
 
-- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
-- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
-- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+It must be detailed and thorough, so as to facilitate review without looking at the code.
 
-If no issue remains, state clearly that the plan is ready for Codex execution.
+I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. THIS IS NON NEGOTIABLE.
+
+Format it properly for easy readability and to ease cognitive overload while reviewing.
+
+The walkthrough must be suitable as a supplement for my human review and potentially as PR-description source material.
+
+Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state.

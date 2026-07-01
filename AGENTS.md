@@ -44,7 +44,7 @@ If you change wording that changes behavior, you are changing product logic.
   - Text normalization; preserve LF-friendly text files.
 - `prompts/00_README.md`
   - User-facing overview of the independent prompt pack.
-- `prompts/01_...md` through `prompts/11_...md`
+- `prompts/01_...md` through `prompts/08_...md`
   - Canonical phase prompts.
 - `sources/current_skill_set.txt`
   - Condensed skill inventory by workflow phase.
@@ -92,6 +92,7 @@ These are the main design constraints that define this repo:
   - Codex for execution/fix phases.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `CODEX_EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
+- The main Opus planning pass, Opus plan-revision pass, Codex execution pass, and Codex review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 
 ## Canonical Workflow Phases
@@ -106,27 +107,26 @@ The numbered prompt files define the workflow order and should stay in sequence.
 2. `02_plan_critique_gpt_gemini_codex.md`
    - Critiques the locked planning artifacts.
    - Produces `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`.
-3. `03_opus_apply_plan_critique.md`
-   - Revises the planning artifacts.
-4. `04_plan_revision_verification_gpt_gemini_codex.md`
+   - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
+3. `03_plan_revision_verification_gpt_gemini_codex.md`
    - Verifies that the revision addressed the critique.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
-5. `05_codex_execute_locked_plan.md`
-   - Executes the locked implementation plan.
-6. `06_opus_review_branch.md`
+   - If issues remain, it can generate the next `OPUS_PLAN_REVISION_REQUEST.md`.
+   - Locked execution is then driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
+4. `04_opus_review_branch.md`
    - Reviews implemented changes.
    - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `CODEX_REVIEW_FIX_PROMPT.md`.
-7. `07_codex_fix_opus_review_findings.md`
-   - Fixes valid review findings from the Opus review.
-8. `08_opus_verify_review_fixes.md`
+   - The generated `CODEX_REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the Codex review-fix pass.
+5. `05_opus_verify_review_fixes.md`
    - Verifies the review-fix pass.
    - Produces `REVIEW_FIX_VERIFICATION.md`.
-9. `09_opus_refresh_review_and_walkthrough.md`
+   - If issues remain, it can generate the next `CODEX_REVIEW_FIX_PROMPT.md`.
+6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
-10. `10_sonnet_human_code_walkthrough.md`
+7. `07_sonnet_human_code_walkthrough.md`
    - Human review gate.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
-11. `11_codex_implement_human_followup.md`
+8. `08_codex_implement_human_followup.md`
    - Implements only human-approved `FOLLOWUP.md` items.
 
 Do not renumber these files casually.
@@ -160,7 +160,7 @@ Several sections are intentionally repeated across prompts. If you edit one, sea
 
 ### `## Skill Handling Rule`
 
-Present in all prompt files `01` through `11`.
+Present in all prompt files `01` through `08`.
 
 Expectation:
 
@@ -173,14 +173,11 @@ Expectation:
 Present in:
 
 - `prompts/02_plan_critique_gpt_gemini_codex.md`
-- `prompts/03_opus_apply_plan_critique.md`
-- `prompts/04_plan_revision_verification_gpt_gemini_codex.md`
-- `prompts/05_codex_execute_locked_plan.md`
-- `prompts/06_opus_review_branch.md`
-- `prompts/07_codex_fix_opus_review_findings.md`
-- `prompts/08_opus_verify_review_fixes.md`
-- `prompts/09_opus_refresh_review_and_walkthrough.md`
-- `prompts/11_codex_implement_human_followup.md`
+- `prompts/03_plan_revision_verification_gpt_gemini_codex.md`
+- `prompts/04_opus_review_branch.md`
+- `prompts/05_opus_verify_review_fixes.md`
+- `prompts/06_opus_refresh_review_and_walkthrough.md`
+- `prompts/08_codex_implement_human_followup.md`
 
 Expectation:
 
@@ -196,7 +193,7 @@ Current default:
 - `FEATURE_SPEC_AND_PLAN.md`
 - `CODEX_EXECUTION_PROMPT.md`
 
-This policy is reflected in multiple files including `prompts/00_README.md`, `01`, and downstream prompts that reference the combined artifact.
+This policy is reflected in multiple files including `prompts/00_README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
 
 Do not casually reintroduce separate `SPEC.md` plus `IMPLEMENTATION_PLAN.md` as the default.
 
@@ -214,7 +211,7 @@ If you rename or materially redefine one of these, update every downstream consu
 
 ### Human approval gate
 
-The explicit `AGREE` gate in `10_sonnet_human_code_walkthrough.md` is intentional and high-value.
+The explicit `AGREE` gate in `07_sonnet_human_code_walkthrough.md` is intentional and high-value.
 
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
 
@@ -356,8 +353,8 @@ Also check:
 
 Also check:
 
-- `10_sonnet_human_code_walkthrough.md`,
-- `11_codex_implement_human_followup.md`,
+- `07_sonnet_human_code_walkthrough.md`,
+- `08_codex_implement_human_followup.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.
 
@@ -365,7 +362,7 @@ Also check:
 
 Before finishing a change, verify:
 
-- the repo still has the expected `00` through `11` prompt set unless the task intentionally changes it,
+- the repo still has the expected `00` through `08` prompt set unless the task intentionally changes it,
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
 - skill links are consistent where intended,

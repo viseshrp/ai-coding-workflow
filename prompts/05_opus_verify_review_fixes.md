@@ -1,8 +1,9 @@
-# 11 — Codex Implements Human-Approved FOLLOWUP.md
+# 05 - Opus Verifies Codex Review Fixes
 
 ## Skills
 
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
@@ -160,75 +161,189 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Goal:
+Role:
 
-- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
+- You are Claude Opus verifying review fixes after Codex updated the branch.
+- Read before answering. Do not speculate about files or code you have not inspected.
+
+Task:
+
+- verify whether Codex satisfied all previously raised concerns, including the previously raised review findings,
+- decide whether the code is ready for final review-artifact refresh or needs another fix pass.
+
+Context to review:
+
+- original `REVIEW.md`,
+- original `WALKTHROUGH.md`,
+- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
+- Codex's review fix summary, if present,
+- current branch diff against `main`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present.
 
 Success criteria:
 
-- only approved `FOLLOWUP.md` items are implemented,
-- each completed item is checked off only after the change and its verification are done,
-- scope stays limited to the approved follow-up work,
-- verification evidence is reported clearly,
-- no AI review loop is restarted after this phase; the workflow returns to manual review.
+- each prior finding is checked against the actual changed code,
+- the status of each finding is explicit and evidence-based,
+- any newly introduced issue is surfaced instead of hidden inside a pass verdict.
+
+Constraints:
+
+- do not modify code,
+- do not assume a finding is fixed because Codex said it was fixed,
+- check actual code and actual diff.
+
+For each prior review finding:
+
+- identify the original finding,
+- inspect the actual changed code,
+- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
+- explain evidence from code,
+- identify any new issues introduced by the fix.
+
+## Required output: `REVIEW_FIX_VERIFICATION.md`
+
+Use this structure:
+
+```markdown
+# Review Fix Verification
+
+## Verdict
+- All required review findings resolved: Yes/No
+- Ready to finalize review/walkthrough docs: Yes/No
+
+## Finding-by-Finding Verification
+
+| Original Finding | Status | Evidence | Remaining Action |
+|---|---|---|---|
+
+## New Issues Introduced
+
+## Remaining Blocking Issues
+
+## Remaining Non-Blocking Issues
+
+## Next Codex Review-Fix Request
+```
+
+If anything remains unresolved, create `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for the next Codex fix pass.
+
+There is no separate checked-in Codex review-fix prompt file after this verification step. `CODEX_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
+
+It must be self-contained.
+
+Do not generate:
+
+- a helper prompt,
+- a wrapper note around review findings,
+- a partial instruction set that expects another checked-in fix prompt file,
+- a checklist without the full direct-use Codex contract.
+
+The generated Codex prompt must use a clear title and contain these top-level sections:
+
+- `## Skills`
+- `## Skill Handling Rule`
+- `## Engineering Contract`
+- `## Prompt`
+
+The generated Codex prompt must include these skill links explicitly:
+
+- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
+- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
+- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+
+The generated Codex prompt must include a `## Skill Handling Rule` that instructs Codex to:
+
+- use only the explicitly linked skills listed in the prompt,
+- treat the prompt as the contract,
+- treat locked task artifacts as the contract for execution,
+- use skills as supporting procedures only,
+- let the prompt win if a skill conflicts with it,
+- stop and ask instead of silently choosing if a conflict is material,
+- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+The generated Codex prompt must embed the full Engineering Contract above verbatim or stricter.
+
+Inside `## Prompt`, the generated Codex prompt must use clear sections for:
+
+- goal,
+- success criteria,
+- context to read before acting,
+- execution posture,
+- constraints,
+- per-review-item process,
+- focused verification,
+- required final response.
+
+Inside those sections, it must instruct Codex as follows.
+
+Goal:
+
+- fix the still-valid unresolved review findings and stop only when you have fresh verification evidence or a concrete blocker.
+
+Success criteria:
+
+- each implemented fix is validated against the actual unresolved review finding and the current code,
+- only valid required findings are fixed,
+- scope stays within the original implementation and review contract,
+- backwards compatibility is preserved,
+- verification evidence is reported clearly.
 
 Context to read before acting:
 
-- `REVIEW.md`,
-- `WALKTHROUGH.md`,
-- `FOLLOWUP.md`,
+- original `REVIEW.md`,
+- original `WALKTHROUGH.md`,
+- `REVIEW_FIX_VERIFICATION.md`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
+- `CODEX_EXECUTION_PROMPT.md`, if present,
 - current branch diff against `main`.
 
 Execution posture:
 
-- understand the context of the current PR before editing,
-- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
-- treat `FOLLOWUP.md` as the execution contract for this phase,
+- understand the current PR and the latest verification feedback before editing,
+- inspect the actual code and review artifacts before deciding whether a finding still needs work,
 - read likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
 - carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
-Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
+Constraints:
 
-`FOLLOWUP.md` is the execution contract for this phase.
+- do not blindly implement every historical review comment,
+- address only the still-valid unresolved required review findings,
+- do not implement optional suggestions unless explicitly approved,
+- keep all fixes within the original implementation scope,
+- preserve plan scope,
+- preserve backwards compatibility,
+- no architecture changes,
+- no unrelated refactors,
+- no tests unless explicitly asked,
+- stop and ask on ambiguity/conflict/context gaps.
 
-Go on and address all items in `FOLLOWUP.md` while checking them off the list.
+Per-review-item process:
 
-Only implement items that are explicitly present in `FOLLOWUP.md`.
+1. Verify the review item against the actual code and the latest verification feedback.
+2. Determine whether it is still valid.
+3. Implement required/blocking valid fixes.
+4. Do not implement optional suggestions unless explicitly approved.
+5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
+6. If a review item requires a design decision not already made, stop and ask.
+7. Check off fixes if a checklist exists.
 
-Do not add new follow-up items.
+Focused verification:
 
-Do not expand scope.
+- run focused verification relevant to the fixes,
+- if a command fails, paste the exact error/log back. Never paraphrase logs.
 
-Do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`.
+Required final response:
 
-Do not write tests unless `FOLLOWUP.md` explicitly asks for tests.
-
-If a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision, stop and ask.
-
-Use small, focused changes.
-
-Commit incrementally if committing is allowed.
-
-Run focused verification relevant to the follow-up items.
-
-If a command fails, paste the exact error/log back. Never paraphrase logs.
-
-Do not create a new AI review prompt.
-
-Do not ask Opus to review this phase.
-
-I will do the final review manually.
-
-## Required final response
+The generated `CODEX_REVIEW_FIX_PROMPT.md` must require this exact response structure:
 
 ```markdown
-# Human Follow-Up Implementation Summary
+# Review Fix Summary
 
-## FOLLOWUP.md Items Completed
+## Review Items Fixed
 
-## FOLLOWUP.md Items Not Completed And Why
+## Review Items Not Fixed And Why
 
 ## Files Changed
 
@@ -238,7 +353,9 @@ I will do the final review manually.
 
 ## Commits Created
 
-## Remaining Manual Review Notes
+## Remaining Questions / Blockers
 ```
 
-Do not claim completion without fresh verification evidence.
+It must explicitly instruct Codex not to claim completion without fresh verification evidence.
+
+If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
