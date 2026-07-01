@@ -331,6 +331,10 @@ Create `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for Codex to 
 
 There is no separate checked-in Codex review-fix prompt file after this review step. `CODEX_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
 
+This phase is the only place that should author `CODEX_REVIEW_FIX_PROMPT.md`.
+
+If a later verification pass says another fix iteration is needed, return to this phase and regenerate `CODEX_REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
+
 It must be self-contained.
 
 Do not generate:

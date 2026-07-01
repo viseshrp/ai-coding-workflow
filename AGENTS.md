@@ -84,6 +84,7 @@ These are the main design constraints that define this repo:
 - No skill router. Skills are linked directly inside the relevant prompts.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - The prompt is the contract for the target model in that phase.
+- Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
   - GPT/Codex for exploration/meta critique in some phases.
@@ -111,7 +112,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
 3. `03_plan_revision_verification_gpt_gemini_codex.md`
    - Verifies that the revision addressed the critique.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
-   - If issues remain, it can generate the next `OPUS_PLAN_REVISION_REQUEST.md`.
+   - If issues remain, the workflow returns to `02`; this phase does not author an alternate `OPUS_PLAN_REVISION_REQUEST.md`.
    - Locked execution is then driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
 4. `04_opus_review_branch.md`
    - Reviews implemented changes.
@@ -120,7 +121,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
 5. `05_opus_verify_review_fixes.md`
    - Verifies the review-fix pass.
    - Produces `REVIEW_FIX_VERIFICATION.md`.
-   - If issues remain, it can generate the next `CODEX_REVIEW_FIX_PROMPT.md`.
+   - If issues remain, the workflow returns to `04`; this phase does not author an alternate `CODEX_REVIEW_FIX_PROMPT.md`.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
 7. `07_sonnet_human_code_walkthrough.md`

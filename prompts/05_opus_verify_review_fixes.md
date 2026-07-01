@@ -222,140 +222,14 @@ Use this structure:
 
 ## Remaining Non-Blocking Issues
 
-## Next Codex Review-Fix Request
+## Required Next Action
 ```
 
-If anything remains unresolved, create `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for the next Codex fix pass.
+If anything remains unresolved:
 
-There is no separate checked-in Codex review-fix prompt file after this verification step. `CODEX_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
-
-It must be self-contained.
-
-Do not generate:
-
-- a helper prompt,
-- a wrapper note around review findings,
-- a partial instruction set that expects another checked-in fix prompt file,
-- a checklist without the full direct-use Codex contract.
-
-The generated Codex prompt must use a clear title and contain these top-level sections:
-
-- `## Skills`
-- `## Skill Handling Rule`
-- `## Engineering Contract`
-- `## Prompt`
-
-The generated Codex prompt must include these skill links explicitly:
-
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
-
-The generated Codex prompt must include a `## Skill Handling Rule` that instructs Codex to:
-
-- use only the explicitly linked skills listed in the prompt,
-- treat the prompt as the contract,
-- treat locked task artifacts as the contract for execution,
-- use skills as supporting procedures only,
-- let the prompt win if a skill conflicts with it,
-- stop and ask instead of silently choosing if a conflict is material,
-- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
-
-The generated Codex prompt must embed the full Engineering Contract above verbatim or stricter.
-
-Inside `## Prompt`, the generated Codex prompt must use clear sections for:
-
-- goal,
-- success criteria,
-- context to read before acting,
-- execution posture,
-- constraints,
-- per-review-item process,
-- focused verification,
-- required final response.
-
-Inside those sections, it must instruct Codex as follows.
-
-Goal:
-
-- fix the still-valid unresolved review findings and stop only when you have fresh verification evidence or a concrete blocker.
-
-Success criteria:
-
-- each implemented fix is validated against the actual unresolved review finding and the current code,
-- only valid required findings are fixed,
-- scope stays within the original implementation and review contract,
-- backwards compatibility is preserved,
-- verification evidence is reported clearly.
-
-Context to read before acting:
-
-- original `REVIEW.md`,
-- original `WALKTHROUGH.md`,
-- `REVIEW_FIX_VERIFICATION.md`,
-- `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `CODEX_EXECUTION_PROMPT.md`, if present,
-- current branch diff against `main`.
-
-Execution posture:
-
-- understand the current PR and the latest verification feedback before editing,
-- inspect the actual code and review artifacts before deciding whether a finding still needs work,
-- read likely relevant files in parallel before editing when that shortens the loop,
-- prefer dedicated repo/search/edit tools over raw shell when available,
-- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
-
-Constraints:
-
-- do not blindly implement every historical review comment,
-- address only the still-valid unresolved required review findings,
-- do not implement optional suggestions unless explicitly approved,
-- keep all fixes within the original implementation scope,
-- preserve plan scope,
-- preserve backwards compatibility,
-- no architecture changes,
-- no unrelated refactors,
-- no tests unless explicitly asked,
-- stop and ask on ambiguity/conflict/context gaps.
-
-Per-review-item process:
-
-1. Verify the review item against the actual code and the latest verification feedback.
-2. Determine whether it is still valid.
-3. Implement required/blocking valid fixes.
-4. Do not implement optional suggestions unless explicitly approved.
-5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
-6. If a review item requires a design decision not already made, stop and ask.
-7. Check off fixes if a checklist exists.
-
-Focused verification:
-
-- run focused verification relevant to the fixes,
-- if a command fails, paste the exact error/log back. Never paraphrase logs.
-
-Required final response:
-
-The generated `CODEX_REVIEW_FIX_PROMPT.md` must require this exact response structure:
-
-```markdown
-# Review Fix Summary
-
-## Review Items Fixed
-
-## Review Items Not Fixed And Why
-
-## Files Changed
-
-## Verification Evidence
-
-## Documentation Updated
-
-## Commits Created
-
-## Remaining Questions / Blockers
-```
-
-It must explicitly instruct Codex not to claim completion without fresh verification evidence.
+- do not create `CODEX_REVIEW_FIX_PROMPT.md` in this phase,
+- state explicitly that the workflow must return to `04_opus_review_branch.md`,
+- state that `04` is the only phase that should author `CODEX_REVIEW_FIX_PROMPT.md`,
+- if the existing `CODEX_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
 
 If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.

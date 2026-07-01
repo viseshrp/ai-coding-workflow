@@ -267,6 +267,10 @@ Create `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use prompt for Opus t
 
 There is no separate checked-in Opus revision prompt file after this critique step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the revision pass.
 
+This phase is the only place that should author `OPUS_PLAN_REVISION_REQUEST.md`.
+
+If a later verification pass says another revision is needed, return to this phase and regenerate `OPUS_PLAN_REVISION_REQUEST.md` here. Do not create an alternate revision prompt in the verification phase.
+
 It must be self-contained.
 
 Do not generate:

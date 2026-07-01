@@ -197,7 +197,7 @@ Task:
 
 - determine whether the revised plan and revised Codex prompt satisfy all previously raised concerns,
 - produce `PLAN_REVISION_VERIFICATION.md`,
-- if anything remains unresolved, also produce a self-contained `OPUS_PLAN_REVISION_REQUEST.md` for the next revision pass.
+- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_gpt_gemini_codex.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
 
 For each previously raised concern:
 
@@ -228,169 +228,14 @@ Use this structure:
 
 ## New Issues Introduced By Revision
 
-## Required Next Opus Revision Request
+## Required Next Action
 ```
 
-If any issue remains, also create `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use prompt for the next Opus revision pass.
+If any issue remains:
 
-There is no separate checked-in Opus revision prompt file after this verification step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the next revision pass.
-
-It must be self-contained.
-
-Do not generate:
-
-- a helper prompt,
-- a meta-only instruction block,
-- a skeleton that expects another prompt file to supply the real revision contract,
-- a revision summary without the full direct-use prompt.
-
-The generated Opus revision request must use a clear title and contain these top-level sections:
-
-- `## Skills`
-- `## Skill Handling Rule`
-- `## Default Planning Artifact Reduction`
-- `## Engineering Contract`
-- `## Prompt`
-
-The generated Opus revision request must include these skill links explicitly:
-
-- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
-- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
-- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
-
-The generated Opus revision request must include a `## Skill Handling Rule` that instructs Opus to:
-
-- use only the explicitly linked skills listed in the prompt,
-- treat the prompt as the contract,
-- treat locked task artifacts as the contract for execution,
-- use skills as supporting procedures only,
-- let the prompt win if a skill conflicts with it,
-- stop and ask instead of silently choosing if a conflict is material,
-- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
-
-The generated Opus revision request must include `## Default Planning Artifact Reduction` and require:
-
-- `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
-
-It must state that:
-
-1. `FEATURE_SPEC_AND_PLAN.md` contains both a detailed spec/reference section and a concrete implementation plan section.
-2. The implementation plan section links back to relevant spec/reference anchors inside the same file instead of duplicating long explanations.
-3. The plan remains the execution contract.
-4. The spec/reference section remains the background reference.
-5. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are only a fallback if I explicitly ask or if the file becomes too large to review comfortably.
-
-The generated Opus revision request must embed the full Engineering Contract above verbatim or stricter.
-
-Inside `## Prompt`, the generated Opus revision request must use clear sections for:
-
-- role,
-- task,
-- context to read before answering,
-- success criteria,
-- constraints,
-- working method,
-- required outputs,
-- final checks.
-
-Inside those sections, it must instruct Opus as follows.
-
-Role:
-
-- You are Claude Opus revising the planning artifacts before implementation.
-- Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
-- Read before answering. Do not speculate about code or files you have not inspected.
-
-Task:
-
-- Update the planning artifacts so they are ready for locked Codex execution.
-- Apply all still-valid unresolved critique items without expanding scope.
-
-Context to read before answering:
-
-- `PLAN_CRITIQUE.md`, if present,
-- the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
-- `PLAN_REVISION_SUMMARY.md`,
-- current `FEATURE_SPEC_AND_PLAN.md`,
-- current `CODEX_EXECUTION_PROMPT.md`,
-- the original draft plan/interviewing notes if available,
-- relevant repository context.
-
-Success criteria:
-
-- every still-relevant critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
-- the revised plan stays within original scope,
-- the revised Codex prompt remains strict enough to prevent divergence during execution,
-- no detail from the current plan artifacts, prior revision history, critique, or draft-plan lineage is silently dropped.
-
-Constraints:
-
-- do not implement code,
-- do not write tests,
-- do not loosen the Codex prompt,
-- do not use the critique or verification notes as permission to change architecture unless I explicitly approve,
-- keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
-
-Working method:
-
-For each remaining concern:
-
-1. Decide whether it is still valid.
-2. If valid and answerable from the repo/context, update the plan/prompt.
-3. If valid but requires my design decision, stop and ask me before updating that part.
-4. If invalid, document why.
-5. If it would expand scope, stop and ask.
-
-And also:
-
-- read the prior critique, revision summary, and current artifacts together,
-- use the verification output to address only the unresolved or newly introduced issues from the latest pass,
-- do not silently drop any critique item or verification issue,
-- ground plan detail in the code and context you actually inspected,
-- preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
-
-Required outputs:
-
-Update or create:
-
-- `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
-- `PLAN_REVISION_SUMMARY.md`
-
-The generated revision request must require `PLAN_REVISION_SUMMARY.md` to use this structure:
-
-```markdown
-# Plan Revision Summary
-
-## Critique Items Addressed
-
-## Critique Items Rejected
-
-## Critique Items Requiring User Decision
-
-## Changes Made To FEATURE_SPEC_AND_PLAN.md
-
-## Changes Made To CODEX_EXECUTION_PROMPT.md
-
-## Remaining Risks
-
-## Ready For Another Critique Pass?
-
-## Ready For Codex Execution?
-```
-
-Final checks:
-
-- verify that the updated plan is still within original scope,
-- verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
-- verify that the Codex prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
-- verify that no test-writing is introduced unless explicitly asked,
-- verify that all skill links relevant to the generated Codex prompt remain present,
-- verify that the Engineering Contract remains intact or stricter.
+- do not create `OPUS_PLAN_REVISION_REQUEST.md` in this phase,
+- state explicitly that the workflow must return to `02_plan_critique_gpt_gemini_codex.md`,
+- state that `02` is the only phase that should author `OPUS_PLAN_REVISION_REQUEST.md`,
+- if the existing `OPUS_PLAN_REVISION_REQUEST.md` was missing, weak, or failed to preserve the needed revision instructions, call that out as a failure in the upstream critique/request phase rather than compensating for it here.
 
 If no issue remains, state clearly that the plan is ready for Codex execution.
