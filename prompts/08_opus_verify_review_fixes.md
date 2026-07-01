@@ -1,8 +1,9 @@
-# 09 — Codex Fixes Opus Review Findings
+# 08 — Opus Verifies Codex Review Fixes
 
 ## Skills
 
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
@@ -160,72 +161,77 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Goal:
+Role:
 
-- fix the valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
+- You are Claude Opus verifying review fixes after Codex updated the branch.
+- Read before answering. Do not speculate about files or code you have not inspected.
+
+Task:
+
+- verify whether Codex satisfied all previously raised concerns, including the previously raised review findings,
+- decide whether the code is ready for final review-artifact refresh or needs another fix pass.
+
+Context to review:
+
+- original `REVIEW.md`,
+- original `WALKTHROUGH.md`,
+- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
+- Codex's review fix summary, if present,
+- current branch diff against `main`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present.
 
 Success criteria:
 
-- each implemented fix is validated against the actual review finding and the current code,
-- only valid required findings are fixed,
-- scope stays within the original implementation and review contract,
-- verification evidence is reported clearly.
-
-Context to read before acting:
-
-- `REVIEW.md`,
-- `WALKTHROUGH.md`,
-- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
-- `FEATURE_SPEC_AND_PLAN.md`, if present,
-- current branch diff against `main`.
-
-Execution posture:
-
-- understand the context of the current PR before editing,
-- inspect the actual code and review artifacts before deciding whether a finding is valid,
-- read likely relevant files in parallel before editing when that shortens the loop,
-- prefer dedicated repo/search/edit tools over raw shell when available,
-- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
+- each prior finding is checked against the actual changed code,
+- the status of each finding is explicit and evidence-based,
+- any newly introduced issue is surfaced instead of hidden inside a pass verdict.
 
 Constraints:
 
-- do not blindly implement every review comment,
-- keep all fixes within the original implementation scope,
-- no architecture changes,
-- no unrelated refactors,
-- no tests unless explicitly asked.
+- do not modify code,
+- do not assume a finding is fixed because Codex said it was fixed,
+- check actual code and actual diff.
 
-For each review item:
+For each prior review finding:
 
-1. Verify it against the actual code.
-2. Determine whether it is valid.
-3. Implement required/blocking valid fixes.
-4. Do not implement optional suggestions unless explicitly approved.
-5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
-6. If a review item requires a design decision not already made, stop and ask.
+- identify the original finding,
+- inspect the actual changed code,
+- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
+- explain evidence from code,
+- identify any new issues introduced by the fix.
 
-Run focused verification relevant to the fixes.
+## Required output: `REVIEW_FIX_VERIFICATION.md`
 
-If a command fails, paste the exact error/log back. Never paraphrase logs.
-
-## Required final response
+Use this structure:
 
 ```markdown
-# Review Fix Summary
+# Review Fix Verification
 
-## Review Items Fixed
+## Verdict
+- All required review findings resolved: Yes/No
+- Ready to finalize review/walkthrough docs: Yes/No
 
-## Review Items Not Fixed And Why
+## Finding-by-Finding Verification
 
-## Files Changed
+| Original Finding | Status | Evidence | Remaining Action |
+|---|---|---|---|
 
-## Verification Evidence
+## New Issues Introduced
 
-## Documentation Updated
+## Remaining Blocking Issues
 
-## Commits Created
+## Remaining Non-Blocking Issues
 
-## Remaining Questions / Blockers
+## Next Codex Review-Fix Request
 ```
 
-Do not claim completion without fresh verification evidence.
+If anything remains unresolved, create a new self-contained `CODEX_REVIEW_FIX_PROMPT.md` for the next Codex fix pass.
+
+The generated Codex prompt must include these skill links explicitly:
+
+- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
+- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
+- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+
+If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.

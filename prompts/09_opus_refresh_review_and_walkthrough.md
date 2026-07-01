@@ -1,10 +1,9 @@
-# 02 — Meta Prompt: Create the Opus Planning Prompt — GPT or Codex
+# 09 — Opus Refreshes Final Review + Walkthrough Files
 
 ## Skills
 
-- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
-- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
-- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 
@@ -20,109 +19,6 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-
-## Prompt
-
-Create a prompt for Claude Opus to perform the planning phase for this coding task. It must be the final paste-ready prompt for the main planning phase.
-
-This is a meta prompt. Your output is the prompt that I will paste into Claude Opus.
-
-Goal:
-
-- turn the current exploration outputs into the final direct-use Opus planning prompt,
-- refine and normalize the exploration-phase seed prompt when it exists,
-- preserve scope and detail while improving direct paste readiness.
-
-Success criteria:
-
-- the generated Opus prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
-- it is structured with clear sections for role, context to read, task, success criteria, constraints, required outputs, and final self-check,
-- it tells Opus not to speculate about code or files it has not read,
-- it preserves the current scope while letting Opus deepen detail inside that scope,
-- it preserves all valid task-specific detail from `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`, if present,
-- this phase outputs only the final Opus planning prompt text; it does not perform the planning work itself and it does not create `FEATURE_SPEC_AND_PLAN.md` or `CODEX_EXECUTION_PROMPT.md`.
-
-Constraints:
-
-- this is a meta phase; your output is the final prompt that I will paste into Claude Opus,
-- the Opus prompt you generate must be self-contained,
-- do not do the Opus planning work yourself,
-- do not implement code,
-- do not write tests,
-- do not introduce unrelated files or workflow changes,
-- if `INITIAL_OPUS_PLANNING_PROMPT.md` is present, treat it as the exploration-phase seed prompt and preserve its valid task-specific detail unless you are improving structure, clarity, or completeness.
-
-Context to use when available:
-
-- `DRAFT_PLAN.md`,
-- `INITIAL_OPUS_PLANNING_PROMPT.md`,
-- interviewing/grilling output,
-- relevant repository context.
-
-Required behavior for the generated Opus prompt:
-
-- analyze the code one more time,
-- take the draft plan file / interviewing output we have,
-- read and critique it,
-- ask more questions to me about the design all at one go,
-- independently flesh out the remaining details to the T after gathering my design decisions,
-- make the initial interviewing output plan into a more detailed implementation plan,
-- be independent and not constrain itself to the existing plan file except for the scope of the plan/changes,
-- use the existing plan file only as an initial source to get started,
-- ignore DevOps/packaging/building and test-related work and focus only on the code, unless otherwise specified in the plan,
-- use the existing plan file as a seed artifact, not the ceiling for detail,
-- preserve all valid task-specific detail from `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`, if present,
-- if those sources differ materially, keep the more scope-conservative interpretation and tell Opus to surface the conflict to the user instead of silently choosing,
-- ask remaining design questions in one batch before finalizing artifacts,
-- ground file/class/function details in actual repository context,
-- separate confirmed facts from inferences and surface unresolved uncertainty plainly.
-
-## Default Planning Artifact Reduction
-
-Default to one combined planning artifact instead of separate spec and implementation plan files.
-
-Create:
-
-- `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
-
-`FEATURE_SPEC_AND_PLAN.md` must contain both:
-
-1. a detailed spec/reference section, and
-2. a concrete implementation plan section.
-
-The implementation plan section must link to the relevant spec/reference anchors inside the same file instead of duplicating long explanations.
-
-The plan remains the execution contract. The spec/reference section remains the background reference.
-
-Only split into separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` if I explicitly ask or if the file becomes too large to review comfortably.
-
-
-The Opus prompt must require these final outputs:
-
-1. `FEATURE_SPEC_AND_PLAN.md` — a single combined artifact with:
-   - a detailed spec/reference section,
-   - a concrete implementation plan with every minor detail fleshed out absolutely thoroughly,
-   - concrete files, classes, methods, variables, and where changes should go,
-   - implementation plan links back to relevant spec/reference anchors inside the same file.
-2. `CODEX_EXECUTION_PROMPT.md` — a prompt for Codex to take the locked feature spec/plan and implement it end-to-end with no interruptions unless a required decision was not made or a conflict appears.
-
-The prompt you generate must explicitly include these skill links and instruct the target agent to use them only as supporting procedures:
-
-- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
-- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
-- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-
-
-The Opus prompt must also require that the generated `CODEX_EXECUTION_PROMPT.md` include these skills explicitly:
-
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-
-The Opus prompt must include the full Engineering Contract below and instruct Opus to embed the contract into `CODEX_EXECUTION_PROMPT.md`.
 
 ## Engineering Contract
 
@@ -262,8 +158,75 @@ For each test concern, classify whether it is:
 Suggest a behavior-level alternative when practical.
 
 
-Do not implement code.
+## Prompt
 
-Do not write tests.
+Role:
 
-Only output the Claude Opus planning prompt.
+- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
+- Read before answering. Do not speculate about files or code you have not inspected.
+
+Task:
+
+- your job is to update the review and walkthrough documents so they accurately reflect the final code state,
+- preserve the existing review trail while clearly marking what was fixed during the review loop.
+
+Context to review:
+
+- current branch diff against `main`,
+- final current code,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `REVIEW_FIX_VERIFICATION.md`, if present.
+
+Success criteria:
+
+- `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
+- `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
+- the refreshed artifacts are detailed, grounded, and internally consistent.
+
+Constraints:
+
+- do not modify production code,
+- do not modify tests,
+- do not make new review findings unless you discover something severe that was missed,
+- if you discover a severe missed issue, stop and ask before proceeding.
+
+## Required output 1: refreshed `REVIEW.md`
+
+Update `REVIEW.md` so it reflects the final code.
+
+It must include:
+
+- final verdict,
+- plan compliance,
+- backwards compatibility review,
+- public API review,
+- performance/complexity review,
+- source documentation grounding,
+- code quality/readability,
+- reuse/DRY/duplication,
+- assumptions surfaced,
+- assert usage,
+- cross-platform review,
+- test review, if applicable,
+- documentation review,
+- any remaining suggestions.
+
+Clearly mark review findings that were fixed during the review loop.
+
+## Required output 2: refreshed `WALKTHROUGH.md`
+
+Update `WALKTHROUGH.md` so it reflects the final code, not the old pre-fix code.
+
+Document each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
+
+It must be detailed and thorough, so as to facilitate review without looking at the code.
+
+I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. THIS IS NON NEGOTIABLE.
+
+Format it properly for easy readability and to ease cognitive overload while reviewing.
+
+The walkthrough must be suitable as a supplement for my human review and potentially as PR-description source material.
+
+Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state.

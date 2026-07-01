@@ -1,10 +1,9 @@
-# 03 — Opus Planning: Create Feature Spec/Plan + Codex Execution Prompt
+# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — GPT, Gemini, or Codex
 
 ## Skills
 
-- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
-- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
-- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 
@@ -20,222 +19,6 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-
-## Default Planning Artifact Reduction
-
-Default to one combined planning artifact instead of separate spec and implementation plan files.
-
-Create:
-
-- `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
-
-`FEATURE_SPEC_AND_PLAN.md` must contain both:
-
-1. a detailed spec/reference section, and
-2. a concrete implementation plan section.
-
-The implementation plan section must link to the relevant spec/reference anchors inside the same file instead of duplicating long explanations.
-
-The plan remains the execution contract. The spec/reference section remains the background reference.
-
-Only split into separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` if I explicitly ask or if the file becomes too large to review comfortably.
-
-
-## Prompt
-
-Role:
-
-- You are Claude Opus performing the planning phase for an agentic coding workflow.
-- Be explicit, source-grounded, and conservative about assumptions.
-- Read before answering. Do not speculate about code or files you have not inspected.
-
-Task:
-
-- Perform the main planning work itself. Do not generate a meta prompt for another model.
-- Your job is to create the detailed planning artifacts that will become the contract for Codex execution.
-- Critique the current draft plan, ask any remaining design questions in one batch, then produce the locked planning artifacts after my answers.
-- The initial interviewing output plan must be made into a more detailed implementation plan.
-
-Context to read before answering:
-
-- Read the draft plan, prior interviewing/grilling notes, and relevant repository context.
-- the draft plan,
-- prior interviewing/grilling notes,
-- relevant repository context.
-
-Success criteria:
-
-- `FEATURE_SPEC_AND_PLAN.md` is concrete enough that Codex can execute without inventing missing detail,
-- `CODEX_EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves Codex no ambiguity about scope, stop rules, or verification,
-- no important detail from the draft plan is dropped,
-- scope stays within the requested change.
-
-Constraints:
-
-- do not implement code,
-- do not write tests,
-- do not make unrelated files or unrelated changes,
-- ignore DevOps/packaging/building and test-related work unless otherwise specified in the plan,
-- prefer the minimum necessary design surface and do not overengineer or add speculative abstractions.
-
-Working method:
-
-- analyze the code one more time,
-- you may be independent and should not constrain yourself to the existing plan file except for the scope of the plan/changes,
-- use the existing plan file as an initial source to get started,
-- use the existing plan as a seed artifact, not the ceiling for detail,
-- ask remaining design questions together in one batch,
-- after my answers, flesh out the remaining details thoroughly enough that Codex can execute without guessing,
-- ground file/class/function details in code you actually inspected,
-- if repo reality conflicts with the draft plan, surface the conflict explicitly instead of silently rewriting scope,
-- separate confirmed facts from inferences and call out unresolved uncertainty plainly.
-
-Final self-check:
-
-- verify that the planning artifacts are explicit about success criteria, stop rules, and verification,
-- verify that the implementation plan is detailed enough to drive end-to-end Codex execution,
-- verify that the prompt and plan remain within the original requested scope.
-
-## Required planning depth
-
-The final plan must be concrete down to:
-
-- files,
-- classes,
-- functions,
-- methods,
-- variables,
-- constants,
-- call flow,
-- data flow,
-- public API behavior,
-- error behavior,
-- backwards compatibility expectations,
-- where each change should go,
-- order of changes,
-- verification commands/checks,
-- documentation updates.
-
-## Required design-question pass
-
-Before finalizing artifacts, identify every remaining design decision that I need to make.
-
-Ask all remaining questions together in one batch.
-
-For each question:
-
-- explain why it matters,
-- give your recommended answer,
-- explain the tradeoffs,
-- identify what parts of the plan depend on the answer.
-
-After I answer, update the artifacts accordingly.
-
-If a question can be answered by reading the codebase, answer it from codebase exploration instead of asking me.
-
-## Required output 1: `FEATURE_SPEC_AND_PLAN.md`
-
-Create `FEATURE_SPEC_AND_PLAN.md`.
-
-It must include:
-
-### 1. Executive summary
-
-- one-paragraph problem statement,
-- goal,
-- non-goals,
-- definition of done.
-
-### 2. Spec / reference section
-
-This is the detailed reference section. Include:
-
-- current behavior,
-- desired behavior,
-- user-visible behavior,
-- public API behavior,
-- backwards compatibility requirements,
-- constraints,
-- design decisions,
-- edge cases,
-- error handling,
-- performance/complexity expectations,
-- dependency/library documentation findings,
-- source-code references,
-- risks,
-- non-goals,
-- unresolved questions, if any.
-
-### 3. Concrete implementation plan section
-
-This is the execution contract.
-
-It must be more direct than the spec/reference section but still extremely detailed.
-
-For every step include:
-
-- exact file(s),
-- exact symbol(s),
-- exact change to make,
-- why the change is needed,
-- link to relevant spec/reference anchor inside this same file,
-- dependencies on previous steps,
-- verification relevant to that step.
-
-### 4. Source/documentation grounding section
-
-For every library/framework/API involved:
-
-- identify the version if possible,
-- cite the official docs/source consulted,
-- explain the pattern chosen,
-- flag anything unverified,
-- flag outdated APIs,
-- explain if source code was used because docs were poor.
-
-### 5. Verification plan
-
-Include:
-
-- focused lint/smoke/build commands, if available,
-- exact checks to run,
-- what successful output means,
-- what failures should be pasted back without paraphrasing,
-- no full test-suite run unless explicitly asked.
-
-### 6. Documentation update plan
-
-Include:
-
-- likely docs folder/file(s),
-- how you found them,
-- exact sections to update or create,
-- reminder not to write the changelog.
-
-## Required output 2: `CODEX_EXECUTION_PROMPT.md`
-
-Create `CODEX_EXECUTION_PROMPT.md`.
-
-This must be a self-contained end-to-end prompt for Codex.
-
-It must instruct Codex to:
-
-- read `FEATURE_SPEC_AND_PLAN.md`,
-- follow the implementation plan exactly,
-- use the spec/reference section only as reference,
-- make no architecture changes,
-- make no unrelated changes,
-- implement end-to-end with no interruptions unless a required decision was not made or a conflict appears,
-- stop and ask on ambiguity/conflict/context gaps,
-- use the full Engineering Contract below,
-- include these skills explicitly:
-
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-
-The generated Codex prompt must include the following Engineering Contract verbatim or stricter:
 
 ## Engineering Contract
 
@@ -375,8 +158,133 @@ For each test concern, classify whether it is:
 Suggest a behavior-level alternative when practical.
 
 
-Before finishing, verify that:
+## Prompt
 
-- `FEATURE_SPEC_AND_PLAN.md` is sufficient for Codex execution,
-- `CODEX_EXECUTION_PROMPT.md` contains every implementation rule above,
-- no details from the draft plan were dropped.
+Goal:
+
+- determine whether the planning artifacts are ready to lock for Codex execution.
+
+Success criteria:
+
+- every material concern is grounded in specific plan text, Codex-prompt text, or concrete repo evidence,
+- blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
+- the output follows the exact artifact structure below.
+
+Constraints:
+
+- do not implement code,
+- do not modify files unless I explicitly ask,
+- critique the plan, not alternative future architectures,
+- if evidence is missing, say so explicitly instead of guessing.
+
+Context to review:
+
+- `FEATURE_SPEC_AND_PLAN.md`,
+- `CODEX_EXECUTION_PROMPT.md`,
+- the original draft plan/interviewing notes if available,
+- relevant repository context if needed.
+
+Working method:
+
+- if you are Codex, inspect the planning artifacts and any necessary repo files in parallel before finalizing,
+- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
+- quote or clearly point to the exact passage that triggered each blocking issue,
+- separate confirmed issues, inferences, and open questions,
+- prefer concrete execution risks over generic style commentary.
+
+Task:
+
+- critique the plan, not execute it,
+- decide whether the artifacts are good enough to lock for Codex execution,
+- produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
+
+## Review dimensions
+
+Review for:
+
+- missing design decisions,
+- unclear requirements,
+- divergence from original scope,
+- insufficient file/class/method/function/variable detail,
+- missing execution order,
+- missing edge cases,
+- backwards compatibility risks,
+- public API naming/design risks,
+- performance or algorithmic complexity concerns,
+- unnecessary brute-force or quadratic operations,
+- poor reuse / DRY violations,
+- failure to reuse existing code,
+- separation-of-concerns violations,
+- missing documentation grounding for library/framework usage,
+- outdated API usage,
+- unnecessary third-party dependencies,
+- missing custom exception/error translation at public API boundaries,
+- cross-platform Linux/Windows risks,
+- test-writing instructions that conflict with “do not write tests unless explicitly asked,”
+- missing verification commands/checks,
+- missing documentation update plan,
+- anything in the Codex prompt that gives Codex too much freedom.
+
+## Required output 1: `PLAN_CRITIQUE.md`
+
+Create or output `PLAN_CRITIQUE.md`.
+
+Use this structure:
+
+```markdown
+# Plan Critique
+
+## Verdict
+- Ready to execute: Yes/No
+- Reason:
+
+## Blocking Issues
+
+## Non-Blocking Issues
+
+## Missing Questions For User
+
+## Scope / Divergence Risks
+
+## Backwards Compatibility Risks
+
+## Public API Risks
+
+## Performance / Complexity Risks
+
+## Source Documentation Grounding Issues
+
+## Codex Prompt Risks
+
+## Simplification Opportunities
+
+## Final Recommendation
+```
+
+## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
+
+Create a self-contained prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
+
+This is a meta-output. The generated Opus revision prompt must include these skill links explicitly:
+
+- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
+- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
+- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
+- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
+- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+
+The generated Opus revision prompt must instruct Opus to:
+
+- read `PLAN_CRITIQUE.md`,
+- read the current `FEATURE_SPEC_AND_PLAN.md`,
+- read the current `CODEX_EXECUTION_PROMPT.md`,
+- apply all valid critique items,
+- ask if a critique item requires a design decision from me,
+- update both planning artifacts,
+- keep the plan/code execution scope unchanged unless I explicitly approve scope changes,
+- preserve the Engineering Contract,
+- produce a `PLAN_REVISION_SUMMARY.md` explaining exactly what changed and which critique items were addressed.
+
+Do not ask Opus to implement code.

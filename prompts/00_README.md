@@ -13,23 +13,22 @@ This zip contains separate self-contained Markdown prompts. Each prompt can be d
 - Skill links point to your `viseshrp/ai-skills-archive` repository.
 - No skill router is used. Skill links are included directly in the relevant prompt files.
 - Every prompt is intentionally self-contained, so some duplication remains across files.
-- Prompt `01` creates the exploration outputs and a seed Opus planning prompt, prompt `02` is the optional helper that refines that seed into the final paste-ready Opus planning prompt, and prompt `03` is the direct Opus planning prompt itself.
+- Prompt `01` creates the exploration outputs and the final paste-ready Opus planning prompt artifact, `INITIAL_OPUS_PLANNING_PROMPT.md`.
+- The main Opus planning pass is driven by that generated artifact, not by a separate checked-in prompt file.
 
 ## Prompt files
 
 1. `01_initial_exploration_gpt_codex.md`
-2. `02_meta_create_opus_planning_prompt.md`
-3. `03_opus_planning_create_feature_spec_plan_and_codex_prompt.md`
-4. `04_plan_critique_gpt_gemini_codex.md`
-5. `05_opus_apply_plan_critique.md`
-6. `06_plan_revision_verification_gpt_gemini_codex.md`
-7. `07_codex_execute_locked_plan.md`
-8. `08_opus_review_branch.md`
-9. `09_codex_fix_opus_review_findings.md`
-10. `10_opus_verify_review_fixes.md`
-11. `11_opus_refresh_review_and_walkthrough.md`
-12. `12_sonnet_human_code_walkthrough.md`
-13. `13_codex_implement_human_followup.md`
+2. `02_plan_critique_gpt_gemini_codex.md`
+3. `03_opus_apply_plan_critique.md`
+4. `04_plan_revision_verification_gpt_gemini_codex.md`
+5. `05_codex_execute_locked_plan.md`
+6. `06_opus_review_branch.md`
+7. `07_codex_fix_opus_review_findings.md`
+8. `08_opus_verify_review_fixes.md`
+9. `09_opus_refresh_review_and_walkthrough.md`
+10. `10_sonnet_human_code_walkthrough.md`
+11. `11_codex_implement_human_followup.md`
 
 ## Skill links used
 

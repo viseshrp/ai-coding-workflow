@@ -1,11 +1,11 @@
-# 08 — Opus Reviews Implemented Branch
+# 07 — Codex Fixes Opus Review Findings
 
 ## Skills
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -160,193 +160,72 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Role:
+Goal:
 
-- You are Claude Opus performing post-implementation review in an existing codebase.
-- Read before answering. Do not speculate about files or code you have not inspected.
-
-Task:
-
-- Compare the current branch against `main` and against the locked planning artifacts.
-- Aggregate all changes in the current branch that are newly added and do a thorough code review.
-- Identify real defects, plan divergence, and high-value follow-up suggestions without expanding scope.
-
-Context to review:
-
-- `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `SPEC.md`, if present,
-- `IMPLEMENTATION_PLAN.md`, if present,
-- any local `PLAN*.md` files in the repo root, if available,
-- `CODEX_EXECUTION_PROMPT.md`, if present.
+- fix the valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
-- every blocking issue is grounded in specific diff, code, or plan evidence,
-- plan divergence is clearly separated from optional suggestions,
-- the outputs are detailed enough to drive both the review-fix phase and the final human walkthrough.
+- each implemented fix is validated against the actual review finding and the current code,
+- only valid required findings are fixed,
+- scope stays within the original implementation and review contract,
+- verification evidence is reported clearly.
+
+Context to read before acting:
+
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- current branch diff against `main`.
+
+Execution posture:
+
+- understand the context of the current PR before editing,
+- inspect the actual code and review artifacts before deciding whether a finding is valid,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
 Constraints:
 
-- do not modify code during this phase,
-- backwards compatibility is top priority,
-- do not turn preferences into blocking findings unless they are justified by real risk or contract mismatch.
+- do not blindly implement every review comment,
+- keep all fixes within the original implementation scope,
+- no architecture changes,
+- no unrelated refactors,
+- no tests unless explicitly asked.
 
-Working method:
+For each review item:
 
-- compare the current branch against the head of `main`,
-- inspect actual code and actual diff before judging,
-- flag divergence and issues,
-- quote or clearly point to the exact evidence for each material finding,
-- separate confirmed issues from preferences, open questions, and optional suggestions,
-- after checking 100% compliance with the plan and ensuring no divergence, provide suggestions.
-- do not make any changes you propose until I give the go-ahead.
+1. Verify it against the actual code.
+2. Determine whether it is valid.
+3. Implement required/blocking valid fixes.
+4. Do not implement optional suggestions unless explicitly approved.
+5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
+6. If a review item requires a design decision not already made, stop and ask.
 
-This branch will be merged into main.
+Run focused verification relevant to the fixes.
 
-## Review dimensions
+If a command fails, paste the exact error/log back. Never paraphrase logs.
 
-Review for:
-
-- readability,
-- quality,
-- backwards compatibility,
-- performance,
-- proper reuse of existing code,
-- plan compliance,
-- source/documentation grounding,
-- justified library/framework usage,
-- outdated APIs,
-- public API usability/intuitiveness/naming/blending with existing APIs,
-- assumptions in code,
-- assert statements in production code,
-- reinvention/duplication of existing code,
-- comment quality and missing comments where code is not obvious,
-- bloated comment blocks,
-- cross-platform Linux/Windows safety,
-- test quality, only for tests that already exist or were explicitly requested.
-
-Backwards compatibility is top priority.
-
-Check usages of libraries/frameworks against correct documentation and make sure usages are grounded 100% in documentation. If documentation is poor, find the source code of the library if it is open source, clone it in a temporary folder, and read it thoroughly to augment your understanding of existing documentation.
-
-Make sure usages use latest APIs and flag outdated APIs.
-
-Check whether usages of libraries/frameworks are justified and not unnecessary.
-
-If the changes touch public APIs or add new public APIs, check whether they are user-friendly and intuitive, blend well with the existing public API set, and are named properly.
-
-Surface all assumptions in the code.
-
-Surface the use of assert statements in code. This is bad outside tests.
-
-If the changes reinvent/duplicate something already in the source code, flag it.
-
-Make sure there are comments for every change that is not obvious in terms of readability. We do not want too many bloated comment blocks. Use just enough to help junior engineers understand easily.
-
-All changes must be strictly cross-platform and must work on both Linux and Windows. Mac is not a concern.
-
-## Test review rules
-
-Tests must validate the right things: architecture and behavior, not implementation details.
-
-Mark unnecessary tests that test temporary hacks or changes.
-
-Make sure tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky, and maintain at least 95% coverage for the new lines.
-
-Do not manually run the entire test suite. Focused tests are better.
-
-While reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that:
-
-- mutate process-global state such as environment variables,
-- depend on private constants or private helper methods,
-- assert exact error wording unless it is an intentional user-facing contract,
-- encode packaging/layout assumptions that may change,
-- mirror production logic instead of independently specifying expected behavior.
-
-For each concern, classify whether it is:
-
-- a real flake risk,
-- an acceptable contract test,
-- or a maintainability concern.
-
-Suggest a behavior-level alternative when practical.
-
-Tests must strictly test one behavior per test/method.
-
-## Required output 1: `REVIEW.md`
-
-Create a detailed `REVIEW.md` document with:
+## Required final response
 
 ```markdown
-# Review
+# Review Fix Summary
 
-## Verdict
+## Review Items Fixed
 
-## Plan Compliance
+## Review Items Not Fixed And Why
 
-## Blocking Issues
+## Files Changed
 
-## Non-Blocking Issues
+## Verification Evidence
 
-## Backwards Compatibility
+## Documentation Updated
 
-## Public API Review
+## Commits Created
 
-## Performance / Complexity Review
-
-## Source Documentation Grounding
-
-## Code Quality / Readability
-
-## Reuse / DRY / Duplication
-
-## Assumptions Surfaced
-
-## Assert Usage
-
-## Cross-Platform Review
-
-## Test Review
-
-## Documentation Review
-
-## Suggestions
+## Remaining Questions / Blockers
 ```
 
-Put suggestions directly below the relevant review findings.
-
-## Required output 2: `WALKTHROUGH.md`
-
-Create a detailed `WALKTHROUGH.md` documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
-
-It must be detailed and thorough, so as to facilitate review without looking at the code.
-
-I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. THIS IS NON NEGOTIABLE.
-
-Format it properly for easy readability and to ease cognitive overload while reviewing.
-
-## Required output 3: `CODEX_REVIEW_FIX_PROMPT.md`
-
-Create a self-contained prompt for Codex to fix the valid review findings.
-
-The generated Codex prompt must include these skill links explicitly:
-
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
-
-The generated Codex prompt must instruct Codex to:
-
-- read `REVIEW.md`,
-- read `WALKTHROUGH.md` for context,
-- understand the current PR,
-- address only the valid required review findings,
-- not implement optional suggestions unless explicitly approved,
-- preserve plan scope,
-- preserve backwards compatibility,
-- follow the Engineering Contract,
-- check off fixes if a checklist exists,
-- stop and ask on ambiguity/conflict/context gaps.
-
-Do not modify code during this Opus review phase.
+Do not claim completion without fresh verification evidence.

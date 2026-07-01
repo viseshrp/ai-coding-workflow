@@ -1,4 +1,4 @@
-# 07 — Codex Executes Locked Plan
+# 05 — Codex Executes Locked Plan
 
 ## Skills
 

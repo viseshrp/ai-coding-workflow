@@ -1,11 +1,14 @@
-# 11 — Opus Refreshes Final Review + Walkthrough Files
+# 03 — Opus Applies Plan Critique
 
 ## Skills
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
+- [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
+- [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -18,6 +21,27 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+
+## Default Planning Artifact Reduction
+
+Default to one combined planning artifact instead of separate spec and implementation plan files.
+
+Create:
+
+- `FEATURE_SPEC_AND_PLAN.md`
+- `CODEX_EXECUTION_PROMPT.md`
+
+`FEATURE_SPEC_AND_PLAN.md` must contain both:
+
+1. a detailed spec/reference section, and
+2. a concrete implementation plan section.
+
+The implementation plan section must link to the relevant spec/reference anchors inside the same file instead of duplicating long explanations.
+
+The plan remains the execution contract. The spec/reference section remains the background reference.
+
+Only split into separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` if I explicitly ask or if the file becomes too large to review comfortably.
 
 
 ## Engineering Contract
@@ -162,71 +186,86 @@ Suggest a behavior-level alternative when practical.
 
 Role:
 
-- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
-- Read before answering. Do not speculate about files or code you have not inspected.
+- You are Claude Opus revising the planning artifacts before implementation.
+- Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
+- Read before answering. Do not speculate about code or files you have not inspected.
 
 Task:
 
-- your job is to update the review and walkthrough documents so they accurately reflect the final code state,
-- preserve the existing review trail while clearly marking what was fixed during the review loop.
+- Update the planning artifacts so they are ready for locked Codex execution.
+- Apply valid critique items without expanding scope.
 
-Context to review:
+Context to read before answering:
 
-- current branch diff against `main`,
-- final current code,
-- `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `REVIEW.md`,
-- `WALKTHROUGH.md`,
-- `REVIEW_FIX_VERIFICATION.md`, if present.
+- `PLAN_CRITIQUE.md`, if present,
+- `OPUS_PLAN_REVISION_REQUEST.md`, if present,
+- current `FEATURE_SPEC_AND_PLAN.md`,
+- current `CODEX_EXECUTION_PROMPT.md`,
+- the original draft plan/interviewing notes if available,
+- relevant repository context.
 
 Success criteria:
 
-- `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
-- `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
-- the refreshed artifacts are detailed, grounded, and internally consistent.
+- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- the revised plan stays within original scope,
+- the revised Codex prompt remains strict enough to prevent divergence during execution.
 
 Constraints:
 
-- do not modify production code,
-- do not modify tests,
-- do not make new review findings unless you discover something severe that was missed,
-- if you discover a severe missed issue, stop and ask before proceeding.
+- do not implement code,
+- do not write tests,
+- do not loosen the Codex prompt,
+- do not use the critique as permission to change architecture unless I explicitly approve.
 
-## Required output 1: refreshed `REVIEW.md`
+Working method:
 
-Update `REVIEW.md` so it reflects the final code.
+For each critique item:
 
-It must include:
+1. Decide whether it is valid.
+2. If valid and answerable from the repo/context, update the plan/prompt.
+3. If valid but requires my design decision, stop and ask me before updating that part.
+4. If invalid, document why.
+5. If it would expand scope, stop and ask.
 
-- final verdict,
-- plan compliance,
-- backwards compatibility review,
-- public API review,
-- performance/complexity review,
-- source documentation grounding,
-- code quality/readability,
-- reuse/DRY/duplication,
-- assumptions surfaced,
-- assert usage,
-- cross-platform review,
-- test review, if applicable,
-- documentation review,
-- any remaining suggestions.
+- Do not silently drop any critique item.
+- Ground plan detail in the code and context you actually inspected.
+- Preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 
-Clearly mark review findings that were fixed during the review loop.
+## Required outputs
 
-## Required output 2: refreshed `WALKTHROUGH.md`
+Update or create:
 
-Update `WALKTHROUGH.md` so it reflects the final code, not the old pre-fix code.
+- `FEATURE_SPEC_AND_PLAN.md`
+- `CODEX_EXECUTION_PROMPT.md`
+- `PLAN_REVISION_SUMMARY.md`
 
-Document each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
+## `PLAN_REVISION_SUMMARY.md` must include
 
-It must be detailed and thorough, so as to facilitate review without looking at the code.
+```markdown
+# Plan Revision Summary
 
-I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. THIS IS NON NEGOTIABLE.
+## Critique Items Addressed
 
-Format it properly for easy readability and to ease cognitive overload while reviewing.
+## Critique Items Rejected
 
-The walkthrough must be suitable as a supplement for my human review and potentially as PR-description source material.
+## Critique Items Requiring User Decision
 
-Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state.
+## Changes Made To FEATURE_SPEC_AND_PLAN.md
+
+## Changes Made To CODEX_EXECUTION_PROMPT.md
+
+## Remaining Risks
+
+## Ready For Another Critique Pass?
+
+## Ready For Codex Execution?
+```
+
+Before finishing, verify that:
+
+- the updated plan is still within original scope,
+- the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
+- the Codex prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- no test-writing is introduced unless explicitly asked,
+- all skill links relevant to the generated Codex prompt remain present,
+- the Engineering Contract remains intact or stricter.

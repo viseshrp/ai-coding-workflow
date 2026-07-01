@@ -1,4 +1,4 @@
-# 12 — Sonnet Human Code Walkthrough + FOLLOWUP.md Creation
+# 10 — Sonnet Human Code Walkthrough + FOLLOWUP.md Creation
 
 ## Skills
 

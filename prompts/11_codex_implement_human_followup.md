@@ -1,9 +1,8 @@
-# 10 — Opus Verifies Codex Review Fixes
+# 11 — Codex Implements Human-Approved FOLLOWUP.md
 
 ## Skills
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
@@ -161,77 +160,85 @@ Suggest a behavior-level alternative when practical.
 
 ## Prompt
 
-Role:
+Goal:
 
-- You are Claude Opus verifying review fixes after Codex updated the branch.
-- Read before answering. Do not speculate about files or code you have not inspected.
-
-Task:
-
-- verify whether Codex satisfied all previously raised concerns, including the previously raised review findings,
-- decide whether the code is ready for final review-artifact refresh or needs another fix pass.
-
-Context to review:
-
-- original `REVIEW.md`,
-- original `WALKTHROUGH.md`,
-- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
-- Codex's review fix summary, if present,
-- current branch diff against `main`,
-- `FEATURE_SPEC_AND_PLAN.md`, if present.
+- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
-- each prior finding is checked against the actual changed code,
-- the status of each finding is explicit and evidence-based,
-- any newly introduced issue is surfaced instead of hidden inside a pass verdict.
+- only approved `FOLLOWUP.md` items are implemented,
+- each completed item is checked off only after the change and its verification are done,
+- scope stays limited to the approved follow-up work,
+- verification evidence is reported clearly,
+- no AI review loop is restarted after this phase; the workflow returns to manual review.
 
-Constraints:
+Context to read before acting:
 
-- do not modify code,
-- do not assume a finding is fixed because Codex said it was fixed,
-- check actual code and actual diff.
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `FOLLOWUP.md`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- current branch diff against `main`.
 
-For each prior review finding:
+Execution posture:
 
-- identify the original finding,
-- inspect the actual changed code,
-- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
-- explain evidence from code,
-- identify any new issues introduced by the fix.
+- understand the context of the current PR before editing,
+- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
+- treat `FOLLOWUP.md` as the execution contract for this phase,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
-## Required output: `REVIEW_FIX_VERIFICATION.md`
+Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
 
-Use this structure:
+`FOLLOWUP.md` is the execution contract for this phase.
+
+Go on and address all items in `FOLLOWUP.md` while checking them off the list.
+
+Only implement items that are explicitly present in `FOLLOWUP.md`.
+
+Do not add new follow-up items.
+
+Do not expand scope.
+
+Do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`.
+
+Do not write tests unless `FOLLOWUP.md` explicitly asks for tests.
+
+If a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision, stop and ask.
+
+Use small, focused changes.
+
+Commit incrementally if committing is allowed.
+
+Run focused verification relevant to the follow-up items.
+
+If a command fails, paste the exact error/log back. Never paraphrase logs.
+
+Do not create a new AI review prompt.
+
+Do not ask Opus to review this phase.
+
+I will do the final review manually.
+
+## Required final response
 
 ```markdown
-# Review Fix Verification
+# Human Follow-Up Implementation Summary
 
-## Verdict
-- All required review findings resolved: Yes/No
-- Ready to finalize review/walkthrough docs: Yes/No
+## FOLLOWUP.md Items Completed
 
-## Finding-by-Finding Verification
+## FOLLOWUP.md Items Not Completed And Why
 
-| Original Finding | Status | Evidence | Remaining Action |
-|---|---|---|---|
+## Files Changed
 
-## New Issues Introduced
+## Verification Evidence
 
-## Remaining Blocking Issues
+## Documentation Updated
 
-## Remaining Non-Blocking Issues
+## Commits Created
 
-## Next Codex Review-Fix Request
+## Remaining Manual Review Notes
 ```
 
-If anything remains unresolved, create a new self-contained `CODEX_REVIEW_FIX_PROMPT.md` for the next Codex fix pass.
-
-The generated Codex prompt must include these skill links explicitly:
-
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
-
-If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
+Do not claim completion without fresh verification evidence.
