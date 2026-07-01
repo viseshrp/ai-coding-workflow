@@ -177,7 +177,7 @@ Context to review:
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
-- `CODEX_EXECUTION_PROMPT.md`, if present.
+- `GPT_EXECUTION_PROMPT.md`, if present.
 
 Success criteria:
 
@@ -325,15 +325,15 @@ I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. TH
 
 Format it properly for easy readability and to ease cognitive overload while reviewing.
 
-## Required output 3: `CODEX_REVIEW_FIX_PROMPT.md`
+## Required output 3: `GPT_REVIEW_FIX_PROMPT.md`
 
-Create `CODEX_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for Codex to fix the valid review findings.
+Create `GPT_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for GPT to fix the valid review findings.
 
-There is no separate checked-in Codex review-fix prompt file after this review step. `CODEX_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
+There is no separate checked-in GPT review-fix prompt file after this review step. `GPT_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
 
-This phase is the only place that should author `CODEX_REVIEW_FIX_PROMPT.md`.
+This phase is the only place that should author `GPT_REVIEW_FIX_PROMPT.md`.
 
-If a later verification pass says another fix iteration is needed, return to this phase and regenerate `CODEX_REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
+If a later verification pass says another fix iteration is needed, return to this phase and regenerate `GPT_REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
 
 It must be self-contained.
 
@@ -342,23 +342,23 @@ Do not generate:
 - a helper prompt,
 - a wrapper note around review findings,
 - a partial instruction set that expects another checked-in fix prompt file,
-- a checklist without the full direct-use Codex contract.
+- a checklist without the full direct-use GPT contract.
 
-The generated Codex prompt must use a clear title and contain these top-level sections:
+The generated GPT prompt must use a clear title and contain these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `## Prompt`
 
-The generated Codex prompt must include these skill links explicitly:
+The generated GPT prompt must include these skill links explicitly:
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 
-The generated Codex prompt must include a `## Skill Handling Rule` that instructs Codex to:
+The generated GPT prompt must include a `## Skill Handling Rule` that instructs GPT to:
 
 - use only the explicitly linked skills listed in the prompt,
 - treat the prompt as the contract,
@@ -368,9 +368,9 @@ The generated Codex prompt must include a `## Skill Handling Rule` that instruct
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-The generated Codex prompt must embed the full Engineering Contract above verbatim or stricter.
+The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter.
 
-Inside `## Prompt`, the generated Codex prompt must use clear sections for:
+Inside `## Prompt`, the generated GPT prompt must use clear sections for:
 
 - goal,
 - success criteria,
@@ -381,7 +381,7 @@ Inside `## Prompt`, the generated Codex prompt must use clear sections for:
 - focused verification,
 - required final response.
 
-Inside those sections, it must instruct Codex as follows.
+Inside those sections, it must instruct GPT as follows.
 
 Goal:
 
@@ -400,7 +400,7 @@ Context to read before acting:
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `CODEX_EXECUTION_PROMPT.md`, if present,
+- `GPT_EXECUTION_PROMPT.md`, if present,
 - current branch diff against `main`.
 
 Execution posture:
@@ -441,7 +441,7 @@ Focused verification:
 
 Required final response:
 
-The generated `CODEX_REVIEW_FIX_PROMPT.md` must require this exact response structure:
+The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response structure:
 
 ```markdown
 # Review Fix Summary
@@ -461,6 +461,6 @@ The generated `CODEX_REVIEW_FIX_PROMPT.md` must require this exact response stru
 ## Remaining Questions / Blockers
 ```
 
-It must explicitly instruct Codex not to claim completion without fresh verification evidence.
+It must explicitly instruct GPT not to claim completion without fresh verification evidence.
 
 Do not modify code during this Opus review phase.

@@ -1,11 +1,11 @@
-# 03 - Plan Revision Verification - GPT, Gemini, or Codex
+# 08 - GPT Implements Human-Approved FOLLOWUP.md
 
 ## Skills
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -162,80 +162,83 @@ Suggest a behavior-level alternative when practical.
 
 Goal:
 
-- determine whether Opus actually addressed the previous plan critique and whether the planning artifacts are now ready for Codex execution.
+- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
-- each prior concern is checked against the revised artifacts and linked to concrete evidence,
-- the verdict is explicit about both readiness and remaining gaps,
-- the output follows the exact structure below.
+- only approved `FOLLOWUP.md` items are implemented,
+- each completed item is checked off only after the change and its verification are done,
+- scope stays limited to the approved follow-up work,
+- verification evidence is reported clearly,
+- no AI review loop is restarted after this phase; the workflow returns to manual review.
 
-Constraints:
+Context to read before acting:
 
-- do not implement code,
-- do not modify files unless explicitly asked,
-- if evidence is missing, say so explicitly instead of guessing.
+- `REVIEW.md`,
+- `WALKTHROUGH.md`,
+- `FOLLOWUP.md`,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- current branch diff against `main`.
 
-Context to review:
+Execution posture:
 
-- the previous `PLAN_CRITIQUE.md`,
-- the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
-- `PLAN_REVISION_SUMMARY.md`,
-- the updated `FEATURE_SPEC_AND_PLAN.md`,
-- the updated `CODEX_EXECUTION_PROMPT.md`,
-- original draft plan/interviewing notes if available.
+- understand the context of the current PR before editing,
+- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
+- treat `FOLLOWUP.md` as the execution contract for this phase,
+- read likely relevant files in parallel before editing when that shortens the loop,
+- prefer dedicated repo/search/edit tools over raw shell when available,
+- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
 
-Working method:
+Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
 
-- if you are Codex, inspect the revised artifacts and any needed repo files in parallel before finalizing,
-- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
-- quote or clearly point to where each concern was addressed,
-- distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
-- if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
+`FOLLOWUP.md` is the execution contract for this phase.
 
-Task:
+Go on and address all items in `FOLLOWUP.md` while checking them off the list.
 
-- determine whether the revised plan and revised Codex prompt satisfy all previously raised concerns,
-- produce `PLAN_REVISION_VERIFICATION.md`,
-- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_gpt_gemini_codex.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
+Only implement items that are explicitly present in `FOLLOWUP.md`.
 
-For each previously raised concern:
+Do not add new follow-up items.
 
-- quote or summarize the concern,
-- identify where it was addressed,
-- classify status as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Concern`,
-- explain your reasoning.
+Do not expand scope.
 
-## Required output: `PLAN_REVISION_VERIFICATION.md`
+Do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`.
 
-Use this structure:
+Do not write tests unless `FOLLOWUP.md` explicitly asks for tests.
+
+If a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision, stop and ask.
+
+Use small, focused changes.
+
+Commit incrementally if committing is allowed.
+
+Run focused verification relevant to the follow-up items.
+
+If a command fails, paste the exact error/log back. Never paraphrase logs.
+
+Do not create a new AI review prompt.
+
+Do not ask Opus to review this phase.
+
+I will do the final review manually.
+
+## Required final response
 
 ```markdown
-# Plan Revision Verification
+# Human Follow-Up Implementation Summary
 
-## Verdict
-- All previous concerns resolved: Yes/No
-- Ready for Codex execution: Yes/No
+## FOLLOWUP.md Items Completed
 
-## Concern-by-Concern Verification
+## FOLLOWUP.md Items Not Completed And Why
 
-| Concern | Status | Evidence | Remaining Action |
-|---|---|---|---|
+## Files Changed
 
-## Remaining Blocking Issues
+## Verification Evidence
 
-## Remaining Non-Blocking Issues
+## Documentation Updated
 
-## New Issues Introduced By Revision
+## Commits Created
 
-## Required Next Action
+## Remaining Manual Review Notes
 ```
 
-If any issue remains:
-
-- do not create `OPUS_PLAN_REVISION_REQUEST.md` in this phase,
-- state explicitly that the workflow must return to `02_plan_critique_gpt_gemini_codex.md`,
-- state that `02` is the only phase that should author `OPUS_PLAN_REVISION_REQUEST.md`,
-- if the existing `OPUS_PLAN_REVISION_REQUEST.md` was missing, weak, or failed to preserve the needed revision instructions, call that out as a failure in the upstream critique/request phase rather than compensating for it here.
-
-If no issue remains, state clearly that the plan is ready for Codex execution.
+Do not claim completion without fresh verification evidence.

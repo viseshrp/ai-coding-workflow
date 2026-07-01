@@ -1,4 +1,4 @@
-# 01 — Initial Exploration / Grilling / Interviewing + Opus Planning Prompt Generation — GPT or Codex
+# 01 — Initial Exploration / Grilling / Interviewing + Opus Planning Prompt Generation — GPT
 
 ## Skills
 
@@ -51,7 +51,7 @@ Working method:
 - ask only when the answer would materially change the plan,
 - if a question can be answered by exploring the codebase, explore the codebase instead of asking me,
 - if a question can be answered by exploring the codebase or provided context, explore first instead of asking me,
-- if you are Codex, gather the most relevant repo context in parallel before asking repo-answerable questions,
+- if you are GPT, gather the most relevant repo context in parallel before asking repo-answerable questions,
 - ask one question at a time when clarification is needed,
 - for each question, include:
   1. the question,
@@ -68,13 +68,13 @@ Workflow context:
 
 My workflow is:
 
-1. GPT/Codex helps me think, interview, grill, and clarify the idea.
+1. GPT helps me think, interview, grill, and clarify the idea.
 2. This produces `DRAFT_PLAN.md`.
 3. This also produces `INITIAL_OPUS_PLANNING_PROMPT.md`.
 4. I paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus.
 5. Opus then uses the draft plan plus repo context as seed context to create:
    - `FEATURE_SPEC_AND_PLAN.md`
-   - `CODEX_EXECUTION_PROMPT.md`
+   - `GPT_EXECUTION_PROMPT.md`
 
 Use the linked skills as supporting procedures:
 
@@ -115,7 +115,7 @@ Do not generate:
 - a helper prompt,
 - a seed-only prompt that expects later normalization,
 - a meta prompt for another model,
-- planning artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `CODEX_EXECUTION_PROMPT.md` in this exploration phase.
+- planning artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `GPT_EXECUTION_PROMPT.md` in this exploration phase.
 
 The generated Opus prompt must use a clear title and contain these top-level sections:
 
@@ -147,7 +147,7 @@ In `## Default Planning Artifact Reduction`, it must instruct Opus to default to
 It must require:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 
 It must state that:
 
@@ -178,7 +178,7 @@ Role:
 Task:
 
 - Perform the main planning work itself. Do not generate a meta prompt for another model.
-- Your job is to create the detailed planning artifacts that will become the contract for Codex execution.
+- Your job is to create the detailed planning artifacts that will become the contract for GPT execution.
 - Critique the current draft plan, ask any remaining design questions in one batch, then produce the locked planning artifacts after my answers.
 - The initial interviewing output plan must be made into a more detailed implementation plan.
 
@@ -192,8 +192,8 @@ Context to read before answering:
 Success criteria:
 
 - the generated Opus prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
-- `FEATURE_SPEC_AND_PLAN.md` is concrete enough that Codex can execute without inventing missing detail,
-- `CODEX_EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves Codex no ambiguity about scope, stop rules, or verification,
+- `FEATURE_SPEC_AND_PLAN.md` is concrete enough that GPT can execute without inventing missing detail,
+- `GPT_EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves GPT no ambiguity about scope, stop rules, or verification,
 - no important detail from the draft plan is dropped,
 - scope stays within the requested change,
 - the prompt preserves the current scope while letting Opus deepen detail inside that scope.
@@ -227,7 +227,7 @@ Working method:
 Final self-check:
 
 - verify that the planning artifacts are explicit about success criteria, stop rules, and verification,
-- verify that the implementation plan is detailed enough to drive end-to-end Codex execution,
+- verify that the implementation plan is detailed enough to drive end-to-end GPT execution,
 - verify that the prompt and plan remain within the original requested scope.
 
 Inside `## Prompt`, after the core sections above, the generated Opus prompt must also include these requirement blocks in substance.
@@ -321,14 +321,14 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - exact sections to update or create,
    - reminder not to write the changelog.
 
-Required output 2: `CODEX_EXECUTION_PROMPT.md`
+Required output 2: `GPT_EXECUTION_PROMPT.md`
 
-- create `CODEX_EXECUTION_PROMPT.md`,
-- make it the final direct-use prompt that I will paste into Codex for locked execution,
+- create `GPT_EXECUTION_PROMPT.md`,
+- make it the final direct-use prompt that I will paste into GPT for locked execution,
 - make it self-contained,
 - do not generate a helper prompt, summary, wrapper note, partial contract, or any prompt that expects another checked-in execution prompt file,
-- there is no separate checked-in Codex execution prompt file after this planning step,
-- require it to instruct Codex to:
+- there is no separate checked-in GPT execution prompt file after this planning step,
+- require it to instruct GPT to:
   1. read `FEATURE_SPEC_AND_PLAN.md`,
   2. treat the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` as the execution contract,
   3. treat the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` as reference context,
@@ -339,20 +339,20 @@ Required output 2: `CODEX_EXECUTION_PROMPT.md`
   8. stop and ask on ambiguity/conflict/context gaps,
   9. use the full Engineering Contract below.
 
-The generated `CODEX_EXECUTION_PROMPT.md` must use a clear title and contain these top-level sections:
+The generated `GPT_EXECUTION_PROMPT.md` must use a clear title and contain these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `## Prompt`
 
-The generated Opus prompt must also require that the generated `CODEX_EXECUTION_PROMPT.md` explicitly include these skill links:
+The generated Opus prompt must also require that the generated `GPT_EXECUTION_PROMPT.md` explicitly include these skill links:
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 
-The generated `CODEX_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs Codex to:
+The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs GPT to:
 
 - use only the explicitly linked skills listed in the prompt,
 - treat the prompt as the contract,
@@ -362,11 +362,11 @@ The generated `CODEX_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `CODEX_EXECUTION_PROMPT.md`.
+The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `GPT_EXECUTION_PROMPT.md`.
 
-The generated Codex prompt must require the following Engineering Contract verbatim or stricter:
+The generated GPT prompt must require the following Engineering Contract verbatim or stricter:
 
-Inside `## Prompt`, the generated `CODEX_EXECUTION_PROMPT.md` must use clear sections for:
+Inside `## Prompt`, the generated `GPT_EXECUTION_PROMPT.md` must use clear sections for:
 
 - goal,
 - success criteria,
@@ -377,7 +377,7 @@ Inside `## Prompt`, the generated `CODEX_EXECUTION_PROMPT.md` must use clear sec
 - execution rules,
 - required final response.
 
-Inside those sections, the generated Opus prompt must require `CODEX_EXECUTION_PROMPT.md` to instruct Codex as follows.
+Inside those sections, the generated Opus prompt must require `GPT_EXECUTION_PROMPT.md` to instruct GPT as follows.
 
 Goal:
 
@@ -393,7 +393,7 @@ Success criteria:
 Context to read before acting:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
-- `CODEX_EXECUTION_PROMPT.md`, if present as saved artifact context,
+- `GPT_EXECUTION_PROMPT.md`, if present as saved artifact context,
 - relevant repository context.
 
 Execution posture:
@@ -445,10 +445,10 @@ Execution rules:
 
 Required final response:
 
-The generated `CODEX_EXECUTION_PROMPT.md` must require this exact response structure:
+The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structure:
 
 ```markdown
-# Codex Execution Summary
+# GPT Execution Summary
 
 ## What Changed
 
@@ -467,7 +467,7 @@ The generated `CODEX_EXECUTION_PROMPT.md` must require this exact response struc
 ## Suggestions Not Implemented Because Out Of Scope
 ```
 
-It must explicitly instruct Codex not to claim completion without fresh verification evidence.
+It must explicitly instruct GPT not to claim completion without fresh verification evidence.
 
 ## Engineering Contract
 
@@ -608,8 +608,8 @@ It must tell Opus to suggest a behavior-level alternative when practical.
 
 Before finishing, the generated prompt must instruct Opus to verify that:
 
-- `FEATURE_SPEC_AND_PLAN.md` is sufficient for Codex execution,
-- `CODEX_EXECUTION_PROMPT.md` contains every implementation rule above,
+- `FEATURE_SPEC_AND_PLAN.md` is sufficient for GPT execution,
+- `GPT_EXECUTION_PROMPT.md` contains every implementation rule above,
 - no details from the draft plan were dropped.
 
 If the task is still ambiguous, keep interviewing instead of pretending the plan is ready.

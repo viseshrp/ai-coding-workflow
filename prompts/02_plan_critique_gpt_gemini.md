@@ -1,4 +1,4 @@
-# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — GPT, Gemini, or Codex
+# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — GPT or Gemini
 
 ## Skills
 
@@ -162,11 +162,11 @@ Suggest a behavior-level alternative when practical.
 
 Goal:
 
-- determine whether the planning artifacts are ready to lock for Codex execution.
+- determine whether the planning artifacts are ready to lock for GPT execution.
 
 Success criteria:
 
-- every material concern is grounded in specific plan text, Codex-prompt text, or concrete repo evidence,
+- every material concern is grounded in specific plan text, GPT-prompt text, or concrete repo evidence,
 - blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
 - the output follows the exact artifact structure below.
 
@@ -180,13 +180,13 @@ Constraints:
 Context to review:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
-- `CODEX_EXECUTION_PROMPT.md`,
+- `GPT_EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
 - relevant repository context if needed.
 
 Working method:
 
-- if you are Codex, inspect the planning artifacts and any necessary repo files in parallel before finalizing,
+- if you are GPT, inspect the planning artifacts and any necessary repo files in parallel before finalizing,
 - if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
 - quote or clearly point to the exact passage that triggered each blocking issue,
 - separate confirmed issues, inferences, and open questions,
@@ -195,7 +195,7 @@ Working method:
 Task:
 
 - critique the plan, not execute it,
-- decide whether the artifacts are good enough to lock for Codex execution,
+- decide whether the artifacts are good enough to lock for GPT execution,
 - produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
 
 ## Review dimensions
@@ -223,7 +223,7 @@ Review for:
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing documentation update plan,
-- anything in the Codex prompt that gives Codex too much freedom.
+- anything in the GPT prompt that gives GPT too much freedom.
 
 ## Required output 1: `PLAN_CRITIQUE.md`
 
@@ -254,7 +254,7 @@ Use this structure:
 
 ## Source Documentation Grounding Issues
 
-## Codex Prompt Risks
+## GPT Prompt Risks
 
 ## Simplification Opportunities
 
@@ -263,7 +263,7 @@ Use this structure:
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
-Create `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
+Create `OPUS_PLAN_REVISION_REQUEST.md` as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
 
 There is no separate checked-in Opus revision prompt file after this critique step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the revision pass.
 
@@ -311,7 +311,7 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 
 It must state that:
 
@@ -344,7 +344,7 @@ Role:
 
 Task:
 
-- Update the planning artifacts so they are ready for locked Codex execution.
+- Update the planning artifacts so they are ready for locked GPT execution.
 - Apply valid critique items without expanding scope.
 
 Context to read before answering:
@@ -352,7 +352,7 @@ Context to read before answering:
 - `PLAN_CRITIQUE.md`, if present,
 - `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
 - current `FEATURE_SPEC_AND_PLAN.md`,
-- current `CODEX_EXECUTION_PROMPT.md`,
+- current `GPT_EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
 - relevant repository context.
 
@@ -360,14 +360,14 @@ Success criteria:
 
 - every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
 - the revised plan stays within original scope,
-- the revised Codex prompt remains strict enough to prevent divergence during execution,
+- the revised GPT prompt remains strict enough to prevent divergence during execution,
 - no detail from the current plan artifacts, critique, or draft-plan lineage is silently dropped.
 
 Constraints:
 
 - do not implement code,
 - do not write tests,
-- do not loosen the Codex prompt,
+- do not loosen the GPT prompt,
 - do not use the critique as permission to change architecture unless I explicitly approve,
 - keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
 
@@ -385,7 +385,7 @@ And also:
 
 - read `PLAN_CRITIQUE.md`,
 - read the current `FEATURE_SPEC_AND_PLAN.md`,
-- read the current `CODEX_EXECUTION_PROMPT.md`,
+- read the current `GPT_EXECUTION_PROMPT.md`,
 - apply all valid critique items,
 - ask if a critique item requires a design decision from me,
 - do not silently drop any critique item,
@@ -397,7 +397,7 @@ Required outputs:
 Update or create:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 - `PLAN_REVISION_SUMMARY.md`
 
 The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use this structure:
@@ -413,22 +413,22 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 
 ## Changes Made To FEATURE_SPEC_AND_PLAN.md
 
-## Changes Made To CODEX_EXECUTION_PROMPT.md
+## Changes Made To GPT_EXECUTION_PROMPT.md
 
 ## Remaining Risks
 
 ## Ready For Another Critique Pass?
 
-## Ready For Codex Execution?
+## Ready For GPT Execution?
 ```
 
 Final checks:
 
 - verify that the updated plan is still within original scope,
 - verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
-- verify that the Codex prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- verify that the GPT prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
 - verify that no test-writing is introduced unless explicitly asked,
-- verify that all skill links relevant to the generated Codex prompt remain present,
+- verify that all skill links relevant to the generated GPT prompt remain present,
 - verify that the Engineering Contract remains intact or stricter.
 
 Do not ask Opus to implement code.

@@ -12,8 +12,8 @@ The main value of this repo is not "one magic prompt." The value is the workflow
 - each workflow phase should have exactly one prompt input, and when the previous phase generates that prompt, that generated artifact is the only prompt for the next phase,
 - `01` generates the dedicated Opus planning prompt artifact for the main planning pass,
 - `02` is the producer of `OPUS_PLAN_REVISION_REQUEST.md`, and `03` verifies whether that revision pass actually worked,
-- locked execution is driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`,
-- `04` is the producer of `CODEX_REVIEW_FIX_PROMPT.md`, and `05` verifies whether that fix pass actually worked,
+- locked execution is driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`,
+- `04` is the producer of `GPT_REVIEW_FIX_PROMPT.md`, and `05` verifies whether that fix pass actually worked,
 - each prompt links only the skills that belong in that phase,
 - each phase emits explicit artifacts,
 - the next phase consumes those artifacts,
@@ -39,7 +39,7 @@ The main value of this repo is not "one magic prompt." The value is the workflow
   - [Prompt 05 - Opus verifies review fixes](#prompt-05---opus-verifies-review-fixes)
   - [Prompt 06 - Opus refreshes final review docs](#prompt-06---opus-refreshes-final-review-docs)
   - [Prompt 07 - Sonnet human walkthrough](#prompt-07---sonnet-human-walkthrough)
-  - [Prompt 08 - Codex implements human follow-up](#prompt-08---codex-implements-human-follow-up)
+  - [Prompt 08 - GPT implements human follow-up](#prompt-08---gpt-implements-human-follow-up)
 - [Engineering contract summary](#engineering-contract-summary)
 - [How to use this repo end to end](#how-to-use-this-repo-end-to-end)
 - [Common entry points](#common-entry-points)
@@ -88,7 +88,7 @@ The chat export is especially important because it captures the key decisions th
 - preserve all important detail from the original prompt set,
 - reduce repetition where possible without losing self-containment,
 - combine spec and implementation plan into one default planning artifact,
-- keep `CODEX_EXECUTION_PROMPT.md` separate,
+- keep `GPT_EXECUTION_PROMPT.md` separate,
 - preserve a strict human approval gate for final follow-up work.
 
 In other words: this repo is not just "prompts plus links." It is a deliberately reorganized version of a pre-existing workflow with explicit tradeoffs recorded in the chat history.
@@ -104,7 +104,7 @@ The chat export explicitly rejects a generic router approach.
 Instead:
 
 - each prompt lists only the skills relevant to that phase,
-- `01` tells GPT/Codex to generate the downstream Opus planning prompt artifact with the required embedded skill links, and downstream prompts tell review/revision models to generate the next request artifacts when appropriate,
+- `01` tells GPT to generate the downstream Opus planning prompt artifact with the required embedded skill links, and downstream prompts tell review/revision models to generate the next request artifacts when appropriate,
 - the prompt always overrides the skill.
 
 ### 2. Self-contained prompt files
@@ -127,7 +127,7 @@ The workflow used to think in terms of separate `SPEC.md` and `IMPLEMENTATION_PL
 The current default is:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 
 `FEATURE_SPEC_AND_PLAN.md` preserves the old split logically inside one file:
 
@@ -138,7 +138,7 @@ The plan section is expected to link back to reference anchors in the same file 
 
 ### 4. Repetition reduced by an embedded Engineering Contract
 
-The original workflow had duplication across Codex implementation instructions and Opus review instructions.
+The original workflow had duplication across GPT implementation instructions and Opus review instructions.
 
 The repo reduces that repetition by embedding a shared Engineering Contract into the prompts that need it.
 
@@ -163,7 +163,7 @@ After the AI review/fix loop is done:
 - Opus refreshes `REVIEW.md` and `WALKTHROUGH.md`,
 - Sonnet walks the human through the diff in small chunks,
 - only explicitly agreed items go into `FOLLOWUP.md`,
-- only then does Codex implement the human-approved follow-up list.
+- only then does GPT implement the human-approved follow-up list.
 
 This is one of the most important characteristics of the repo.
 
@@ -179,14 +179,14 @@ This is one of the most important characteristics of the repo.
 |   +-- agentic_coding_prompt_pack_refactored.md
 +-- prompts/
 |   +-- 00_README.md
-|   +-- 01_initial_exploration_gpt_codex.md
-|   +-- 02_plan_critique_gpt_gemini_codex.md
-|   +-- 03_plan_revision_verification_gpt_gemini_codex.md
+|   +-- 01_initial_exploration_gpt.md
+|   +-- 02_plan_critique_gpt_gemini.md
+|   +-- 03_plan_revision_verification_gpt_gemini.md
 |   +-- 04_opus_review_branch.md
 |   +-- 05_opus_verify_review_fixes.md
 |   +-- 06_opus_refresh_review_and_walkthrough.md
 |   +-- 07_sonnet_human_code_walkthrough.md
-|   +-- 08_codex_implement_human_followup.md
+|   +-- 08_gpt_implement_human_followup.md
 +-- sources/
     +-- ai_talk.pdf
     +-- current_skill_set.txt
@@ -217,24 +217,24 @@ This is one of the most important characteristics of the repo.
 flowchart TD
     A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md"]
     B --> C["Opus planning pass via INITIAL_OPUS_PLANNING_PROMPT.md"]
-    C --> D["FEATURE_SPEC_AND_PLAN.md + CODEX_EXECUTION_PROMPT.md"]
+    C --> D["FEATURE_SPEC_AND_PLAN.md + GPT_EXECUTION_PROMPT.md"]
     D --> E["02 Plan critique"]
     E --> F["OPUS_PLAN_REVISION_REQUEST.md"]
     F --> G["Opus revision pass via OPUS_PLAN_REVISION_REQUEST.md"]
     G --> H["Updated plan artifacts + PLAN_REVISION_SUMMARY.md"]
     H --> I["03 Verify plan revision"]
     I -- "more plan work needed" --> E
-    I -- "plan locked" --> J["Codex execution via CODEX_EXECUTION_PROMPT.md"]
+    I -- "plan locked" --> J["GPT execution via GPT_EXECUTION_PROMPT.md"]
     J --> K["Implemented branch"]
     K --> L["04 Opus reviews implemented branch"]
-    L --> M["REVIEW.md + WALKTHROUGH.md + CODEX_REVIEW_FIX_PROMPT.md"]
-    M --> N["Codex fix pass via CODEX_REVIEW_FIX_PROMPT.md"]
+    L --> M["REVIEW.md + WALKTHROUGH.md + GPT_REVIEW_FIX_PROMPT.md"]
+    M --> N["GPT fix pass via GPT_REVIEW_FIX_PROMPT.md"]
     N --> O["05 Verify review fixes"]
     O -- "more review fixes needed" --> L
     O -- "AI review loop complete" --> P["06 Refresh REVIEW.md + WALKTHROUGH.md"]
     P --> Q["07 Sonnet human walkthrough"]
     Q --> R["FOLLOWUP.md"]
-    R --> S["08 Codex implements human follow-up"]
+    R --> S["08 GPT implements human follow-up"]
     S --> T["Manual final review"]
 ```
 
@@ -244,9 +244,9 @@ flowchart TD
 - There is no separate checked-in prompt file for the main Opus planning phase; that phase is driven by the generated `INITIAL_OPUS_PLANNING_PROMPT.md` artifact.
 - Prompt `02` creates `OPUS_PLAN_REVISION_REQUEST.md`, and that generated artifact is the direct-use Opus revision prompt for the next plan-revision pass.
 - Prompt `03` verifies the latest revision and, if it fails, the workflow returns to `02`.
-- There is no separate checked-in prompt file for the locked Codex execution phase; that phase is driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
+- There is no separate checked-in prompt file for the locked GPT execution phase; that phase is driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
 - Prompts `04` and `05` are the AI code review/fix loop.
-- Prompt `04` creates `CODEX_REVIEW_FIX_PROMPT.md`, and that generated artifact is the direct-use Codex fix prompt for the next review-fix pass.
+- Prompt `04` creates `GPT_REVIEW_FIX_PROMPT.md`, and that generated artifact is the direct-use GPT fix prompt for the next review-fix pass.
 - Prompt `05` verifies the latest fix pass and, if it fails, the workflow returns to `04`.
 - Prompt `06` exists so `REVIEW.md` and `WALKTHROUGH.md` reflect the final post-fix code, not a stale earlier snapshot.
 - Prompts `07` and `08` are a separate human-reviewed final pass, not an extension of the AI review loop.
@@ -259,15 +259,15 @@ One of the fastest ways to understand this repo is to understand the artifact ch
 |---|---|---|---|
 | `DRAFT_PLAN.md` | `01` | Opus planning pass via `INITIAL_OPUS_PLANNING_PROMPT.md` | First structured articulation of the task after clarification. |
 | `INITIAL_OPUS_PLANNING_PROMPT.md` | `01` | Opus planning pass | Final paste-ready Opus planning prompt generated during exploration. |
-| `FEATURE_SPEC_AND_PLAN.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct Codex execution, `04`, `05`, `06`, `08` | Combined spec/reference plus execution contract. |
-| `CODEX_EXECUTION_PROMPT.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct Codex execution, `04`, `05` | End-to-end implementation prompt for Codex. |
+| `FEATURE_SPEC_AND_PLAN.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05`, `06`, `08` | Combined spec/reference plus execution contract. |
+| `GPT_EXECUTION_PROMPT.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05` | End-to-end implementation prompt for GPT. |
 | `PLAN_CRITIQUE.md` | `02` | direct Opus revision pass via `OPUS_PLAN_REVISION_REQUEST.md`, `03` | Records critique findings against the planning artifacts. |
-| `OPUS_PLAN_REVISION_REQUEST.md` | `02` | direct Opus revision pass, `03` as verification context | Self-contained request for Opus to revise the plan and Codex prompt. |
+| `OPUS_PLAN_REVISION_REQUEST.md` | `02` | direct Opus revision pass, `03` as verification context | Self-contained request for Opus to revise the plan and GPT prompt. |
 | `PLAN_REVISION_SUMMARY.md` | direct Opus revision pass | `03` | Explains what changed in the planning artifacts after critique. |
-| `PLAN_REVISION_VERIFICATION.md` | `03` | Human decision point before direct Codex execution | Confirms whether the plan is ready for locked execution. |
-| `REVIEW.md` | `04`, refreshed in `06` | direct Codex review-fix pass, `05`, `07`, `08` | Formal post-implementation review document. |
-| `WALKTHROUGH.md` | `04`, refreshed in `06` | direct Codex review-fix pass, `05`, `07`, `08` | Detailed beginner-friendly walkthrough of the change set. |
-| `CODEX_REVIEW_FIX_PROMPT.md` | `04` | direct Codex review-fix pass, `05` as verification context | Self-contained request for Codex to fix valid review findings. |
+| `PLAN_REVISION_VERIFICATION.md` | `03` | Human decision point before direct GPT execution | Confirms whether the plan is ready for locked execution. |
+| `REVIEW.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Formal post-implementation review document. |
+| `WALKTHROUGH.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Detailed beginner-friendly walkthrough of the change set. |
+| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix valid review findings. |
 | `REVIEW_FIX_VERIFICATION.md` | `05` | `06` | Confirms whether the review-fix pass actually resolved the issues. |
 | `FOLLOWUP.md` | `07` | `08` | Human-approved final follow-up checklist. |
 
@@ -358,22 +358,22 @@ This is the fastest file-by-file map of the prompt pack.
 | Step | File | Primary model / role | Use when | Main outputs or result |
 |---|---|---|---|---|
 | 00 | [prompts/00_README.md](prompts/00_README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack |
-| 01 | [prompts/01_initial_exploration_gpt_codex.md](prompts/01_initial_exploration_gpt_codex.md) | GPT or Codex | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
-| 02 | [prompts/02_plan_critique_gpt_gemini_codex.md](prompts/02_plan_critique_gpt_gemini_codex.md) | GPT, Gemini, or Codex | The Opus planning artifacts already exist and need critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
-| 03 | [prompts/03_plan_revision_verification_gpt_gemini_codex.md](prompts/03_plan_revision_verification_gpt_gemini_codex.md) | GPT, Gemini, or Codex | You need to verify whether the latest Opus revision actually fixed the critique | `PLAN_REVISION_VERIFICATION.md` |
-| 04 | [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md) | Claude Opus | Implementation is done and the branch needs formal review | `REVIEW.md`, `WALKTHROUGH.md`, `CODEX_REVIEW_FIX_PROMPT.md` |
+| 01 | [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md) | GPT | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
+| 02 | [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md) | GPT or Gemini | The Opus planning artifacts already exist and need critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
+| 03 | [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md) | GPT or Gemini | You need to verify whether the latest Opus revision actually fixed the critique | `PLAN_REVISION_VERIFICATION.md` |
+| 04 | [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md) | Claude Opus | Implementation is done and the branch needs formal review | `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md` |
 | 05 | [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md) | Claude Opus | The review fixes need an audit before the loop ends | `REVIEW_FIX_VERIFICATION.md` |
 | 06 | [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | The AI review loop is complete and the docs need a final refresh | Refreshed `REVIEW.md`, refreshed `WALKTHROUGH.md` |
 | 07 | [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md) | Claude Sonnet with human in the loop | Final human review and approval pass | Human-vetted `FOLLOWUP.md` |
-| 08 | [prompts/08_codex_implement_human_followup.md](prompts/08_codex_implement_human_followup.md) | Codex | `FOLLOWUP.md` contains only human-approved items | Code changes plus human follow-up implementation summary |
+| 08 | [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) | GPT | `FOLLOWUP.md` contains only human-approved items | Code changes plus human follow-up implementation summary |
 
 Important note:
 
 - The main Opus planning pass happens between `01` and `02`.
 - It is driven by the generated `INITIAL_OPUS_PLANNING_PROMPT.md` artifact rather than a separate checked-in prompt file.
 - The Opus plan-revision pass happens between `02` and `03` and is driven by the generated `OPUS_PLAN_REVISION_REQUEST.md` artifact.
-- Locked execution happens after `03` and is driven by the generated `CODEX_EXECUTION_PROMPT.md` artifact plus `FEATURE_SPEC_AND_PLAN.md`.
-- The Codex review-fix pass happens between `04` and `05` and is driven by the generated `CODEX_REVIEW_FIX_PROMPT.md` artifact.
+- Locked execution happens after `03` and is driven by the generated `GPT_EXECUTION_PROMPT.md` artifact plus `FEATURE_SPEC_AND_PLAN.md`.
+- The GPT review-fix pass happens between `04` and `05` and is driven by the generated `GPT_REVIEW_FIX_PROMPT.md` artifact.
 
 ## Prompt-by-prompt deep dive
 
@@ -393,7 +393,7 @@ What it explains:
 - why the pack uses independent prompts,
 - why the Engineering Contract exists,
 - why `FEATURE_SPEC_AND_PLAN.md` is the default planning artifact,
-- why `CODEX_EXECUTION_PROMPT.md` remains separate,
+- why `GPT_EXECUTION_PROMPT.md` remains separate,
 - which skill links are used across the pack.
 
 Why it exists:
@@ -404,7 +404,7 @@ Why it exists:
 
 ### Prompt 01 - Initial exploration
 
-File: [prompts/01_initial_exploration_gpt_codex.md](prompts/01_initial_exploration_gpt_codex.md)
+File: [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md)
 
 Primary role:
 
@@ -412,7 +412,7 @@ Primary role:
 
 Target model:
 
-- GPT or Codex.
+- GPT.
 
 Skills used:
 
@@ -445,7 +445,7 @@ Why it matters:
 What happens next:
 
 - `INITIAL_OPUS_PLANNING_PROMPT.md` is pasted into Opus.
-- Opus uses that generated prompt plus `DRAFT_PLAN.md` and repository context to create `FEATURE_SPEC_AND_PLAN.md` and `CODEX_EXECUTION_PROMPT.md`.
+- Opus uses that generated prompt plus `DRAFT_PLAN.md` and repository context to create `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
 - The generated Opus planning prompt carries the planning-phase skill links and execution-contract requirements that used to live in separate checked-in planning prompt files.
 
 Use this when:
@@ -456,7 +456,7 @@ Use this when:
 
 ### Prompt 02 - Plan critique loop
 
-File: [prompts/02_plan_critique_gpt_gemini_codex.md](prompts/02_plan_critique_gpt_gemini_codex.md)
+File: [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md)
 
 Primary role:
 
@@ -464,7 +464,7 @@ Primary role:
 
 Target model:
 
-- GPT, Gemini, or Codex.
+- GPT or Gemini.
 
 Skills used:
 
@@ -476,7 +476,7 @@ Skills used:
 What it does:
 
 - critiques `FEATURE_SPEC_AND_PLAN.md`,
-- critiques `CODEX_EXECUTION_PROMPT.md`,
+- critiques `GPT_EXECUTION_PROMPT.md`,
 - checks for missing questions, edge cases, API risks, scope drift, performance risks, backwards compatibility risks, and prompt looseness,
 - produces both a critique document and a revision request for Opus.
 
@@ -496,11 +496,11 @@ What happens next:
 - There is no separate checked-in Opus revision prompt file after the fold.
 - `02` is the only phase that should author that prompt.
 - If verification later fails, the workflow returns to `02` instead of creating an alternate revision prompt in `03`.
-- The generated revision request carries the full revision contract: preserve scope, update `FEATURE_SPEC_AND_PLAN.md`, update `CODEX_EXECUTION_PROMPT.md`, preserve the Engineering Contract, and produce `PLAN_REVISION_SUMMARY.md`.
+- The generated revision request carries the full revision contract: preserve scope, update `FEATURE_SPEC_AND_PLAN.md`, update `GPT_EXECUTION_PROMPT.md`, preserve the Engineering Contract, and produce `PLAN_REVISION_SUMMARY.md`.
 
 ### Prompt 03 - Plan revision verification
 
-File: [prompts/03_plan_revision_verification_gpt_gemini_codex.md](prompts/03_plan_revision_verification_gpt_gemini_codex.md)
+File: [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md)
 
 Primary role:
 
@@ -508,7 +508,7 @@ Primary role:
 
 Target model:
 
-- GPT, Gemini, or Codex.
+- GPT or Gemini.
 
 Skills used:
 
@@ -534,17 +534,17 @@ Conditional output:
 
 What happens when the plan is locked:
 
-- the generated `CODEX_EXECUTION_PROMPT.md` is pasted directly into Codex,
-- Codex reads `FEATURE_SPEC_AND_PLAN.md`,
-- Codex treats the implementation-plan section as the execution contract and the spec/reference section as reference context,
-- Codex is constrained to no divergence, no creativity, and no architecture changes,
-- Codex runs focused verification and reports a structured execution summary.
+- the generated `GPT_EXECUTION_PROMPT.md` is pasted directly into GPT,
+- GPT reads `FEATURE_SPEC_AND_PLAN.md`,
+- GPT treats the implementation-plan section as the execution contract and the spec/reference section as reference context,
+- GPT is constrained to no divergence, no creativity, and no architecture changes,
+- GPT runs focused verification and reports a structured execution summary.
 
 Why it exists:
 
 - to close the loop on planning rigor,
 - to avoid the common failure mode where a revised plan is assumed to be fixed without a real audit,
-- to make the handoff into direct Codex execution artifact-driven rather than informal.
+- to make the handoff into direct GPT execution artifact-driven rather than informal.
 
 ### Prompt 04 - Opus reviews implemented branch
 
@@ -571,21 +571,21 @@ What it does:
 - compares the implementation against the plan artifacts,
 - reviews for readability, quality, performance, backwards compatibility, API behavior, reuse, documentation grounding, comments, test quality, and cross-platform safety,
 - creates both a review artifact and a teaching artifact,
-- generates the direct-use Codex fix prompt for the next pass when review findings need action.
+- generates the direct-use GPT fix prompt for the next pass when review findings need action.
 
 Required outputs:
 
 - `REVIEW.md`
 - `WALKTHROUGH.md`
-- `CODEX_REVIEW_FIX_PROMPT.md`
+- `GPT_REVIEW_FIX_PROMPT.md`
 
 What makes this phase distinctive:
 
 - `REVIEW.md` is the formal decision artifact,
 - `WALKTHROUGH.md` is intentionally line-by-line and beginner-oriented,
-- `CODEX_REVIEW_FIX_PROMPT.md` is the real pasted-into-Codex fix prompt after the fold, not a helper note,
+- `GPT_REVIEW_FIX_PROMPT.md` is the real pasted-into-GPT fix prompt after the fold, not a helper note,
 - `04` is the only phase that should author that prompt,
-- the generated Codex fix prompt must address valid findings only.
+- the generated GPT fix prompt must address valid findings only.
 
 Why it exists:
 
@@ -713,9 +713,9 @@ Why this phase is special:
 - it is the phase where the user takes control,
 - it converts the final human review into a precise checklist rather than vague comments.
 
-### Prompt 08 - Codex implements human follow-up
+### Prompt 08 - GPT implements human follow-up
 
-File: [prompts/08_codex_implement_human_followup.md](prompts/08_codex_implement_human_followup.md)
+File: [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md)
 
 Primary role:
 
@@ -723,7 +723,7 @@ Primary role:
 
 Target model:
 
-- Codex.
+- GPT.
 
 Skills used:
 
@@ -782,20 +782,20 @@ This contract is a big part of the workflow's personality. If you remove it, you
 
 If you are starting from a vague feature or task idea, the default path is:
 
-1. Start with [prompts/01_initial_exploration_gpt_codex.md](prompts/01_initial_exploration_gpt_codex.md).
-2. Paste the generated `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus and let it create `FEATURE_SPEC_AND_PLAN.md` plus `CODEX_EXECUTION_PROMPT.md`.
-3. Critique the plan with [prompts/02_plan_critique_gpt_gemini_codex.md](prompts/02_plan_critique_gpt_gemini_codex.md).
+1. Start with [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md).
+2. Paste the generated `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus and let it create `FEATURE_SPEC_AND_PLAN.md` plus `GPT_EXECUTION_PROMPT.md`.
+3. Critique the plan with [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md).
 4. Paste the generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus if critique changes are needed.
-5. Verify the revised plan with [prompts/03_plan_revision_verification_gpt_gemini_codex.md](prompts/03_plan_revision_verification_gpt_gemini_codex.md).
+5. Verify the revised plan with [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md).
 6. Repeat `02` -> generated `OPUS_PLAN_REVISION_REQUEST.md` pass -> `03` until the plan is truly locked.
-7. Paste the generated `CODEX_EXECUTION_PROMPT.md` into Codex and execute against `FEATURE_SPEC_AND_PLAN.md`.
+7. Paste the generated `GPT_EXECUTION_PROMPT.md` into GPT and execute against `FEATURE_SPEC_AND_PLAN.md`.
 8. Review with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md).
-9. Paste the generated `CODEX_REVIEW_FIX_PROMPT.md` into Codex if valid review findings need action.
+9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action.
 10. Verify the fixes with [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md).
-11. Repeat `04` -> generated `CODEX_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done.
+11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done.
 12. Refresh the final review docs with [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md).
 13. Run the human walkthrough with [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
-14. Implement the human-approved follow-up list with [prompts/08_codex_implement_human_followup.md](prompts/08_codex_implement_human_followup.md).
+14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
 15. Perform your final manual review.
 
 ## Common entry points
@@ -808,8 +808,8 @@ Use these shortcuts when appropriate:
   - if clarification already happened and you already have a clean `DRAFT_PLAN.md` plus a satisfactory Opus planning prompt.
 - Start at `02`
   - if the planning artifacts already exist and you only want to critique/lock them.
-- Start with direct Codex execution
-  - if the plan is already locked and you already have `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
+- Start with direct GPT execution
+  - if the plan is already locked and you already have `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
 - Start at `04`
   - if implementation already exists and you only need the AI review loop.
 - Start at `07`
@@ -832,7 +832,7 @@ It also intentionally does not check in runtime workflow artifacts like:
 
 - `DRAFT_PLAN.md`
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 - `PLAN_CRITIQUE.md`
 - `REVIEW.md`
 - `WALKTHROUGH.md`

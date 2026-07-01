@@ -71,9 +71,11 @@ Default to editing only:
 - `README.md`
 - `AGENTS.md`
 
-Do not edit `archived/` unless the task explicitly asks for the archive to be refreshed or kept in sync.
+Never edit, rename, or rewrite anything under `archived/` unless the user explicitly asks for archive work.
 
 Do not populate `.agents/` or `.codex/` unless explicitly asked.
+
+Never edit, rename, or rewrite anything under `sources/` unless the user explicitly asks for source-material work.
 
 Do not edit PDFs or chat exports unless explicitly asked.
 
@@ -87,47 +89,47 @@ These are the main design constraints that define this repo:
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - GPT/Codex for exploration/meta critique in some phases.
+  - GPT for exploration/meta critique in some phases.
   - Claude Opus for planning/review/revision phases.
   - Claude Sonnet for human walkthrough/follow-up gating.
-  - Codex for execution/fix phases.
-- The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `CODEX_EXECUTION_PROMPT.md`.
+  - GPT for execution/fix phases.
+- The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
-- The main Opus planning pass, Opus plan-revision pass, Codex execution pass, and Codex review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
+- The main Opus planning pass, Opus plan-revision pass, GPT execution pass, and GPT review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 
 ## Canonical Workflow Phases
 
 The numbered prompt files define the workflow order and should stay in sequence.
 
-1. `01_initial_exploration_gpt_codex.md`
+1. `01_initial_exploration_gpt.md`
    - Clarifies a vague idea.
    - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
    - The Opus prompt produced here is the final paste-ready prompt for the main planning pass.
    - The main Opus planning phase is driven by that generated artifact rather than by a separate checked-in prompt file.
-2. `02_plan_critique_gpt_gemini_codex.md`
+2. `02_plan_critique_gpt_gemini.md`
    - Critiques the locked planning artifacts.
    - Produces `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`.
    - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
-3. `03_plan_revision_verification_gpt_gemini_codex.md`
+3. `03_plan_revision_verification_gpt_gemini.md`
    - Verifies that the revision addressed the critique.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
    - If issues remain, the workflow returns to `02`; this phase does not author an alternate `OPUS_PLAN_REVISION_REQUEST.md`.
-   - Locked execution is then driven by the generated `CODEX_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
+   - Locked execution is then driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
 4. `04_opus_review_branch.md`
    - Reviews implemented changes.
-   - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `CODEX_REVIEW_FIX_PROMPT.md`.
-   - The generated `CODEX_REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the Codex review-fix pass.
+   - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
+   - The generated `GPT_REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the GPT review-fix pass.
 5. `05_opus_verify_review_fixes.md`
    - Verifies the review-fix pass.
    - Produces `REVIEW_FIX_VERIFICATION.md`.
-   - If issues remain, the workflow returns to `04`; this phase does not author an alternate `CODEX_REVIEW_FIX_PROMPT.md`.
+   - If issues remain, the workflow returns to `04`; this phase does not author an alternate `GPT_REVIEW_FIX_PROMPT.md`.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
 7. `07_sonnet_human_code_walkthrough.md`
    - Human review gate.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
-8. `08_codex_implement_human_followup.md`
+8. `08_gpt_implement_human_followup.md`
    - Implements only human-approved `FOLLOWUP.md` items.
 
 Do not renumber these files casually.
@@ -173,12 +175,12 @@ Expectation:
 
 Present in:
 
-- `prompts/02_plan_critique_gpt_gemini_codex.md`
-- `prompts/03_plan_revision_verification_gpt_gemini_codex.md`
+- `prompts/02_plan_critique_gpt_gemini.md`
+- `prompts/03_plan_revision_verification_gpt_gemini.md`
 - `prompts/04_opus_review_branch.md`
 - `prompts/05_opus_verify_review_fixes.md`
 - `prompts/06_opus_refresh_review_and_walkthrough.md`
-- `prompts/08_codex_implement_human_followup.md`
+- `prompts/08_gpt_implement_human_followup.md`
 
 Expectation:
 
@@ -192,7 +194,7 @@ Expectation:
 Current default:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 
 This policy is reflected in multiple files including `prompts/00_README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
 
@@ -204,7 +206,7 @@ The review/fix/human-review portion relies on a stable artifact chain:
 
 - `REVIEW.md`
 - `WALKTHROUGH.md`
-- `CODEX_REVIEW_FIX_PROMPT.md`
+- `GPT_REVIEW_FIX_PROMPT.md`
 - `REVIEW_FIX_VERIFICATION.md`
 - `FOLLOWUP.md`
 
@@ -355,7 +357,7 @@ Also check:
 Also check:
 
 - `07_sonnet_human_code_walkthrough.md`,
-- `08_codex_implement_human_followup.md`,
+- `08_gpt_implement_human_followup.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.
 
@@ -380,7 +382,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `FEATURE_SPEC_AND_PLAN.md`
-- `CODEX_EXECUTION_PROMPT.md`
+- `GPT_EXECUTION_PROMPT.md`
 - `REVIEW.md`
 - `WALKTHROUGH.md`
 - `FOLLOWUP.md`

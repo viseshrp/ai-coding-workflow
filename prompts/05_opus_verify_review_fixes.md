@@ -1,4 +1,4 @@
-# 05 - Opus Verifies Codex Review Fixes
+# 05 - Opus Verifies GPT Review Fixes
 
 ## Skills
 
@@ -163,20 +163,20 @@ Suggest a behavior-level alternative when practical.
 
 Role:
 
-- You are Claude Opus verifying review fixes after Codex updated the branch.
+- You are Claude Opus verifying review fixes after GPT updated the branch.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
 
-- verify whether Codex satisfied all previously raised concerns, including the previously raised review findings,
+- verify whether GPT satisfied all previously raised concerns, including the previously raised review findings,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
 Context to review:
 
 - original `REVIEW.md`,
 - original `WALKTHROUGH.md`,
-- `CODEX_REVIEW_FIX_PROMPT.md`, if present,
-- Codex's review fix summary, if present,
+- `GPT_REVIEW_FIX_PROMPT.md`, if present,
+- GPT's review fix summary, if present,
 - current branch diff against `main`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present.
 
@@ -189,7 +189,7 @@ Success criteria:
 Constraints:
 
 - do not modify code,
-- do not assume a finding is fixed because Codex said it was fixed,
+- do not assume a finding is fixed because GPT said it was fixed,
 - check actual code and actual diff.
 
 For each prior review finding:
@@ -227,9 +227,9 @@ Use this structure:
 
 If anything remains unresolved:
 
-- do not create `CODEX_REVIEW_FIX_PROMPT.md` in this phase,
+- do not create `GPT_REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_opus_review_branch.md`,
-- state that `04` is the only phase that should author `CODEX_REVIEW_FIX_PROMPT.md`,
-- if the existing `CODEX_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
+- state that `04` is the only phase that should author `GPT_REVIEW_FIX_PROMPT.md`,
+- if the existing `GPT_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
 
 If all required review findings are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
