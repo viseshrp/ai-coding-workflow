@@ -42,7 +42,7 @@ If you change wording that changes behavior, you are changing product logic.
   - This repository-level maintenance guide.
 - `.gitattributes`
   - Text normalization; preserve LF-friendly text files.
-- `prompts/00_README.md`
+- `prompts/README.md`
   - User-facing overview of the independent prompt pack.
 - `prompts/01_...md` through `prompts/08_...md`
   - Canonical phase prompts.
@@ -66,7 +66,7 @@ If you change wording that changes behavior, you are changing product logic.
 Default to editing only:
 
 - `prompts/*.md`
-- `prompts/00_README.md`
+- `prompts/README.md`
 - `sources/current_skill_set.txt`
 - `README.md`
 - `AGENTS.md`
@@ -196,7 +196,7 @@ Current default:
 - `FEATURE_SPEC_AND_PLAN.md`
 - `GPT_EXECUTION_PROMPT.md`
 
-This policy is reflected in multiple files including `prompts/00_README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
+This policy is reflected in multiple files including `prompts/README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
 
 Do not casually reintroduce separate `SPEC.md` plus `IMPLEMENTATION_PLAN.md` as the default.
 
@@ -223,7 +223,7 @@ The explicit `AGREE` gate in `07_sonnet_human_code_walkthrough.md` is intentiona
 If you change the canonical skill set:
 
 - update every affected prompt file,
-- update `prompts/00_README.md`,
+- update `prompts/README.md`,
 - update `sources/current_skill_set.txt`.
 
 ## Directory-Specific Rules
@@ -234,14 +234,15 @@ This is the canonical product surface.
 
 Rules:
 
-- Keep filenames zero-padded and phase-ordered.
+- Keep phase prompt filenames zero-padded and phase-ordered.
+- Keep the pack guide at `prompts/README.md`.
 - Keep prompts self-contained.
 - Preserve explicit skill links.
 - Preserve explicit artifact filenames.
 - Preserve the intended target model for each phase.
 - Avoid style-only rewrites that create diff noise without workflow benefit.
 
-### `prompts/00_README.md`
+### `prompts/README.md`
 
 This is the pack overview. Update it when:
 
@@ -320,7 +321,7 @@ Also check:
 
 - the prompt file that uses it,
 - other prompts that should stay aligned by phase,
-- `prompts/00_README.md`,
+- `prompts/README.md`,
 - `sources/current_skill_set.txt`.
 
 ### If you change the Engineering Contract
@@ -338,7 +339,7 @@ Also check:
 
 - upstream producer prompts,
 - downstream consumer prompts,
-- `prompts/00_README.md`,
+- `prompts/README.md`,
 - any explicit required-output headings that mention the artifact.
 
 ### If you add a new workflow phase
@@ -346,7 +347,7 @@ Also check:
 Also check:
 
 - numbering and filename ordering,
-- `prompts/00_README.md`,
+- `prompts/README.md`,
 - `sources/current_skill_set.txt`,
 - any text that enumerates the workflow end-to-end,
 - whether the new phase should contain `## Skill Handling Rule`,
@@ -365,12 +366,12 @@ Also check:
 
 Before finishing a change, verify:
 
-- the repo still has the expected `00` through `08` prompt set unless the task intentionally changes it,
+- the repo still has `prompts/README.md` plus the expected `01` through `08` prompt set unless the task intentionally changes it,
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
 - skill links are consistent where intended,
 - repeated policy blocks are updated everywhere they should be,
-- `prompts/00_README.md` still matches the actual prompt set,
+- `prompts/README.md` still matches the actual prompt set,
 - `sources/current_skill_set.txt` still matches the actual prompt set,
 - any new wording did not accidentally add scope or remove guardrails,
 - Markdown remains readable and copy-paste ready.

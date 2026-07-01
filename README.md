@@ -31,7 +31,7 @@ The main value of this repo is not "one magic prompt." The value is the workflow
 - [Skill model](#skill-model)
 - [Prompt pack table of contents](#prompt-pack-table-of-contents)
 - [Prompt-by-prompt deep dive](#prompt-by-prompt-deep-dive)
-  - [Prompt 00 - Pack README](#prompt-00---pack-readme)
+  - [Prompts README](#prompts-readme)
   - [Prompt 01 - Initial exploration](#prompt-01---initial-exploration)
   - [Prompt 02 - Plan critique loop](#prompt-02---plan-critique-loop)
   - [Prompt 03 - Plan revision verification](#prompt-03---plan-revision-verification)
@@ -42,6 +42,8 @@ The main value of this repo is not "one magic prompt." The value is the workflow
   - [Prompt 08 - GPT implements human follow-up](#prompt-08---gpt-implements-human-follow-up)
 - [Engineering contract summary](#engineering-contract-summary)
 - [How to use this repo end to end](#how-to-use-this-repo-end-to-end)
+  - [Running it in Cursor or Copilot agent windows](#running-it-in-cursor-or-copilot-agent-windows)
+  - [Worked example](#worked-example)
 - [Common entry points](#common-entry-points)
 - [What is intentionally not in this repo](#what-is-intentionally-not-in-this-repo)
 - [Maintenance and source material](#maintenance-and-source-material)
@@ -178,7 +180,7 @@ This is one of the most important characteristics of the repo.
 +-- archived/
 |   +-- agentic_coding_prompt_pack_refactored.md
 +-- prompts/
-|   +-- 00_README.md
+|   +-- README.md
 |   +-- 01_initial_exploration_gpt.md
 |   +-- 02_plan_critique_gpt_gemini.md
 |   +-- 03_plan_revision_verification_gpt_gemini.md
@@ -357,7 +359,7 @@ This is the fastest file-by-file map of the prompt pack.
 
 | Step | File | Primary model / role | Use when | Main outputs or result |
 |---|---|---|---|---|
-| 00 | [prompts/00_README.md](prompts/00_README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack |
+| README | [prompts/README.md](prompts/README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack plus operator instructions |
 | 01 | [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md) | GPT | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
 | 02 | [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md) | GPT or Gemini | The Opus planning artifacts already exist and need critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
 | 03 | [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md) | GPT or Gemini | You need to verify whether the latest Opus revision actually fixed the critique | `PLAN_REVISION_VERIFICATION.md` |
@@ -379,9 +381,9 @@ Important note:
 
 This section is intentionally detailed so you do not have to reverse-engineer the prompt pack by opening files one at a time.
 
-### Prompt 00 - Pack README
+### Prompts README
 
-File: [prompts/00_README.md](prompts/00_README.md)
+File: [prompts/README.md](prompts/README.md)
 
 What it is:
 
@@ -394,7 +396,8 @@ What it explains:
 - why the Engineering Contract exists,
 - why `FEATURE_SPEC_AND_PLAN.md` is the default planning artifact,
 - why `GPT_EXECUTION_PROMPT.md` remains separate,
-- which skill links are used across the pack.
+- which skill links are used across the pack,
+- how to run the workflow inside an agent-enabled editor window such as Cursor or Copilot.
 
 Why it exists:
 
@@ -780,6 +783,10 @@ This contract is a big part of the workflow's personality. If you remove it, you
 
 ## How to use this repo end to end
 
+Use this workflow in the real code repository you want to change, not in this prompt-pack repository.
+
+The checked-in prompt files live here. The runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `FOLLOWUP.md` belong in the target code repository where the agent can read and update the actual code.
+
 If you are starting from a vague feature or task idea, the default path is:
 
 1. Start with [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md).
@@ -797,6 +804,51 @@ If you are starting from a vague feature or task idea, the default path is:
 13. Run the human walkthrough with [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
 14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
 15. Perform your final manual review.
+
+### Running it in Cursor or Copilot agent windows
+
+1. Open the real target code repository in Cursor, VS Code with Copilot agent mode, or another editor that gives the model live access to the workspace.
+2. Open this prompt-pack repo in a second window or side tab so you can copy the prompt text from `prompts/`.
+3. Run each phase inside the target code repo window. This repo is the workflow source; the target repo is the execution environment.
+4. Save generated artifacts in the target repo root using the exact filenames the workflow expects. If the UI does not create files automatically, create them manually and paste the model output into them.
+5. Prefer a fresh chat for each phase or at least for each model handoff. That keeps the context window cleaner and makes the artifact boundary explicit.
+6. For checked-in phases, paste the checked-in prompt file from this repo.
+7. For generated phases, paste the generated artifact itself. The important generated prompts are `INITIAL_OPUS_PLANNING_PROMPT.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `GPT_EXECUTION_PROMPT.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
+8. Do not replace a generated prompt with a different checked-in prompt. If the previous phase failed to generate the right next-phase prompt, go back and fix the previous phase instead of inventing an alternate path.
+9. Keep the model-role boundaries intact: GPT for exploration and execution passes, Opus for planning/review/revision passes, Sonnet for the human walkthrough gate.
+10. Treat the artifact files as the handoff boundary between chats. The next phase should read the files produced by the previous phase rather than relying on hidden chat memory.
+
+### Worked example
+
+Example task:
+
+`Add a CSV export button to the orders table in an existing React + Node repository without changing the current API contract or adding tests unless explicitly requested.`
+
+Example operator sequence in an agent UI:
+
+1. Open the product repo in Cursor or Copilot agent mode.
+2. Start a GPT chat for phase `01` and paste [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md).
+3. Under that prompt, add a short operator note such as:
+
+```text
+We are working in the repo currently open in this editor.
+Store generated workflow artifacts in the repo root.
+Task: add a CSV export button to the orders table without changing the current API contract.
+Do not write tests unless they become explicitly approved later.
+```
+
+4. Save the outputs from `01` as `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
+5. Start an Opus chat, paste `INITIAL_OPUS_PLANNING_PROMPT.md`, and let Opus create `FEATURE_SPEC_AND_PLAN.md` plus `GPT_EXECUTION_PROMPT.md`.
+6. Start a GPT or Gemini critique chat, paste [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md), and save `PLAN_CRITIQUE.md` plus `OPUS_PLAN_REVISION_REQUEST.md` if the plan is incomplete.
+7. If the critique says the plan missed edge cases such as filter preservation, authorization behavior, or export size constraints, paste `OPUS_PLAN_REVISION_REQUEST.md` into Opus and save the revised planning artifacts.
+8. Run [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md). If it still says the plan is weak, go back to `02` rather than pushing forward.
+9. Once the plan is locked, start a GPT execution chat and paste `GPT_EXECUTION_PROMPT.md` to implement the change against `FEATURE_SPEC_AND_PLAN.md`.
+10. After implementation, start an Opus review chat with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md). Save `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md` if fixes are needed.
+11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and make only the requested fixes.
+12. Run [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md). If the fixes still fail verification, loop back to `04`.
+13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
+14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items.
+15. Finish with your own manual review.
 
 ## Common entry points
 
@@ -858,7 +910,7 @@ If you want to maintain or extend the prompt pack itself:
   - Fastest compact view of the intended skill-by-phase mapping.
 - [sources/original_scrappy_prompts.txt](sources/original_scrappy_prompts.txt)
   - Best source for comparing current prompts against the pre-refactor workflow language.
-- [prompts/00_README.md](prompts/00_README.md)
+- [prompts/README.md](prompts/README.md)
   - Pack-local overview for anyone entering through the `prompts/` directory.
 - [archived/agentic_coding_prompt_pack_refactored.md](archived/agentic_coding_prompt_pack_refactored.md)
   - Consolidated historical reference, useful for audit and comparison.
