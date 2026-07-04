@@ -165,7 +165,7 @@ The workflow does not end at the AI review loop.
 After the AI review/fix loop is done:
 
 - Opus refreshes `REVIEW.md` and `WALKTHROUGH.md`,
-- GPT or Sonnet walks the human through a changed-file checklist in small chunks,
+- GPT or Sonnet walks the human through a changed-file checklist file by file and chunk by chunk,
 - only explicitly agreed items go into `FOLLOWUP.md`,
 - only then does GPT implement the human-approved follow-up list.
 
@@ -698,14 +698,16 @@ Skills used:
 What it does:
 
 - builds the main review list from the changed files in the current PR,
-- uses `WALKTHROUGH.md` only as supporting context for the current checklist item,
+- uses `WALKTHROUGH.md` only as supporting context for the current file chunk,
 - discards `REVIEW.md` as a review input for this phase,
 - inspects the actual code and diff against `main`,
-- shows the human no more than five lines of code at a time,
+- reviews one file at a time and one changed chunk at a time within that file,
+- shows the human a few intelligently selected surrounding lines around each change,
+- also surfaces relevant method definitions when method calls appear in the excerpts,
 - explains what the code does,
-- moves through the review one checklist item at a time,
+- keeps `RESOLVE` for the end of a fully reviewed file rather than after every chunk,
 - uses `AGREE` to record a follow-up item in `FOLLOWUP.md`,
-- uses `RESOLVE` to advance to the next checklist item and attempt GitHub-side item resolution when `gh` is available and authenticated.
+- uses `RESOLVE` to advance to the next file and attempt GitHub-side item resolution when `gh` is available and authenticated.
 
 Key artifact rule:
 
