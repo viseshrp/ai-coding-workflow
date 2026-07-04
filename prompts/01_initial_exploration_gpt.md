@@ -35,6 +35,7 @@ Success criteria:
 - the important constraints, risks, and non-goals are explicit,
 - `DRAFT_PLAN.md` preserves anything Opus must not lose,
 - `INITIAL_OPUS_PLANNING_PROMPT.md` is the final paste-ready Opus planning prompt for the main planning phase,
+- both generated artifacts are created in the target repo root using the exact required filenames and nowhere else,
 - this phase stops at `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`; it does not perform the Opus planning phase itself.
 
 Constraints:
@@ -42,6 +43,8 @@ Constraints:
 - do not implement code,
 - do not write tests,
 - do not create unrelated files,
+- create workflow-generated Markdown artifacts only in the target repo root using the exact required filenames,
+- every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` fields,
 - use only the linked skills as supporting procedures.
 
 Working method:
@@ -85,7 +88,7 @@ Use the linked skills as supporting procedures:
 
 ## Output artifact 1: `DRAFT_PLAN.md`
 
-Create `DRAFT_PLAN.md` with:
+Create `DRAFT_PLAN.md` in the target repo root with:
 
 - problem statement,
 - goals,
@@ -102,7 +105,7 @@ Create `DRAFT_PLAN.md` with:
 
 ## Output artifact 2: `INITIAL_OPUS_PLANNING_PROMPT.md`
 
-Create `INITIAL_OPUS_PLANNING_PROMPT.md` as the final direct-use planning prompt for Claude Opus.
+Create `INITIAL_OPUS_PLANNING_PROMPT.md` in the target repo root as the final direct-use planning prompt for Claude Opus.
 
 This generated artifact is the prompt that I will paste into Claude Opus for the main planning phase.
 
@@ -143,6 +146,10 @@ In `## Skill Handling Rule`, it must instruct the target agent to:
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
 In `## Default Planning Artifact Reduction`, it must instruct Opus to default to one combined planning artifact instead of separate spec and implementation plan files.
+
+It must also instruct Opus that every workflow-generated Markdown artifact belongs in the target repo root using the exact required filename and must never be created in a subdirectory or alternate path.
+
+It must also instruct Opus that every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving `Created by` and `Created at` after first creation and refreshing `Updated at` whenever the artifact is edited.
 
 It must require:
 
@@ -264,7 +271,7 @@ Required design-question pass:
 
 Required output 1: `FEATURE_SPEC_AND_PLAN.md`
 
-- create `FEATURE_SPEC_AND_PLAN.md`,
+- create `FEATURE_SPEC_AND_PLAN.md` in the target repo root,
 - make it a single combined artifact with:
   1. a detailed spec/reference section,
   2. a concrete implementation plan with every minor detail fleshed out absolutely thoroughly,
@@ -323,7 +330,7 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
 
 Required output 2: `GPT_EXECUTION_PROMPT.md`
 
-- create `GPT_EXECUTION_PROMPT.md`,
+- create `GPT_EXECUTION_PROMPT.md` in the target repo root,
 - make it the final direct-use prompt that I will paste into GPT for locked execution,
 - make it self-contained,
 - do not generate a helper prompt, summary, wrapper note, partial contract, or any prompt that expects another checked-in execution prompt file,
@@ -388,7 +395,11 @@ Success criteria:
 - only the planned changes are implemented,
 - the smallest correct changes are made,
 - required documentation updates are completed,
-- focused verification is run and reported with fresh evidence.
+- focused verification is run and reported with fresh evidence,
+- any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
+- any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
+- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one.
 
 Context to read before acting:
 
@@ -407,6 +418,8 @@ Constraints:
 
 - the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` is the execution contract,
 - the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` is reference context,
+- workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
+- workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
 - follow the plan exactly,
 - no divergence,
 - no creativity,
@@ -441,6 +454,14 @@ Execution rules:
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
 - update related documentation as described in the plan,
 - do not write the changelog,
+- after verification, stage the intended files with `git add`,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- create focused commit(s) with detailed messages,
+- push the current branch after committing,
+- check whether a pull request already exists for the current branch before creating one,
+- create a pull request if and only if the current branch does not already have one,
+- if you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that,
+- do not create a duplicate pull request for the same branch,
 - keep interim narration minimal and save the full report for the final response unless blocked.
 
 Required final response:
@@ -461,6 +482,10 @@ The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structu
 ## Documentation Updated
 
 ## Commits Created
+
+## Push Status
+
+## Pull Request
 
 ## Not Done / Blocked
 

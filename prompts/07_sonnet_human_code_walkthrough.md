@@ -39,6 +39,12 @@ Goal:
 - create or update `FOLLOWUP.md` as the checklist for necessary changes, but do not record any item until I explicitly approve it with `AGREE`,
 - discuss and agree on exact next steps with a detailed step-by-step plan before recording any follow-up item.
 
+Artifact location rule:
+
+- all workflow-generated Markdown artifacts for this workflow must live in the target repo root using the exact required filenames,
+- all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
+- if `FOLLOWUP.md` is created or updated, it must be created or updated only in the target repo root and nowhere else.
+
 Context to read before starting:
 
 - `WALKTHROUGH.md`,
@@ -61,6 +67,8 @@ Constraints:
 - discard `REVIEW.md` completely as a review input for this phase,
 - use `WALKTHROUGH.md` only to gather context that helps the human review,
 - use `WALKTHROUGH.md` as supplemental context only; actual code and actual diff win,
+- keep `FOLLOWUP.md` in the target repo root using its exact required filename,
+- ensure `FOLLOWUP.md` includes `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` when it changes,
 - prepare to create or update `FOLLOWUP.md`, but leave it unchanged until I explicitly approve a specific item with `AGREE`,
 - do not batch multiple review sections into one response,
 - if evidence is insufficient or the review point is ambiguous, stop and ask instead of filling gaps with assumptions.
@@ -112,7 +120,7 @@ The locked output of this phase is a human-approved `FOLLOWUP.md` for the next i
 
 ## FOLLOWUP.md rules
 
-Create/update `FOLLOWUP.md` only with explicitly agreed items.
+Create/update `FOLLOWUP.md` only with explicitly agreed items, keep it in the target repo root, and include `Created by`, `Created at`, and `Updated at` metadata.
 
 Also create a follow-up list markdown file to track a checklist of the changes that are necessary.
 

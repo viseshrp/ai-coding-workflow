@@ -170,6 +170,12 @@ Task:
 - your job is to update the review and walkthrough documents so they accurately reflect the final code state,
 - preserve the existing review trail while clearly marking what was fixed during the review loop.
 
+Artifact location rule:
+
+- `REVIEW.md`, `WALKTHROUGH.md`, and any other workflow-generated Markdown artifacts must stay in the target repo root using their exact required filenames,
+- every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields and refreshing `Updated at` whenever the artifact is updated,
+- do not move or recreate them in subdirectories or alternate paths.
+
 Context to review:
 
 - current branch diff against `main`,
@@ -194,7 +200,7 @@ Constraints:
 
 ## Required output 1: refreshed `REVIEW.md`
 
-Update `REVIEW.md` so it reflects the final code.
+Update `REVIEW.md` in the target repo root so it reflects the final code.
 
 It must include:
 
@@ -217,7 +223,7 @@ Clearly mark review findings that were fixed during the review loop.
 
 ## Required output 2: refreshed `WALKTHROUGH.md`
 
-Update `WALKTHROUGH.md` so it reflects the final code, not the old pre-fix code.
+Update `WALKTHROUGH.md` in the target repo root so it reflects the final code, not the old pre-fix code.
 
 Document each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
 

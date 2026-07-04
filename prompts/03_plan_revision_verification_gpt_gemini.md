@@ -199,6 +199,13 @@ Task:
 - produce `PLAN_REVISION_VERIFICATION.md`,
 - if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_gpt_gemini.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
 
+Artifact location rule:
+
+- all workflow-generated Markdown artifacts for this workflow must live in the target repo root using the exact required filenames,
+- do not normalize them into subdirectories or alternate paths,
+- all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
+- treat any artifact-path drift as a workflow failure to call out explicitly.
+
 For each previously raised concern:
 
 - quote or summarize the concern,
@@ -207,6 +214,8 @@ For each previously raised concern:
 - explain your reasoning.
 
 ## Required output: `PLAN_REVISION_VERIFICATION.md`
+
+Create `PLAN_REVISION_VERIFICATION.md` in the target repo root.
 
 Use this structure:
 

@@ -171,6 +171,13 @@ Task:
 - verify whether GPT satisfied all previously raised concerns, including the previously raised review findings,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
+Artifact location rule:
+
+- all workflow-generated Markdown artifacts for this workflow must live in the target repo root using the exact required filenames,
+- do not normalize them into subdirectories or alternate paths,
+- all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
+- treat any artifact-path drift as a workflow failure to call out explicitly.
+
 Treat all valid findings from both `Blocking Issues` and `Non-Blocking Issues` as required for this verification pass.
 
 Context to review:
@@ -203,6 +210,8 @@ For each prior review finding:
 - identify any new issues introduced by the fix.
 
 ## Required output: `REVIEW_FIX_VERIFICATION.md`
+
+Create `REVIEW_FIX_VERIFICATION.md` in the target repo root.
 
 Use this structure:
 

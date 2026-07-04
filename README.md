@@ -14,6 +14,8 @@ The main value of this repo is not "one magic prompt." The value is the workflow
 - `02` is the producer of `OPUS_PLAN_REVISION_REQUEST.md`, and `03` verifies whether that revision pass actually worked,
 - locked execution is driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`,
 - `04` is the producer of `GPT_REVIEW_FIX_PROMPT.md`, and `05` verifies whether that fix pass actually worked,
+- execution phases are expected to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
+- execution phases are also expected not to commit workflow-generated Markdown artifacts unless you explicitly want that,
 - each prompt links only the skills that belong in that phase,
 - each phase emits explicit artifacts,
 - the next phase consumes those artifacts,
@@ -262,14 +264,14 @@ One of the fastest ways to understand this repo is to understand the artifact ch
 | `DRAFT_PLAN.md` | `01` | Opus planning pass via `INITIAL_OPUS_PLANNING_PROMPT.md` | First structured articulation of the task after clarification. |
 | `INITIAL_OPUS_PLANNING_PROMPT.md` | `01` | Opus planning pass | Final paste-ready Opus planning prompt generated during exploration. |
 | `FEATURE_SPEC_AND_PLAN.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05`, `06`, `08` | Combined spec/reference plus execution contract. |
-| `GPT_EXECUTION_PROMPT.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05` | End-to-end implementation prompt for GPT. |
+| `GPT_EXECUTION_PROMPT.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05` | End-to-end implementation prompt for GPT, including stage/commit/push and create-PR-only-if-missing behavior. |
 | `PLAN_CRITIQUE.md` | `02` | direct Opus revision pass via `OPUS_PLAN_REVISION_REQUEST.md`, `03` | Records critique findings against the planning artifacts. |
 | `OPUS_PLAN_REVISION_REQUEST.md` | `02` | direct Opus revision pass, `03` as verification context | Self-contained request for Opus to revise the plan and GPT prompt. |
 | `PLAN_REVISION_SUMMARY.md` | direct Opus revision pass | `03` | Explains what changed in the planning artifacts after critique. |
 | `PLAN_REVISION_VERIFICATION.md` | `03` | Human decision point before direct GPT execution | Confirms whether the plan is ready for locked execution. |
 | `REVIEW.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Formal post-implementation review document. |
 | `WALKTHROUGH.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Detailed beginner-friendly walkthrough of the change set. |
-| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix all valid review findings, including non-blocking issues. |
+| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix all valid review findings, including non-blocking issues, then stage/commit/push and create a PR only if missing. |
 | `REVIEW_FIX_VERIFICATION.md` | `05` | `06` | Confirms whether the review-fix pass actually resolved the issues. |
 | `FOLLOWUP.md` | `07` | `08` | Human-approved final follow-up checklist. |
 
@@ -785,7 +787,7 @@ This contract is a big part of the workflow's personality. If you remove it, you
 
 Use this workflow in the real code repository you want to change, not in this prompt-pack repository.
 
-The checked-in prompt files live here. The runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `FOLLOWUP.md` belong in the target code repository where the agent can read and update the actual code.
+The checked-in prompt files live here. The runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `FOLLOWUP.md` belong in the target code repository root where the agent can read and update the actual code. Do not place them in subdirectories or alternate paths. Each artifact should include `Created by`, `Created at`, and `Updated at`, preserving the creation fields after first creation and refreshing `Updated at` on every edit.
 
 If you are starting from a vague feature or task idea, the default path is:
 
@@ -796,13 +798,18 @@ If you are starting from a vague feature or task idea, the default path is:
 5. Verify the revised plan with [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md).
 6. Repeat `02` -> generated `OPUS_PLAN_REVISION_REQUEST.md` pass -> `03` until the plan is truly locked.
 7. Paste the generated `GPT_EXECUTION_PROMPT.md` into GPT and execute against `FEATURE_SPEC_AND_PLAN.md`.
+   That execution phase is expected to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one.
+   It should not stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `GPT_EXECUTION_PROMPT.md` unless you explicitly ask for that.
 8. Review with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md).
-9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action. That fix pass is meant to address all valid findings, including non-blocking issues and minor nits, not just the high-priority ones.
+9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action. That fix pass is meant to address all valid findings, including non-blocking issues and minor nits, not just the high-priority ones, and it should also stage, commit, push, and create a PR only if missing.
+   It should not stage or commit workflow-generated Markdown artifacts such as `REVIEW.md`, `WALKTHROUGH.md`, or `GPT_REVIEW_FIX_PROMPT.md` unless you explicitly ask for that.
 10. Verify the fixes with [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md).
 11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done. `Suggestions` remain optional unless explicitly approved, but valid issues from both `Blocking Issues` and `Non-Blocking Issues` should be resolved in the fix loop.
 12. Refresh the final review docs with [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md).
 13. Run the human walkthrough with [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
 14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
+   That follow-up execution phase should also stage, commit, push, and create a PR only if the current branch does not already have one.
+   It should not stage or commit workflow-generated Markdown artifacts such as `FOLLOWUP.md` unless you explicitly ask for that.
 15. Perform your final manual review.
 
 ### Running it in Cursor or Copilot agent windows
@@ -810,13 +817,15 @@ If you are starting from a vague feature or task idea, the default path is:
 1. Open the real target code repository in Cursor, VS Code with Copilot agent mode, or another editor that gives the model live access to the workspace.
 2. Open this prompt-pack repo in a second window or side tab so you can copy the prompt text from `prompts/`.
 3. Run each phase inside the target code repo window. This repo is the workflow source; the target repo is the execution environment.
-4. Save generated artifacts in the target repo root using the exact filenames the workflow expects. If the UI does not create files automatically, create them manually and paste the model output into them.
+4. Save generated artifacts in the target repo root using the exact filenames the workflow expects. Do not place them in subdirectories or alternate paths. Make sure each artifact includes `Created by`, `Created at`, and `Updated at`, preserving the creation fields after first creation and refreshing `Updated at` on every edit. If the UI does not create files automatically, create them manually and paste the model output into them.
 5. Prefer a fresh chat for each phase or at least for each model handoff. That keeps the context window cleaner and makes the artifact boundary explicit.
 6. For checked-in phases, paste the checked-in prompt file from this repo.
 7. For generated phases, paste the generated artifact itself. The important generated prompts are `INITIAL_OPUS_PLANNING_PROMPT.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `GPT_EXECUTION_PROMPT.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
 8. Do not replace a generated prompt with a different checked-in prompt. If the previous phase failed to generate the right next-phase prompt, go back and fix the previous phase instead of inventing an alternate path.
 9. Keep the model-role boundaries intact: GPT for exploration and execution passes, Opus for planning/review/revision passes, Sonnet for the human walkthrough gate.
 10. Treat the artifact files as the handoff boundary between chats. The next phase should read the files produced by the previous phase rather than relying on hidden chat memory.
+11. In execution phases, expect the model to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one. If it needs a fallback way to check PR existence, it should use GitHub CLI (`gh`) for that fallback.
+12. Also expect execution phases not to stage or commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 
 ### Worked example
 
@@ -842,12 +851,12 @@ Do not write tests unless they become explicitly approved later.
 6. Start a GPT or Gemini critique chat, paste [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md), and save `PLAN_CRITIQUE.md` plus `OPUS_PLAN_REVISION_REQUEST.md` if the plan is incomplete.
 7. If the critique says the plan missed edge cases such as filter preservation, authorization behavior, or export size constraints, paste `OPUS_PLAN_REVISION_REQUEST.md` into Opus and save the revised planning artifacts.
 8. Run [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md). If it still says the plan is weak, go back to `02` rather than pushing forward.
-9. Once the plan is locked, start a GPT execution chat and paste `GPT_EXECUTION_PROMPT.md` to implement the change against `FEATURE_SPEC_AND_PLAN.md`.
+9. Once the plan is locked, start a GPT execution chat and paste `GPT_EXECUTION_PROMPT.md` to implement the change against `FEATURE_SPEC_AND_PLAN.md`. That pass should verify, `git add`, commit, push, and create a PR only if the branch does not already have one, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 10. After implementation, start an Opus review chat with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md). Save `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md` if fixes are needed.
-11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits.
+11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits. That fix pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 12. Run [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md). If the fixes still fail verification, loop back to `04`.
 13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
-14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items.
+14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items. That follow-up pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 15. Finish with your own manual review.
 
 ## Common entry points

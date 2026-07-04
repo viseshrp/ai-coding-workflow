@@ -170,6 +170,10 @@ Success criteria:
 - each completed item is checked off only after the change and its verification are done,
 - scope stays limited to the approved follow-up work,
 - verification evidence is reported clearly,
+- any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
+- any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
+- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- the final follow-up execution stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
 - no AI review loop is restarted after this phase; the workflow returns to manual review.
 
 Context to read before acting:
@@ -185,6 +189,8 @@ Execution posture:
 - understand the context of the current PR before editing,
 - use `REVIEW.md` and `WALKTHROUGH.md` for context only,
 - treat `FOLLOWUP.md` as the execution contract for this phase,
+- keep workflow-generated Markdown artifacts in the target repo root using their exact required filenames,
+- preserve `Created by` and `Created at` metadata on existing workflow-generated Markdown artifacts and refresh `Updated at` whenever one is edited,
 - read likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
 - carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
@@ -213,6 +219,22 @@ Commit incrementally if committing is allowed.
 
 Run focused verification relevant to the follow-up items.
 
+After verification, stage the intended files with `git add`.
+
+Do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed.
+
+Create focused commit(s) with detailed messages.
+
+Push the current branch after committing.
+
+Check whether a pull request already exists for the current branch before creating one.
+
+Create a pull request if and only if the current branch does not already have one.
+
+If you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that.
+
+Do not create a duplicate pull request for the same branch.
+
 If a command fails, paste the exact error/log back. Never paraphrase logs.
 
 Do not create a new AI review prompt.
@@ -237,6 +259,10 @@ I will do the final review manually.
 ## Documentation Updated
 
 ## Commits Created
+
+## Push Status
+
+## Pull Request
 
 ## Remaining Manual Review Notes
 ```

@@ -275,7 +275,7 @@ Tests must strictly test one behavior per test/method.
 
 ## Required output 1: `REVIEW.md`
 
-Create a detailed `REVIEW.md` document with:
+Create a detailed `REVIEW.md` document in the target repo root with:
 
 ```markdown
 # Review
@@ -321,7 +321,7 @@ Use `Suggestions` only for optional improvements that are not required in the GP
 
 ## Required output 2: `WALKTHROUGH.md`
 
-Create a detailed `WALKTHROUGH.md` documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
+Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
 
 It must be detailed and thorough, so as to facilitate review without looking at the code.
 
@@ -331,7 +331,7 @@ Format it properly for easy readability and to ease cognitive overload while rev
 
 ## Required output 3: `GPT_REVIEW_FIX_PROMPT.md`
 
-Create `GPT_REVIEW_FIX_PROMPT.md` as the final direct-use prompt for GPT to fix all valid review findings from `REVIEW.md`, including both `Blocking Issues` and `Non-Blocking Issues`.
+Create `GPT_REVIEW_FIX_PROMPT.md` in the target repo root as the final direct-use prompt for GPT to fix all valid review findings from `REVIEW.md`, including both `Blocking Issues` and `Non-Blocking Issues`.
 
 There is no separate checked-in GPT review-fix prompt file after this review step. `GPT_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
 
@@ -397,7 +397,11 @@ Success criteria:
 - all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
 - scope stays within the original implementation and review contract,
 - backwards compatibility is preserved,
-- verification evidence is reported clearly.
+- verification evidence is reported clearly,
+- any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
+- any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
+- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- the fix pass stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one.
 
 Context to read before acting:
 
@@ -423,6 +427,8 @@ Constraints:
 - keep all fixes within the original implementation scope,
 - preserve plan scope,
 - preserve backwards compatibility,
+- workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
+- workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
 - no architecture changes,
 - no unrelated refactors,
 - no tests unless explicitly asked,
@@ -441,6 +447,14 @@ Per-review-item process:
 Focused verification:
 
 - run focused verification relevant to the fixes,
+- after verification, stage the intended files with `git add`,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- create focused commit(s) with detailed messages,
+- push the current branch after committing,
+- check whether a pull request already exists for the current branch before creating one,
+- create a pull request if and only if the current branch does not already have one,
+- if you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that,
+- do not create a duplicate pull request for the same branch,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
 
 Required final response:
@@ -461,6 +475,10 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 ## Documentation Updated
 
 ## Commits Created
+
+## Push Status
+
+## Pull Request
 
 ## Remaining Questions / Blockers
 ```
