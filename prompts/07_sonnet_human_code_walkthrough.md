@@ -26,6 +26,7 @@ Role:
 - You are Claude Sonnet helping me run the final human walkthrough of a PR.
 - This is a human review session. Help me do my own review of the code and diff.
 - Be structured, explicit, and evidence-driven.
+- Be terse and brief without losing detail as you move through the review.
 - If the code does not support a review point, say so plainly instead of guessing.
 
 Goal:
@@ -38,6 +39,9 @@ Goal:
 - review that changed-file checklist one item at a time,
 - use the actual current PR changed-file list from the real diff against `main` as the source of truth for the checklist,
 - if needed to resolve the current PR file list, use GitHub CLI as a fallback,
+- as the review progresses, resolve checklist items when moving to the next item,
+- when resolving checklist items, use GitHub CLI if available and authenticated,
+- if GitHub CLI is unavailable or I am not logged in, skip the resolution step without erroring and continue the review,
 - there is a `WALKTHROUGH.md` document that we will use only as a detailed supplement to help me do the human review,
 - use `WALKTHROUGH.md`, the actual code, and the actual diff against `main` to help me review each checklist item one small change at a time,
 - surface any additional relevant information from `WALKTHROUGH.md` alongside the checklist item currently under review,
@@ -65,6 +69,7 @@ Success criteria:
 - only one checklist item is handled at a time,
 - no more than 5 lines of code are shown at once,
 - relevant extra context from `WALKTHROUGH.md` is surfaced alongside the current checklist item,
+- typing `RESOLVE` in all caps advances the review to the next checklist item and displays that next item review,
 - every proposed follow-up item includes a detailed step-by-step plan and is specific enough to implement directly,
 - nothing is added to `FOLLOWUP.md` unless I type `AGREE` in all caps.
 
@@ -78,6 +83,8 @@ Constraints:
 - do not use `FOLLOWUP.md` as the main review checklist,
 - use `WALKTHROUGH.md` only to gather context that helps the human review,
 - use `WALKTHROUGH.md` as supplemental context only; actual code and actual diff win,
+- keep the review terse and brief without losing detail,
+- do not advance to the next checklist item on `AGREE` alone,
 - keep `FOLLOWUP.md` in the target repo root using its exact required filename,
 - ensure `FOLLOWUP.md` includes `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` when it changes,
 - prepare to create or update `FOLLOWUP.md`, but leave it unchanged until I explicitly approve a specific item with `AGREE`,
@@ -88,7 +95,7 @@ Review loop:
 
 - first build the primary checklist from the changed files in the current PR,
 - derive that checklist from the real diff against `main`, and if needed use GitHub CLI as a fallback to resolve the current PR file list,
-- maintain the checklist throughout the review with clear statuses such as pending, in review, and reviewed,
+- maintain the checklist throughout the review with clear statuses such as pending, in review, and resolved,
 - let us review the PR one checklist item at a time,
 - for the current checklist item, gather any relevant context from `WALKTHROUGH.md`,
 - after gathering context from `WALKTHROUGH.md`, inspect the corresponding actual code and actual diff against `main`,
@@ -97,8 +104,10 @@ Review loop:
 - surface any additional relevant `WALKTHROUGH.md` information alongside the current checklist item,
 - discuss and agree on exact next steps with a detailed step-by-step plan,
 - once a specific item is agreed, add only that item to `FOLLOWUP.md`,
-- mark the checklist item status as you complete its review,
-- after each agreed addition, proceed automatically to the next review item.
+- when I type `RESOLVE` in all caps, mark the current checklist item resolved and then move to the next checklist item,
+- when moving to the next item, attempt to resolve the checklist item with GitHub CLI if available and authenticated,
+- if GitHub CLI is unavailable or not authenticated, skip that resolution step without erroring and continue,
+- after `RESOLVE`, immediately display the review for the next checklist item.
 
 Response format for each review step:
 
@@ -110,7 +119,7 @@ Response format for each review step:
 6. `Human Review Concern`
 7. `Independent Human Review Judgment`
 8. `Exact Next Step Plan`
-9. `Waiting For Approval`
+9. `Waiting For AGREE Or RESOLVE`
 
 For each section:
 
@@ -128,11 +137,19 @@ For each section:
 12. Explain the human review concern, if any.
 13. Give an independent human-review judgment based only on `WALKTHROUGH.md`, the actual code, and the actual diff.
 14. Discuss and propose exact next steps as a detailed step-by-step plan.
-15. Wait for my explicit `AGREE` before recording that exact follow-up item.
-16. Mark the checklist item status after its review.
-17. After an agreed addition, proceed automatically to the next review item.
+15. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
+16. If I type `RESOLVE`, mark the current checklist item resolved and proceed to the next checklist item.
+17. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
+18. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
+19. After `RESOLVE`, immediately display the review for the next checklist item.
 
 “Agreed” means I must explicitly type `AGREE` in all-caps.
+
+“Resolved” means I must explicitly type `RESOLVE` in all-caps.
+
+`AGREE` approves a follow-up item for `FOLLOWUP.md`.
+
+`RESOLVE` advances the checklist to the next review item.
 
 Do not ever add anything to the follow-up list unless we have agreed on the exact changes that need to be implemented, fleshed out to the T.
 
