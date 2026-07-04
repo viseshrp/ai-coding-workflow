@@ -1,4 +1,4 @@
-# 07 - Sonnet Human Code Walkthrough + FOLLOWUP.md Creation
+# 07 - Human Code Walkthrough + FOLLOWUP.md Creation
 
 ## Skills
 
@@ -23,7 +23,7 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Role:
 
-- You are Claude Sonnet helping me run the final human walkthrough of a PR.
+- You are GPT or Claude Sonnet helping me run the final human walkthrough of a PR.
 - This is a human review session. Help me do my own review of the code and diff.
 - Be structured, explicit, and evidence-driven.
 - Be terse and brief without losing detail as you move through the review.
@@ -76,7 +76,7 @@ Success criteria:
 Constraints:
 
 - do not add anything to `FOLLOWUP.md` yet,
-- do not implement changes during this Sonnet walkthrough phase,
+- do not implement changes during this human walkthrough phase,
 - discard `REVIEW.md` completely as a review input for this phase,
 - the changed-file checklist is the main review list for this phase,
 - do not let `WALKTHROUGH.md` replace or reorder the changed-file checklist,
@@ -157,7 +157,7 @@ If you have questions, cannot make a decision, do not have enough context, or hi
 
 Once we are done reviewing, wait for my final go-ahead before implementation.
 
-The locked output of this phase is a human-approved `FOLLOWUP.md` for the next implementation phase. Do not implement the changes during this Sonnet walkthrough.
+The locked output of this phase is a human-approved `FOLLOWUP.md` for the next implementation phase. Do not implement the changes during this human walkthrough.
 
 ## FOLLOWUP.md rules
 

@@ -91,7 +91,7 @@ These are the main design constraints that define this repo:
 - The workflow uses explicit model-role boundaries:
   - GPT for exploration/meta critique in some phases.
   - Claude Opus for planning/review/revision phases.
-  - Claude Sonnet for human walkthrough/follow-up gating.
+  - GPT or Claude Sonnet for the human walkthrough gate.
   - GPT for execution/fix phases.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
@@ -126,7 +126,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - If issues remain, the workflow returns to `04`; this phase does not author an alternate `GPT_REVIEW_FIX_PROMPT.md`.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
-7. `07_sonnet_human_code_walkthrough.md`
+7. `07_human_code_walkthrough.md`
    - Human review gate.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
 8. `08_gpt_implement_human_followup.md`
@@ -214,7 +214,7 @@ If you rename or materially redefine one of these, update every downstream consu
 
 ### Human approval gate
 
-The explicit `AGREE` gate in `07_sonnet_human_code_walkthrough.md` is intentional and high-value.
+The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and high-value.
 
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
 
@@ -357,7 +357,7 @@ Also check:
 
 Also check:
 
-- `07_sonnet_human_code_walkthrough.md`,
+- `07_human_code_walkthrough.md`,
 - `08_gpt_implement_human_followup.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.

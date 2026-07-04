@@ -40,7 +40,7 @@ The main value of this repo is not "one magic prompt." The value is the workflow
   - [Prompt 04 - Opus reviews implemented branch](#prompt-04---opus-reviews-implemented-branch)
   - [Prompt 05 - Opus verifies review fixes](#prompt-05---opus-verifies-review-fixes)
   - [Prompt 06 - Opus refreshes final review docs](#prompt-06---opus-refreshes-final-review-docs)
-  - [Prompt 07 - Sonnet human walkthrough](#prompt-07---sonnet-human-walkthrough)
+  - [Prompt 07 - Human walkthrough](#prompt-07---human-walkthrough)
   - [Prompt 08 - GPT implements human follow-up](#prompt-08---gpt-implements-human-follow-up)
 - [Engineering contract summary](#engineering-contract-summary)
 - [How to use this repo end to end](#how-to-use-this-repo-end-to-end)
@@ -165,7 +165,7 @@ The workflow does not end at the AI review loop.
 After the AI review/fix loop is done:
 
 - Opus refreshes `REVIEW.md` and `WALKTHROUGH.md`,
-- Sonnet walks the human through the diff in small chunks,
+- GPT or Sonnet walks the human through a changed-file checklist in small chunks,
 - only explicitly agreed items go into `FOLLOWUP.md`,
 - only then does GPT implement the human-approved follow-up list.
 
@@ -189,7 +189,7 @@ This is one of the most important characteristics of the repo.
 |   +-- 04_opus_review_branch.md
 |   +-- 05_opus_verify_review_fixes.md
 |   +-- 06_opus_refresh_review_and_walkthrough.md
-|   +-- 07_sonnet_human_code_walkthrough.md
+|   +-- 07_human_code_walkthrough.md
 |   +-- 08_gpt_implement_human_followup.md
 +-- sources/
     +-- ai_talk.pdf
@@ -236,7 +236,7 @@ flowchart TD
     N --> O["05 Verify review fixes"]
     O -- "more review fixes needed" --> L
     O -- "AI review loop complete" --> P["06 Refresh REVIEW.md + WALKTHROUGH.md"]
-    P --> Q["07 Sonnet human walkthrough"]
+    P --> Q["07 Human walkthrough"]
     Q --> R["FOLLOWUP.md"]
     R --> S["08 GPT implements human follow-up"]
     S --> T["Manual final review"]
@@ -368,7 +368,7 @@ This is the fastest file-by-file map of the prompt pack.
 | 04 | [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md) | Claude Opus | Implementation is done and the branch needs formal review | `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md` |
 | 05 | [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md) | Claude Opus | The review fixes need an audit before the loop ends | `REVIEW_FIX_VERIFICATION.md` |
 | 06 | [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | The AI review loop is complete and the docs need a final refresh | Refreshed `REVIEW.md`, refreshed `WALKTHROUGH.md` |
-| 07 | [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md) | Claude Sonnet with human in the loop | Final human review and approval pass | Human-vetted `FOLLOWUP.md` |
+| 07 | [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) | GPT or Claude Sonnet with human in the loop | Final human review and approval pass | Human-vetted `FOLLOWUP.md` |
 | 08 | [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) | GPT | `FOLLOWUP.md` contains only human-approved items | Code changes plus human follow-up implementation summary |
 
 Important note:
@@ -677,9 +677,9 @@ Why it exists:
 - because stale review docs become actively misleading during the human walkthrough phase,
 - because the final human reviewer should not be forced to mentally merge old docs with new code.
 
-### Prompt 07 - Sonnet human walkthrough
+### Prompt 07 - Human walkthrough
 
-File: [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md)
+File: [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md)
 
 Primary role:
 
@@ -687,7 +687,7 @@ Primary role:
 
 Target model:
 
-- Claude Sonnet.
+- GPT or Claude Sonnet.
 
 Skills used:
 
@@ -697,12 +697,15 @@ Skills used:
 
 What it does:
 
-- uses `REVIEW.md` and `WALKTHROUGH.md` as aids, not as unquestionable truth,
+- builds the main review list from the changed files in the current PR,
+- uses `WALKTHROUGH.md` only as supporting context for the current checklist item,
+- discards `REVIEW.md` as a review input for this phase,
 - inspects the actual code and diff against `main`,
 - shows the human no more than five lines of code at a time,
 - explains what the code does,
-- discusses review findings one section at a time,
-- waits for explicit human approval before recording any follow-up item.
+- moves through the review one checklist item at a time,
+- uses `AGREE` to record a follow-up item in `FOLLOWUP.md`,
+- uses `RESOLVE` to advance to the next checklist item and attempt GitHub-side item resolution when `gh` is available and authenticated.
 
 Key artifact rule:
 
@@ -711,6 +714,7 @@ Key artifact rule:
 Important human gate:
 
 - the human must type `AGREE` in all caps.
+- the human must type `RESOLVE` in all caps to move to the next checklist item.
 
 Why this phase is special:
 
@@ -806,7 +810,7 @@ If you are starting from a vague feature or task idea, the default path is:
 10. Verify the fixes with [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md).
 11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done. `Suggestions` remain optional unless explicitly approved, but valid issues from both `Blocking Issues` and `Non-Blocking Issues` should be resolved in the fix loop.
 12. Refresh the final review docs with [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md).
-13. Run the human walkthrough with [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
+13. Run the human walkthrough with [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) in GPT or Claude Sonnet.
 14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
    That follow-up execution phase should also stage, commit, push, and create a PR only if the current branch does not already have one.
    It should not stage or commit workflow-generated Markdown artifacts such as `FOLLOWUP.md` unless you explicitly ask for that.
@@ -822,7 +826,7 @@ If you are starting from a vague feature or task idea, the default path is:
 6. For checked-in phases, paste the checked-in prompt file from this repo.
 7. For generated phases, paste the generated artifact itself. The important generated prompts are `INITIAL_OPUS_PLANNING_PROMPT.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `GPT_EXECUTION_PROMPT.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
 8. Do not replace a generated prompt with a different checked-in prompt. If the previous phase failed to generate the right next-phase prompt, go back and fix the previous phase instead of inventing an alternate path.
-9. Keep the model-role boundaries intact: GPT for exploration and execution passes, Opus for planning/review/revision passes, Sonnet for the human walkthrough gate.
+9. Keep the model-role boundaries intact: GPT for exploration and execution passes, Opus for planning/review/revision passes, and GPT or Sonnet for the human walkthrough gate.
 10. Treat the artifact files as the handoff boundary between chats. The next phase should read the files produced by the previous phase rather than relying on hidden chat memory.
 11. In execution phases, expect the model to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one. If it needs a fallback way to check PR existence, it should use GitHub CLI (`gh`) for that fallback.
 12. Also expect execution phases not to stage or commit workflow-generated Markdown artifacts unless you explicitly ask for that.
@@ -855,7 +859,7 @@ Do not write tests unless they become explicitly approved later.
 10. After implementation, start an Opus review chat with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md). Save `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md` if fixes are needed.
 11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits. That fix pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 12. Run [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md). If the fixes still fail verification, loop back to `04`.
-13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_sonnet_human_code_walkthrough.md](prompts/07_sonnet_human_code_walkthrough.md).
+13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) in GPT or Claude Sonnet.
 14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items. That follow-up pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 15. Finish with your own manual review.
 

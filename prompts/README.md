@@ -19,7 +19,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 ## Design Decisions In This Version
 
 - The repeated GPT implementation rules and Opus review checks were consolidated into one internal `Engineering Contract` section that is embedded inside the prompts that need it.
-- Each checked-in phase prompt is tuned to the target model family: GPT phases are outcome-first and operational, Opus/Sonnet phases use explicit sectioning and evidence-grounded output contracts, and GPT/Gemini critique phases keep verdicts and schemas explicit.
+- Each checked-in phase prompt is tuned to the target model family: GPT phases are outcome-first and operational, Opus phases use explicit sectioning and evidence-grounded output contracts, the human walkthrough prompt works in either GPT or Sonnet, and GPT/Gemini critique phases keep verdicts and schemas explicit.
 - Prompt files are written to be pasted directly into the target model session. Phase-orientation notes live in repo docs rather than as non-prompt blurbs above the prompt body.
 - Each workflow phase should have exactly one prompt input. When the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and replaces any separate checked-in prompt for that same step.
 - The default planning output is reduced from separate `SPEC.md` + `IMPLEMENTATION_PLAN.md` into one combined `FEATURE_SPEC_AND_PLAN.md`.
@@ -48,7 +48,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 - `04_opus_review_branch.md`
 - `05_opus_verify_review_fixes.md`
 - `06_opus_refresh_review_and_walkthrough.md`
-- `07_sonnet_human_code_walkthrough.md`
+- `07_human_code_walkthrough.md`
 - `08_gpt_implement_human_followup.md`
 
 ## Generated Workflow Artifacts That Replace Removed Checked-In Prompts
@@ -81,7 +81,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
     It should not stage or commit workflow-generated Markdown artifacts such as `REVIEW.md`, `WALKTHROUGH.md`, or `GPT_REVIEW_FIX_PROMPT.md` unless you explicitly ask for that.
 13. Run `05_opus_verify_review_fixes.md` in Opus to verify the fixes. If verification fails, go back to `04`. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` -> `05` until the AI review loop is complete.
 14. Run `06_opus_refresh_review_and_walkthrough.md` in Opus so the final `REVIEW.md` and `WALKTHROUGH.md` reflect the post-fix code rather than a stale snapshot.
-15. Run `07_sonnet_human_code_walkthrough.md` in Claude Sonnet with you present. Only items you explicitly approve should go into `FOLLOWUP.md`.
+15. Run `07_human_code_walkthrough.md` in GPT or Claude Sonnet with you present. Only items you explicitly approve should go into `FOLLOWUP.md`.
 16. If `FOLLOWUP.md` exists, start a fresh GPT chat and paste `08_gpt_implement_human_followup.md`. GPT should implement only the human-approved follow-up items, then verify, `git add`, commit, push, and create a pull request only if the current branch does not already have one.
     It should not stage or commit workflow-generated Markdown artifacts such as `FOLLOWUP.md` unless you explicitly ask for that.
 17. Do the final manual review yourself. The workflow does not replace that last human check.
@@ -113,7 +113,7 @@ Do not write tests unless they become explicitly approved later.
    It should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 9. Paste `04_opus_review_branch.md` into Opus to review the implementation. If Opus generates `GPT_REVIEW_FIX_PROMPT.md`, paste that into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits.
 10. Paste `05_opus_verify_review_fixes.md` into Opus to confirm the fix pass really addressed the findings. Repeat the review loop if needed.
-11. Paste `06_opus_refresh_review_and_walkthrough.md` into Opus, then paste `07_sonnet_human_code_walkthrough.md` into Sonnet to walk yourself through the final diff.
+11. Paste `06_opus_refresh_review_and_walkthrough.md` into Opus, then paste `07_human_code_walkthrough.md` into GPT or Sonnet to walk yourself through the final diff.
 12. If you explicitly approve any final cleanup item, save it in `FOLLOWUP.md`, then paste `08_gpt_implement_human_followup.md` into GPT to apply only that approved follow-up work. That pass should also verify, `git add`, commit, push, and create a pull request only if the branch does not already have one.
    It should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
 
