@@ -162,18 +162,19 @@ Suggest a behavior-level alternative when practical.
 
 Goal:
 
-- implement the human-approved items in `FOLLOWUP.md` and stop only when you have fresh verification evidence or a concrete blocker.
+- execute the human-approved `FOLLOWUP.md` items end-to-end and stop only when you have a verified result or a concrete blocker.
 
 Success criteria:
 
 - only approved `FOLLOWUP.md` items are implemented,
 - each completed item is checked off only after the change and its verification are done,
-- scope stays limited to the approved follow-up work,
-- verification evidence is reported clearly,
+- the smallest correct changes are made,
+- required documentation updates are completed,
+- focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
 - workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
-- the final follow-up execution stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
+- the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
 - no AI review loop is restarted after this phase; the workflow returns to manual review.
 
 Context to read before acting:
@@ -186,60 +187,70 @@ Context to read before acting:
 
 Execution posture:
 
+- act like an autonomous engineer: gather context, implement, run the smallest relevant checks, refine, then report,
 - understand the context of the current PR before editing,
 - use `REVIEW.md` and `WALKTHROUGH.md` for context only,
 - treat `FOLLOWUP.md` as the execution contract for this phase,
-- keep workflow-generated Markdown artifacts in the target repo root using their exact required filenames,
-- preserve `Created by` and `Created at` metadata on existing workflow-generated Markdown artifacts and refresh `Updated at` whenever one is edited,
-- read likely relevant files in parallel before editing when that shortens the loop,
+- read all likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
-- carry through implementation and focused verification without waiting for step-by-step approval unless blocked.
+- keep progressing until you have a verified result or one of the stop conditions below.
 
-Use `REVIEW.md` and `WALKTHROUGH.md` for context only.
+Constraints:
 
-`FOLLOWUP.md` is the execution contract for this phase.
+- `FOLLOWUP.md` is the execution contract for this phase,
+- `REVIEW.md` and `WALKTHROUGH.md` are reference context only,
+- workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
+- workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
+- go on and address all items in `FOLLOWUP.md` while checking them off the list,
+- only implement items that are explicitly present in `FOLLOWUP.md`,
+- do not add new follow-up items,
+- do not expand scope,
+- do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`,
+- follow the approved `FOLLOWUP.md` items exactly,
+- no divergence,
+- no creativity,
+- no architecture changes,
+- just execute what is written.
 
-Go on and address all items in `FOLLOWUP.md` while checking them off the list.
+Stop rules:
 
-Only implement items that are explicitly present in `FOLLOWUP.md`.
+- implement end-to-end with no interruptions unless one of the following conditions is true,
+- stop and ask if there is a conflict in decisions,
+- stop and ask if a required decision was never made,
+- stop and ask if a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision,
+- stop and ask if following `FOLLOWUP.md` would create a performance, backwards-compatibility, security, or public-API problem,
+- stop and ask if you do not have enough context,
+- if a missing credential, external dependency, or environment precondition blocks verification, say exactly what blocked you,
+- if any of those happens, stop and ask. Do not assume.
+- otherwise do not stop at analysis.
 
-Do not add new follow-up items.
+Execution rules:
 
-Do not expand scope.
-
-Do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`.
-
-Do not write tests unless `FOLLOWUP.md` explicitly asks for tests.
-
-If a `FOLLOWUP.md` item is wrong, stale, ambiguous, conflicts with the current code, or needs a design decision, stop and ask.
-
-Use small, focused changes.
-
-Commit incrementally if committing is allowed.
-
-Run focused verification relevant to the follow-up items.
-
-After verification, stage the intended files with `git add`.
-
-Do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed.
-
-Create focused commit(s) with detailed messages.
-
-Push the current branch after committing.
-
-Check whether a pull request already exists for the current branch before creating one.
-
-Create a pull request if and only if the current branch does not already have one.
-
-If you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that.
-
-Do not create a duplicate pull request for the same branch.
-
-If a command fails, paste the exact error/log back. Never paraphrase logs.
-
-Do not create a new AI review prompt.
-
-Do not ask Opus to review this phase.
+- read likely relevant files in parallel before editing when practical,
+- prefer dedicated repo/file/edit/search tools over raw shell when available,
+- carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
+- work in small increments,
+- commit often and incrementally in small increments if committing is allowed,
+- split large commits into sensible parts,
+- use detailed commit messages and detailed commit descriptions,
+- do not make unrelated refactors,
+- do not write tests unless explicitly asked,
+- run focused verification relevant to the approved follow-up items,
+- run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
+- if a command fails, paste the exact error/log back. Never paraphrase logs.
+- update related documentation as required by the approved follow-up items,
+- do not write the changelog,
+- after verification, stage the intended files with `git add`,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- create focused commit(s) with detailed messages,
+- push the current branch after committing,
+- check whether a pull request already exists for the current branch before creating one,
+- create a pull request if and only if the current branch does not already have one,
+- if you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that,
+- do not create a duplicate pull request for the same branch,
+- do not create a new AI review prompt,
+- do not ask Opus to review this phase,
+- keep interim narration minimal and save the full report for the final response unless blocked.
 
 I will do the final review manually.
 
@@ -248,11 +259,11 @@ I will do the final review manually.
 ```markdown
 # Human Follow-Up Implementation Summary
 
-## FOLLOWUP.md Items Completed
-
-## FOLLOWUP.md Items Not Completed And Why
+## What Changed
 
 ## Files Changed
+
+## FOLLOWUP.md Items Completed
 
 ## Verification Evidence
 
@@ -263,6 +274,10 @@ I will do the final review manually.
 ## Push Status
 
 ## Pull Request
+
+## Not Done / Blocked
+
+## Suggestions Not Implemented Because Out Of Scope
 
 ## Remaining Manual Review Notes
 ```
