@@ -174,6 +174,8 @@ Success criteria:
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
 - workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- if committing is allowed, each commit strictly corresponds to one approved `FOLLOWUP.md` item and does not mix work from multiple follow-up items,
+- if committing is allowed, commits are small, focused, and split into sensible parts rather than bundled into one broad commit,
 - the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
 - no AI review loop is restarted after this phase; the workflow returns to manual review.
 
@@ -230,8 +232,10 @@ Execution rules:
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
 - carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
 - work in small increments,
-- commit often and incrementally in small increments if committing is allowed,
-- split large commits into sensible parts,
+- if committing is allowed, each commit must map to exactly one approved `FOLLOWUP.md` item,
+- if committing is allowed, commit often in small focused increments,
+- do not bundle multiple follow-up items, partial work for unrelated items, or unrelated cleanup into the same commit,
+- split large commits into sensible smaller focused parts,
 - use detailed commit messages and detailed commit descriptions,
 - do not make unrelated refactors,
 - do not write tests unless explicitly asked,
@@ -281,5 +285,7 @@ I will do the final review manually.
 
 ## Remaining Manual Review Notes
 ```
+
+In `## Commits Created`, list each commit together with the exact `FOLLOWUP.md` item it corresponds to.
 
 Do not claim completion without fresh verification evidence.
