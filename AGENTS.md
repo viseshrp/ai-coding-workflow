@@ -96,6 +96,9 @@ These are the main design constraints that define this repo:
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
 - The main Opus planning pass, Opus plan-revision pass, GPT execution pass, and GPT review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
+- Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
+- If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
+- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 
 ## Canonical Workflow Phases

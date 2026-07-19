@@ -173,6 +173,8 @@ Success criteria:
 - focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
+- scope stays limited to the approved follow-up work,
+- verification evidence is reported clearly,
 - workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
 - if committing is allowed, each commit strictly corresponds to one approved `FOLLOWUP.md` item and does not mix work from multiple follow-up items,
 - if committing is allowed, commits are small, focused, and split into sensible parts rather than bundled into one broad commit,
@@ -238,7 +240,7 @@ Execution rules:
 - split large commits into sensible smaller focused parts,
 - use detailed commit messages and detailed commit descriptions,
 - do not make unrelated refactors,
-- do not write tests unless explicitly asked,
+- do not write tests unless `FOLLOWUP.md` explicitly asks for tests,
 - run focused verification relevant to the approved follow-up items,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
