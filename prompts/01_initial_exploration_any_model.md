@@ -6,6 +6,7 @@
 - [grill-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grill-me/SKILL.md)
 - [idea-refine](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/idea-refine/SKILL.md)
 - [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
+- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -18,6 +19,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Use `unslop` for every chat response and generated artifact. Prefer plain words, concrete statements, and short, readable sentences. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure. Preserve technical meaning and required detail.
 
 
 ## Prompt
@@ -96,6 +99,7 @@ Use the linked skills as supporting procedures:
 - Use `grill-me` to stress-test the plan/design.
 - Use `idea-refine` to move from rough concept to concrete proposal.
 - Use `context-engineering` to identify what repo context matters and avoid context flooding.
+- Use `unslop` to keep questions, explanations, and artifacts plain, concise, concrete, and natural.
 
 ## Output artifact 1: `DRAFT_PLAN.md`
 
@@ -145,6 +149,7 @@ In `## Skills`, it must explicitly include these skill links:
 - [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
 
 In `## Skill Handling Rule`, it must instruct the target agent to:
 
@@ -155,6 +160,7 @@ In `## Skill Handling Rule`, it must instruct the target agent to:
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- use `unslop` for every chat response and generated artifact, using plain words, concrete statements, short readable sentences, and a natural human voice without dropping technical meaning or required detail.
 
 In `## Default Planning Artifact Reduction`, it must instruct Opus to default to one combined planning artifact instead of separate spec and implementation plan files.
 
@@ -369,6 +375,7 @@ The generated Opus prompt must also require that the generated `GPT_EXECUTION_PR
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
 
 The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs GPT to:
 
@@ -379,6 +386,7 @@ The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- use `unslop` for every chat response and generated artifact, using plain words, concrete statements, short readable sentences, and a natural human voice without dropping technical meaning or required detail.
 
 The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `GPT_EXECUTION_PROMPT.md`.
 

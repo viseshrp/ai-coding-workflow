@@ -10,6 +10,7 @@ Load these skills from the sibling `../ai-skills-archive` repository:
 - `code-review-and-quality`: `archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md`
 - `source-driven-development`: `archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md`
 - `verification-before-completion`: `archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md`
+- `unslop`: `archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md`
 
 ## Skill Handling Rule
 
@@ -28,7 +29,8 @@ Use only the local skills listed in this prompt:
 - use `python-testing` for pytest structures, fixtures, parametrization, mocking, and coverage mechanics,
 - use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
 - use `source-driven-development` only when a pytest or plugin API is version-sensitive or uncertain, and verify it against authoritative documentation,
-- use `verification-before-completion` to require fresh command output before any passing or completion claim.
+- use `verification-before-completion` to require fresh command output before any passing or completion claim,
+- use `unslop` for every chat response and all prose in test names, comments, docstrings, and the final human handoff. Prefer plain words, concrete statements, and short, readable sentences. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure without changing code meaning.
 
 The prompt is the contract. Locked task artifacts are the contract for expected behavior. Skills are supporting procedures only.
 
