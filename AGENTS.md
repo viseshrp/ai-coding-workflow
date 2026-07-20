@@ -89,7 +89,8 @@ These are the main design constraints that define this repo:
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - GPT for exploration/meta critique in some phases.
+  - Any capable repo-aware model for the initial exploration/grilling phase.
+  - GPT or Gemini for meta critique/verification in some phases.
   - Claude Opus for planning/review/revision phases.
   - GPT or Claude Sonnet for the human walkthrough gate.
   - GPT for execution/fix phases.
@@ -105,7 +106,7 @@ These are the main design constraints that define this repo:
 
 The numbered prompt files define the workflow order and should stay in sequence.
 
-1. `01_initial_exploration_gpt.md`
+1. `01_initial_exploration_any_model.md`
    - Clarifies a vague idea.
    - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
    - The Opus prompt produced here is the final paste-ready prompt for the main planning pass.

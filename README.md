@@ -183,7 +183,7 @@ This is one of the most important characteristics of the repo.
 |   +-- agentic_coding_prompt_pack_refactored.md
 +-- prompts/
 |   +-- README.md
-|   +-- 01_initial_exploration_gpt.md
+|   +-- 01_initial_exploration_any_model.md
 |   +-- 02_plan_critique_gpt_gemini.md
 |   +-- 03_plan_revision_verification_gpt_gemini.md
 |   +-- 04_opus_review_branch.md
@@ -362,7 +362,7 @@ This is the fastest file-by-file map of the prompt pack.
 | Step | File | Primary model / role | Use when | Main outputs or result |
 |---|---|---|---|---|
 | README | [prompts/README.md](prompts/README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack plus operator instructions |
-| 01 | [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md) | GPT | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
+| 01 | [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
 | 02 | [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md) | GPT or Gemini | The Opus planning artifacts already exist and need critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
 | 03 | [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md) | GPT or Gemini | You need to verify whether the latest Opus revision actually fixed the critique | `PLAN_REVISION_VERIFICATION.md` |
 | 04 | [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md) | Claude Opus | Implementation is done and the branch needs formal review | `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md` |
@@ -409,7 +409,7 @@ Why it exists:
 
 ### Prompt 01 - Initial exploration
 
-File: [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md)
+File: [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md)
 
 Primary role:
 
@@ -417,7 +417,7 @@ Primary role:
 
 Target model:
 
-- GPT.
+- Any capable repo-aware model.
 
 Skills used:
 
@@ -797,7 +797,7 @@ The checked-in prompt files live here. The runtime artifacts such as `DRAFT_PLAN
 
 If you are starting from a vague feature or task idea, the default path is:
 
-1. Start with [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md).
+1. Start with [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md).
 2. Paste the generated `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus and let it create `FEATURE_SPEC_AND_PLAN.md` plus `GPT_EXECUTION_PROMPT.md`.
 3. Critique the plan with [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md).
 4. Paste the generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus if critique changes are needed.
@@ -828,7 +828,7 @@ If you are starting from a vague feature or task idea, the default path is:
 6. For checked-in phases, paste the checked-in prompt file from this repo.
 7. For generated phases, paste the generated artifact itself. The important generated prompts are `INITIAL_OPUS_PLANNING_PROMPT.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `GPT_EXECUTION_PROMPT.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
 8. Do not replace a generated prompt with a different checked-in prompt. If the previous phase failed to generate the right next-phase prompt, go back and fix the previous phase instead of inventing an alternate path.
-9. Keep the model-role boundaries intact: GPT for exploration and execution passes, Opus for planning/review/revision passes, and GPT or Sonnet for the human walkthrough gate.
+9. Keep the model-role boundaries intact: any capable repo-aware model for exploration, GPT or Gemini for critique/verification, Opus for planning/review/revision passes, GPT or Sonnet for the human walkthrough gate, and GPT for execution/fix passes.
 10. Treat the artifact files as the handoff boundary between chats. The next phase should read the files produced by the previous phase rather than relying on hidden chat memory.
 11. In execution phases, expect the model to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one. If it needs a fallback way to check PR existence, it should use GitHub CLI (`gh`) for that fallback.
 12. Also expect execution phases not to stage or commit workflow-generated Markdown artifacts unless you explicitly ask for that.
@@ -842,7 +842,7 @@ Example task:
 Example operator sequence in an agent UI:
 
 1. Open the product repo in Cursor or Copilot agent mode.
-2. Start a GPT chat for phase `01` and paste [prompts/01_initial_exploration_gpt.md](prompts/01_initial_exploration_gpt.md).
+2. Start a chat with any capable repo-aware model for phase `01` and paste [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md).
 3. Under that prompt, add a short operator note such as:
 
 ```text

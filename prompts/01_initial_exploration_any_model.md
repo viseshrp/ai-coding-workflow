@@ -1,4 +1,4 @@
-# 01 — Initial Exploration / Grilling / Interviewing + Opus Planning Prompt Generation — GPT
+# 01 — Initial Exploration / Grilling / Interviewing + Opus Planning Prompt Generation — Any Model
 
 ## Skills
 
@@ -23,6 +23,8 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 ## Prompt
 
 You are helping me perform the initial exploration phase for an agentic coding workflow.
+
+This exploration prompt is intentionally model-agnostic. Use the same interviewing, grilling, clarification, and artifact-generation contract regardless of whether the model is GPT, Claude, Gemini, or another capable repo-aware model.
 
 Goal:
 
@@ -55,7 +57,7 @@ Working method:
 - ask only when the answer would materially change the plan,
 - if a question can be answered by exploring the codebase, explore the codebase instead of asking me,
 - if a question can be answered by exploring the codebase or provided context, explore first instead of asking me,
-- if you are GPT, gather the most relevant repo context in parallel before asking repo-answerable questions,
+- if your environment supports repo exploration and parallel context gathering, gather the most relevant repo context in parallel before asking repo-answerable questions,
 - when clarification is needed, ask one question at a time and do not move on until that question is actually nailed down,
 - keep grilling until every material scope, UX, behavior, technical, constraint, rollout, edge-case, backwards-compatibility, and documentation decision is either answered or explicitly marked as intentionally deferred,
 - for each question, include:
@@ -80,7 +82,7 @@ Workflow context:
 
 My workflow is:
 
-1. GPT helps me think, interview, grill, and clarify the idea.
+1. A capable exploration model helps me think, interview, grill, and clarify the idea.
 2. This produces `DRAFT_PLAN.md`.
 3. This also produces `INITIAL_OPUS_PLANNING_PROMPT.md`.
 4. I paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus.

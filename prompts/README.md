@@ -19,7 +19,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 ## Design Decisions In This Version
 
 - The repeated GPT implementation rules and Opus review checks were consolidated into one internal `Engineering Contract` section that is embedded inside the prompts that need it.
-- Each checked-in phase prompt is tuned to the target model family: GPT phases are outcome-first and operational, Opus phases use explicit sectioning and evidence-grounded output contracts, the human walkthrough prompt works in either GPT or Sonnet, and GPT/Gemini critique phases keep verdicts and schemas explicit.
+- Phase `01` is intentionally model-agnostic for exploration and grilling, GPT execution/fix phases remain outcome-first and operational, Opus phases use explicit sectioning and evidence-grounded output contracts, the human walkthrough prompt works in either GPT or Sonnet, and GPT/Gemini critique phases keep verdicts and schemas explicit.
 - Prompt files are written to be pasted directly into the target model session. Phase-orientation notes live in repo docs rather than as non-prompt blurbs above the prompt body.
 - Each workflow phase should have exactly one prompt input. When the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and replaces any separate checked-in prompt for that same step.
 - The default planning output is reduced from separate `SPEC.md` + `IMPLEMENTATION_PLAN.md` into one combined `FEATURE_SPEC_AND_PLAN.md`.
@@ -42,7 +42,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 
 - `README.md`
   - The pack-local guide you are reading now.
-- `01_initial_exploration_gpt.md`
+- `01_initial_exploration_any_model.md`
 - `02_plan_critique_gpt_gemini.md`
 - `03_plan_revision_verification_gpt_gemini.md`
 - `04_opus_review_branch.md`
@@ -68,7 +68,7 @@ The generated prompt artifacts are different: when one phase creates the prompt 
 2. Keep this prompt-pack repo open in another window or side tab so you can copy the phase prompts from `prompts/`.
 3. Run the workflow in the target code repo window, not in this repo. The prompt pack is the instruction source; the target repo is where the real work and runtime artifacts live.
 4. Save every generated workflow artifact in the target repo root using the exact required filename. Do not place them in subdirectories or alternate paths. Make sure each artifact includes `Created by`, `Created at`, and `Updated at`; preserve the creation fields after first creation and refresh `Updated at` on every edit. If your UI does not auto-create files from model output, create the file manually and paste the output in.
-5. Start a fresh GPT agent chat and paste `01_initial_exploration_gpt.md`. Add your task request below it and let that phase produce `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
+5. Start a fresh chat with any capable repo-aware model and paste `01_initial_exploration_any_model.md`. Add your task request below it and let that phase produce `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
 6. Start a fresh Claude Opus chat and paste the generated `INITIAL_OPUS_PLANNING_PROMPT.md`. Let Opus create `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
 7. Start a fresh GPT or Gemini critique chat and paste `02_plan_critique_gpt_gemini.md`. That phase should read the planning artifacts and produce `PLAN_CRITIQUE.md` and, when needed, `OPUS_PLAN_REVISION_REQUEST.md`.
 8. If `02` says the plan needs revision, return to Opus and paste the generated `OPUS_PLAN_REVISION_REQUEST.md`. Save the updated `FEATURE_SPEC_AND_PLAN.md`, the updated `GPT_EXECUTION_PROMPT.md`, and `PLAN_REVISION_SUMMARY.md`.
@@ -95,7 +95,7 @@ Example task:
 Example operator flow:
 
 1. Open the real product repo in Cursor or Copilot agent mode.
-2. In the GPT chat for phase `01`, paste `01_initial_exploration_gpt.md`, then add a short operator note such as:
+2. In the phase `01` exploration chat, paste `01_initial_exploration_any_model.md`, then add a short operator note such as:
 
 ```text
 We are working in the repo currently open in this editor.
