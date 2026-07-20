@@ -125,38 +125,10 @@ Use this contract as the single shared engineering standard for planning, execut
 
 ### Tests
 
-- DO NOT WRITE TESTS UNTIL EXPLICITLY ASKED.
-- Do not create, modify, or delete tests unless I explicitly ask for test changes.
-- Running existing focused tests/checks is allowed when the prompt asks for verification.
-- Do not manually run the entire test suite unless I explicitly ask. Focused tests are better.
-
-When I explicitly ask you to write tests, follow these rules:
-
-```text
-Always keep test code in separate files or folders away from production code. No comingling.
-Tests must validate the right things: architecture and behavior, not implementation details.
-Avoid unnecessary tests that test temporary hacks or changes.
-Make sure tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky, and maintain at least 95% coverage for the new lines.
-Do not manually run the entire test suite unless explicitly asked. Focused tests are better.
-Tests must strictly test one behavior per test/method.
-```
-
-When reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that:
-
-- mutate process-global state such as environment variables,
-- depend on private constants or private helper methods,
-- assert exact error wording unless it is an intentional user-facing contract,
-- encode packaging/layout assumptions that may change,
-- mirror production logic instead of independently specifying expected behavior.
-
-For each test concern, classify whether it is:
-
-- a real flake risk,
-- an acceptable contract test,
-- or a maintainability concern.
-
-Suggest a behavior-level alternative when practical.
-
+- Do not create, modify, or delete tests in this review phase.
+- Run only focused existing tests or checks needed to substantiate findings; do not manually run the entire suite.
+- Review existing or changed tests under the phase-specific test-review rules below.
+- Defer all test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
 
 ## Prompt
 
@@ -247,31 +219,17 @@ All changes must be strictly cross-platform and must work on both Linux and Wind
 
 ## Test review rules
 
-Tests must validate the right things: architecture and behavior, not implementation details.
+Review existing or changed tests; do not author tests in this phase.
 
-Mark unnecessary tests that test temporary hacks or changes.
+- Require the fewest tests that cover distinct changed behavior and material regression risks. Flag duplicate, transient, temporary-hack, or coverage-only tests.
+- Require observable behavior rather than implementation details, one clear behavior per test, and small linear test functions, fixtures, and helpers.
+- Check that tests follow existing pytest configuration and conventions and prefer existing fixtures and native APIs such as `monkeypatch`, `tmp_path`, capture fixtures, `pytest.raises`, `pytest.warns`, parametrization, and an installed mock fixture over hand-rolled Python or standard-library mechanisms.
+- Flag any test that monkeypatches, patches, or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
+- Limit mocks to impractical external boundaries; flag internal call choreography and implementation-detail mocks.
+- Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or network access, and expected values that mirror production logic.
+- Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only.
 
-Make sure tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky, and maintain at least 95% coverage for the new lines.
-
-Do not manually run the entire test suite. Focused tests are better.
-
-While reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that:
-
-- mutate process-global state such as environment variables,
-- depend on private constants or private helper methods,
-- assert exact error wording unless it is an intentional user-facing contract,
-- encode packaging/layout assumptions that may change,
-- mirror production logic instead of independently specifying expected behavior.
-
-For each concern, classify whether it is:
-
-- a real flake risk,
-- an acceptable contract test,
-- or a maintainability concern.
-
-Suggest a behavior-level alternative when practical.
-
-Tests must strictly test one behavior per test/method.
+Classify each concern as a real flake risk, an acceptable contract test, or a maintainability concern, and suggest a behavior-level alternative when practical.
 
 ## Required output 1: `REVIEW.md`
 

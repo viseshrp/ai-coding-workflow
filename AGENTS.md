@@ -37,17 +37,15 @@ If you change wording that changes behavior, you are changing product logic.
 ## Repository Map
 
 - `README.md`
-  - Minimal root entrypoint.
+  - User-facing workflow and prompt-pack guide.
 - `AGENTS.md`
   - This repository-level maintenance guide.
 - `.gitattributes`
   - Text normalization; preserve LF-friendly text files.
-- `prompts/README.md`
-  - User-facing overview of the independent prompt pack.
-- `prompts/01_...md` through `prompts/08_...md`
+- `prompts/01_...md` through `prompts/09_...md`
   - Canonical phase prompts.
 - `sources/current_skill_set.txt`
-  - Condensed skill inventory by workflow phase.
+  - Preserved historical skill inventory. Its name does not make it a current synchronization target.
 - `sources/original_scrappy_prompts.txt`
   - Earlier/raw source material.
 - `sources/*.pdf`
@@ -66,8 +64,6 @@ If you change wording that changes behavior, you are changing product logic.
 Default to editing only:
 
 - `prompts/*.md`
-- `prompts/README.md`
-- `sources/current_skill_set.txt`
 - `README.md`
 - `AGENTS.md`
 
@@ -75,31 +71,46 @@ Never edit, rename, or rewrite anything under `archived/` unless the user explic
 
 Do not populate `.agents/` or `.codex/` unless explicitly asked.
 
-Never edit, rename, or rewrite anything under `sources/` unless the user explicitly asks for source-material work.
+## Immutable Source Material - Hard Rule
 
-Do not edit PDFs or chat exports unless explicitly asked.
+Everything under `sources/` is immutable original or reference input. NEVER create, edit, rewrite, rename, move, format, normalize, regenerate, or delete a file under `sources/`.
+
+This prohibition includes:
+
+- `sources/original_scrappy_prompts.txt`,
+- `sources/current_skill_set.txt`, despite its name,
+- every file under `sources/chat_exports/`,
+- every PDF and any future file placed under `sources/`.
+
+Do not include `sources/` in repository-wide replacements, threshold updates, formatting passes, skill synchronization, archive refreshes, or wording cleanup. Read these files when provenance is needed, but apply derived changes only to canonical prompts, `README.md`, or `AGENTS.md`.
+
+If a task appears to require changing a source file, stop and ask instead of modifying it. A broad request such as "change all mentions" does not override this rule.
 
 ## Core Product Constraints
 
 These are the main design constraints that define this repo:
 
-- No skill router. Skills are linked directly inside the relevant prompts.
+- No skill router. Skills are listed directly inside the relevant prompts.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - Any capable repo-aware model for the initial exploration/grilling phase.
+  - Any capable repo-aware model for the initial exploration/grilling and final test-writing phases.
   - GPT or Gemini for meta critique/verification in some phases.
   - Claude Opus for planning/review/revision phases.
   - GPT or Claude Sonnet for the human walkthrough gate.
-  - GPT for execution/fix phases.
+  - GPT for execution, fix, and follow-up phases.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
 - The main Opus planning pass, Opus plan-revision pass, GPT execution pass, and GPT review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
 - Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
+- The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, pytest-native APIs where available, and at least 85% coverage for new or changed lines.
+- Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each listed local `SKILL.md` completely, and return to the target repository.
+- Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
+- Human review of the phase-`09` test diff is the terminal workflow step. Do not add another AI phase after it.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 
 ## Canonical Workflow Phases
@@ -135,6 +146,13 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
 8. `08_gpt_implement_human_followup.md`
    - Implements only human-approved `FOLLOWUP.md` items.
+9. `09_write_focused_tests_any_model.md`
+   - Writes the smallest meaningful focused pytest test set for the final branch state.
+   - Is explicitly model-agnostic and must not rely on vendor-specific behavior or tooling.
+   - Pulls and reads its relevant skills from the sibling `../ai-skills-archive` repository before using them.
+   - Requires at least 85% coverage for new or changed lines.
+   - Changes test files only and generates no downstream prompt or workflow artifact.
+   - Hands the resulting test diff directly to a human reviewer, which ends the workflow.
 
 Do not renumber these files casually.
 
@@ -167,7 +185,7 @@ Several sections are intentionally repeated across prompts. If you edit one, sea
 
 ### `## Skill Handling Rule`
 
-Present in all prompt files `01` through `08`.
+Present in all prompt files `01` through `09`.
 
 Expectation:
 
@@ -185,6 +203,7 @@ Present in:
 - `prompts/05_opus_verify_review_fixes.md`
 - `prompts/06_opus_refresh_review_and_walkthrough.md`
 - `prompts/08_gpt_implement_human_followup.md`
+- `prompts/09_write_focused_tests_any_model.md`
 
 Expectation:
 
@@ -192,6 +211,14 @@ Expectation:
 - Changes here are high-impact and must be propagated deliberately.
 - If you change policy semantics, review every copy before finishing.
 - `01` does not contain the contract directly, but it instructs generated planning prompts to preserve constraints; keep that relationship in mind.
+- `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
+
+The `### Tests` subsection is deliberately phase-specific:
+
+- phases `01`, `02`, `03`, `05`, and `08` state only the no-authoring boundary and defer detailed test policy to `09`,
+- phases `04` and `06` carry concise review-only test criteria,
+- phase `09` owns the complete test-authoring contract,
+- do not copy phase `09`'s detailed pytest rules back into every Engineering Contract.
 
 ### Combined planning artifact policy
 
@@ -200,7 +227,7 @@ Current default:
 - `FEATURE_SPEC_AND_PLAN.md`
 - `GPT_EXECUTION_PROMPT.md`
 
-This policy is reflected in multiple files including `prompts/README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
+This policy is reflected in `README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
 
 Do not casually reintroduce separate `SPEC.md` plus `IMPLEMENTATION_PLAN.md` as the default.
 
@@ -227,8 +254,8 @@ The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and h
 If you change the canonical skill set:
 
 - update every affected prompt file,
-- update `prompts/README.md`,
-- update `sources/current_skill_set.txt`.
+- update `README.md`,
+- do not update the preserved `sources/current_skill_set.txt` snapshot.
 
 ## Directory-Specific Rules
 
@@ -239,16 +266,16 @@ This is the canonical product surface.
 Rules:
 
 - Keep phase prompt filenames zero-padded and phase-ordered.
-- Keep the pack guide at `prompts/README.md`.
+- Keep the consolidated pack guide at the repository-root `README.md`.
 - Keep prompts self-contained.
-- Preserve explicit skill links.
+- Preserve explicit skill links or local skill paths.
 - Preserve explicit artifact filenames.
 - Preserve the intended target model for each phase.
 - Avoid style-only rewrites that create diff noise without workflow benefit.
 
-### `prompts/README.md`
+### `README.md`
 
-This is the pack overview. Update it when:
+This is the consolidated repository and prompt-pack overview. Update it when:
 
 - prompt filenames change,
 - phase count changes,
@@ -256,26 +283,16 @@ This is the pack overview. Update it when:
 - the canonical skill inventory changes,
 - the high-level design decisions change.
 
-### `sources/current_skill_set.txt`
-
-Treat this as a compact support manifest for the workflow's skill placement.
-
-Update it when:
-
-- a skill is added,
-- a skill is removed,
-- a skill moves to a different workflow phase,
-- phase names materially change.
-
 ### `sources/`
 
-Treat files here as reference inputs, not ordinary editable docs.
+Treat every file here as immutable reference input.
 
 Rules:
 
-- Do not rename or rewrite source PDFs casually.
+- Never modify, add, rename, move, normalize, regenerate, or delete anything in this directory.
+- Never use this directory as a synchronization target.
 - Do not assume the source files and prompt pack are one-to-one mirrors.
-- Use them for rationale only when needed.
+- Read them for provenance or rationale only when needed.
 
 ### `archived/`
 
@@ -293,7 +310,7 @@ Rules:
 - Prefer concrete file names over vague placeholders.
 - Preserve strong constraints where they are clearly intentional.
 - Preserve explicit stop-and-ask behavior on ambiguity/conflict.
-- Preserve "do not write tests unless explicitly asked" semantics where present.
+- Preserve "do not write tests unless explicitly asked" semantics where present; prompt `09` is the explicit final authorization.
 - Preserve backwards-compatibility emphasis where present.
 - Preserve the separation between required actions and optional suggestions.
 - Avoid adding tool/vendor assumptions not already part of the workflow.
@@ -308,25 +325,25 @@ Rules:
 
 ## What Not To Do
 
-- Do not replace repeated policy blocks with "see other file" references.
+- Do not replace shared safety-policy blocks with "see other file" references. Phase-owned detail, such as test authoring, may stay centralized in its owning phase with a concise boundary elsewhere.
 - Do not invent a skill router.
 - Do not silently change the default artifact flow.
 - Do not collapse human approval gates.
 - Do not weaken scope-control instructions accidentally.
 - Do not generate runtime workflow artifacts in the repo unless the user explicitly asks for them.
+- Do not add a generated prompt, review loop, or workflow artifact after phase `09`; only human review of its tests follows.
 - Do not treat `archived/` as the primary editable surface.
 - Do not rename prompts just for aesthetics.
 
 ## Change Playbooks
 
-### If you change a skill link
+### If you change a skill reference
 
 Also check:
 
 - the prompt file that uses it,
 - other prompts that should stay aligned by phase,
-- `prompts/README.md`,
-- `sources/current_skill_set.txt`.
+- `README.md`.
 
 ### If you change the Engineering Contract
 
@@ -343,7 +360,7 @@ Also check:
 
 - upstream producer prompts,
 - downstream consumer prompts,
-- `prompts/README.md`,
+- `README.md`,
 - any explicit required-output headings that mention the artifact.
 
 ### If you add a new workflow phase
@@ -351,8 +368,7 @@ Also check:
 Also check:
 
 - numbering and filename ordering,
-- `prompts/README.md`,
-- `sources/current_skill_set.txt`,
+- `README.md`,
 - any text that enumerates the workflow end-to-end,
 - whether the new phase should contain `## Skill Handling Rule`,
 - whether it should contain `## Engineering Contract`.
@@ -363,6 +379,7 @@ Also check:
 
 - `07_human_code_walkthrough.md`,
 - `08_gpt_implement_human_followup.md`,
+- `09_write_focused_tests_any_model.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.
 
@@ -370,13 +387,13 @@ Also check:
 
 Before finishing a change, verify:
 
-- the repo still has `prompts/README.md` plus the expected `01` through `08` prompt set unless the task intentionally changes it,
+- the repo has the expected `01` through `09` prompt set,
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
-- skill links are consistent where intended,
+- skill references are consistent where intended,
 - repeated policy blocks are updated everywhere they should be,
-- `prompts/README.md` still matches the actual prompt set,
-- `sources/current_skill_set.txt` still matches the actual prompt set,
+- `README.md` matches the actual prompt set and workflow,
+- no file under `sources/` was modified, added, renamed, moved, or deleted,
 - any new wording did not accidentally add scope or remove guardrails,
 - Markdown remains readable and copy-paste ready.
 
@@ -393,7 +410,9 @@ When making non-trivial changes, search for these strings before finalizing:
 - `FOLLOWUP.md`
 - `DO NOT MAKE ASSUMPTIONS`
 - `Do not write tests`
+- `85% coverage`
 - `Use only the explicitly linked skills`
+- `Use only the local skills`
 
 ## Default Agent Posture In This Repo
 

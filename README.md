@@ -1,188 +1,145 @@
-# ai-coding-workflow
+# AI Coding Workflow
 
-This repository is a curated, phase-based prompt pack for an agentic coding workflow.
+A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, and focused tests.
 
-It is not an application codebase. It is a working set of self-contained Markdown prompts, source material, and design history for a strict multi-model workflow that moves through:
+This repository is the workflow source, not the application being changed. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, and `REVIEW.md` belong in the target repository root.
 
-idea clarification -> planning -> plan critique -> locked execution -> AI review loop -> human walkthrough -> final human-approved follow-up execution
+## Workflow
 
-The main value of this repo is not "one magic prompt." The value is the workflow contract:
+```mermaid
+flowchart TD
+    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md"]
+    B --> C["Opus planning via generated prompt"]
+    C --> D["FEATURE_SPEC_AND_PLAN.md + GPT_EXECUTION_PROMPT.md"]
+    D --> E["02 Critique plan"]
+    E --> F["OPUS_PLAN_REVISION_REQUEST.md"]
+    F --> G["Opus revises plan"]
+    G --> H["Updated plan + PLAN_REVISION_SUMMARY.md"]
+    H --> I["03 Verify revision"]
+    I -- "more plan work" --> E
+    I -- "plan locked" --> J["GPT executes generated prompt"]
+    J --> K["04 Opus reviews branch"]
+    K --> L["REVIEW.md + WALKTHROUGH.md + GPT_REVIEW_FIX_PROMPT.md"]
+    L --> M["GPT fixes valid findings"]
+    M --> N["05 Verify review fixes"]
+    N -- "more fixes" --> K
+    N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md"]
+    O --> P["07 Human walkthrough"]
+    P --> Q{"Approved FOLLOWUP.md items?"}
+    Q -- "yes" --> R["08 GPT implements FOLLOWUP.md"]
+    Q -- "no" --> S["09 Write minimal focused tests"]
+    R --> S
+    S --> T["Human reviews the test diff; workflow ends"]
+```
 
-- each reusable checked-in step has a dedicated prompt where that makes sense, and generated artifact prompts are used directly where the workflow already produces the real downstream prompt,
-- each workflow phase should have exactly one prompt input, and when the previous phase generates that prompt, that generated artifact is the only prompt for the next phase,
-- `01` generates the dedicated Opus planning prompt artifact for the main planning pass,
-- `02` is the producer of `OPUS_PLAN_REVISION_REQUEST.md`, and `03` verifies whether that revision pass actually worked,
-- locked execution is driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`,
-- `04` is the producer of `GPT_REVIEW_FIX_PROMPT.md`, and `05` verifies whether that fix pass actually worked,
-- execution phases are expected to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
-- execution phases are also expected not to commit workflow-generated Markdown artifacts unless you explicitly want that,
-- each prompt links only the skills that belong in that phase,
-- each phase emits explicit artifacts,
-- the next phase consumes those artifacts,
-- review and follow-up are treated as separate loops,
-- human approval remains a first-class gate.
+Generated prompt artifacts are the only prompt input for their handoff:
 
-## Table of Contents
+- `INITIAL_OPUS_PLANNING_PROMPT.md` drives the main Opus planning pass.
+- `OPUS_PLAN_REVISION_REQUEST.md` drives an Opus plan-revision pass.
+- `GPT_EXECUTION_PROMPT.md` drives locked GPT implementation.
+- `GPT_REVIEW_FIX_PROMPT.md` drives a GPT review-fix pass.
 
-- [What this repo is](#what-this-repo-is)
-- [Where this workflow came from](#where-this-workflow-came-from)
-- [Core design decisions](#core-design-decisions)
-- [Repository layout](#repository-layout)
-- [Workflow at a glance](#workflow-at-a-glance)
-- [Artifact lifecycle](#artifact-lifecycle)
-- [Skill model](#skill-model)
-- [Prompt pack table of contents](#prompt-pack-table-of-contents)
-- [Prompt-by-prompt deep dive](#prompt-by-prompt-deep-dive)
-  - [Prompts README](#prompts-readme)
-  - [Prompt 01 - Initial exploration](#prompt-01---initial-exploration)
-  - [Prompt 02 - Plan critique loop](#prompt-02---plan-critique-loop)
-  - [Prompt 03 - Plan revision verification](#prompt-03---plan-revision-verification)
-  - [Prompt 04 - Opus reviews implemented branch](#prompt-04---opus-reviews-implemented-branch)
-  - [Prompt 05 - Opus verifies review fixes](#prompt-05---opus-verifies-review-fixes)
-  - [Prompt 06 - Opus refreshes final review docs](#prompt-06---opus-refreshes-final-review-docs)
-  - [Prompt 07 - Human walkthrough](#prompt-07---human-walkthrough)
-  - [Prompt 08 - GPT implements human follow-up](#prompt-08---gpt-implements-human-follow-up)
-- [Engineering contract summary](#engineering-contract-summary)
-- [How to use this repo end to end](#how-to-use-this-repo-end-to-end)
-  - [Running it in Cursor or Copilot agent windows](#running-it-in-cursor-or-copilot-agent-windows)
-  - [Worked example](#worked-example)
-- [Common entry points](#common-entry-points)
-- [What is intentionally not in this repo](#what-is-intentionally-not-in-this-repo)
-- [Maintenance and source material](#maintenance-and-source-material)
+If a generated prompt is incomplete, return to its producer phase instead of inventing a parallel checked-in prompt.
 
-## What this repo is
+## Prompt Index
 
-This repo is the checked-in version of a strict prompt workflow for coding tasks that need:
+| Step | Prompt | Model / role | Result |
+|---|---|---|---|
+| 01 | [Initial exploration](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
+| 02 | [Plan critique](prompts/02_plan_critique_gpt_gemini.md) | GPT or Gemini | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
+| 03 | [Plan-revision verification](prompts/03_plan_revision_verification_gpt_gemini.md) | GPT or Gemini | `PLAN_REVISION_VERIFICATION.md` |
+| 04 | [Implemented-branch review](prompts/04_opus_review_branch.md) | Claude Opus | `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md` |
+| 05 | [Review-fix verification](prompts/05_opus_verify_review_fixes.md) | Claude Opus | `REVIEW_FIX_VERIFICATION.md` |
+| 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md` |
+| 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | GPT or Claude Sonnet with a human | Human-approved `FOLLOWUP.md`, when needed |
+| 08 | [Human follow-up implementation](prompts/08_gpt_implement_human_followup.md) | GPT | Approved follow-up changes |
+| 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by human review |
 
-- deliberate clarification before planning,
-- detailed planning before implementation,
-- explicit critique before execution,
-- strict execution against a locked plan,
-- structured review against both `main` and the plan,
-- a human-guided walkthrough before the final follow-up pass.
+The main Opus planning pass, Opus plan-revision pass, locked GPT execution pass, and GPT review-fix pass use generated prompts, so they do not have separate checked-in phase files.
 
-The prompt pack is intentionally split into separate files so each prompt can be dropped directly into a model session at the right phase.
+## How to Run It
 
-That means the repo optimizes for:
+1. Open the target code repository in a repo-aware agent UI. Keep this prompt pack available only as the instruction source.
+2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
+3. Paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
+4. Run [prompt 02](prompts/02_plan_critique_gpt_gemini.md). If revision is required, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus.
+5. Run [prompt 03](prompts/03_plan_revision_verification_gpt_gemini.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
+6. Paste `GPT_EXECUTION_PROMPT.md` into GPT to implement `FEATURE_SPEC_AND_PLAN.md`.
+7. Run [prompt 04](prompts/04_opus_review_branch.md). If it creates `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into GPT, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all valid blocking and non-blocking findings are resolved.
+8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then perform the independent human review with [prompt 07](prompts/07_human_code_walkthrough.md).
+9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_gpt_implement_human_followup.md).
+10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
+11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.
 
-- explicit sequencing,
-- self-contained prompts,
-- explicit artifact handoffs,
-- clear model-role boundaries,
-- reproducible loops instead of ad hoc improvisation.
+Use a fresh chat for each major phase or model handoff. The artifact files, not hidden chat history, are the handoff boundary.
 
-## Where this workflow came from
+## Operator Rules
 
-The current repo is best understood as the result of three inputs that were refined together:
+- Run the workflow in the target code repository, never in this prompt-pack repository.
+- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename.
+- Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
+- Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
+- Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
+- Do not stage or commit workflow-generated Markdown artifacts unless explicitly requested.
+- Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
+- Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
 
-1. `sources/original_scrappy_prompts.txt`
-   - The raw earlier prompt set.
-2. `sources/chat_exports/ChatGPT-Workflow and Skills Integration.json`
-   - The design conversation that explains how the raw workflow was reorganized and how skills were assigned to phases.
-3. `sources/ai_talk.pdf`
-   - Referenced in the chat export as the original workflow basis, specifically pages 24-32.
+## Artifact Chain
 
-The chat export is especially important because it captures the key decisions that shaped the final repo:
+| Artifact | Producer | Main consumer |
+|---|---|---|
+| `DRAFT_PLAN.md` | 01 | Generated Opus planning prompt |
+| `INITIAL_OPUS_PLANNING_PROMPT.md` | 01 | Main Opus planning pass |
+| `FEATURE_SPEC_AND_PLAN.md` | Opus planning/revision | Critique, execution, and review phases |
+| `GPT_EXECUTION_PROMPT.md` | Opus planning/revision | Locked GPT execution |
+| `PLAN_CRITIQUE.md` | 02 | Opus revision and 03 |
+| `OPUS_PLAN_REVISION_REQUEST.md` | 02 | Opus revision |
+| `PLAN_REVISION_SUMMARY.md` | Opus revision | 03 |
+| `PLAN_REVISION_VERIFICATION.md` | 03 | Execution gate |
+| `REVIEW.md` | 04, refreshed by 06 | GPT review-fix context and later workflow context |
+| `WALKTHROUGH.md` | 04, refreshed by 06 | GPT review-fix and human walkthrough context |
+| `GPT_REVIEW_FIX_PROMPT.md` | 04 | GPT review-fix pass |
+| `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
+| `FOLLOWUP.md` | 07 | 08 |
 
-- only include skills that fit the existing workflow,
-- do not turn the workflow into a broad skill soup,
-- do not use a skill router in the final prompt pack,
-- include explicit skill links inside the prompts themselves,
-- keep prompts independent and self-contained,
-- preserve all important detail from the original prompt set,
-- reduce repetition where possible without losing self-containment,
-- combine spec and implementation plan into one default planning artifact,
-- keep `GPT_EXECUTION_PROMPT.md` separate,
-- preserve a strict human approval gate for final follow-up work.
+Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Human review of the test diff ends the workflow.
 
-In other words: this repo is not just "prompts plus links." It is a deliberately reorganized version of a pre-existing workflow with explicit tradeoffs recorded in the chat history.
+## Core Design
 
-## Core design decisions
+- One prompt input per phase. A generated downstream prompt replaces a separate checked-in prompt for that handoff.
+- Prompts are self-contained. Repeated skill and Engineering Contract blocks are intentional.
+- No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
+- The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
+- Model roles stay explicit: any capable repo-aware model for exploration and final test writing; GPT or Gemini for plan critique/verification; Opus for planning, revision, and AI review; GPT or Sonnet for the human walkthrough; GPT for implementation, fixes, and follow-up.
+- Planning and AI review each have a verification loop. Human review remains an independent approval gate.
+- The final automated phase adds the smallest meaningful focused test set. A human reviews those tests, and the workflow ends without another prompt or artifact.
 
-These are the most important design choices in the current repo.
+## Testing Policy
 
-### 1. No skill router
+Earlier phases may inspect or run focused tests, but they do not author tests. Prompt 09 owns the complete test-writing contract:
 
-The chat export explicitly rejects a generic router approach.
+- write the fewest nonduplicative tests that cover changed behavior and material regression risks,
+- keep tests behavior-focused, deterministic, isolated, and small enough to read linearly,
+- follow existing pytest configuration and reuse fixtures, native APIs, and installed plugins instead of hand-rolled Python or standard-library mechanisms,
+- never monkeypatch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
+- reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
+- change test files only, then hand the test diff directly to a human without another prompt or workflow artifact.
 
-Instead:
+The full policy, local-skill loading procedure, stop rules, and verification contract live in [phase 09](prompts/09_write_focused_tests_any_model.md).
 
-- each prompt lists only the skills relevant to that phase,
-- `01` tells GPT to generate the downstream Opus planning prompt artifact with the required embedded skill links, and downstream prompts tell review/revision models to generate the next request artifacts when appropriate,
-- the prompt always overrides the skill.
+## Skills
 
-### 2. Self-contained prompt files
+Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
 
-Every prompt is meant to be copy-paste ready on its own.
+Skills support the workflow; they do not widen scope or override prompt constraints.
 
-That is why some duplication is intentional:
-
-- repeated skill-handling rules,
-- repeated Engineering Contract blocks,
-- repeated artifact references,
-- repeated guardrails around scope and verification.
-
-This duplication is a feature, not a mistake.
-
-### 3. Combined planning artifact by default
-
-The workflow used to think in terms of separate `SPEC.md` and `IMPLEMENTATION_PLAN.md`.
-
-The current default is:
-
-- `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
-
-`FEATURE_SPEC_AND_PLAN.md` preserves the old split logically inside one file:
-
-- spec/reference section = deeper rationale and reference material,
-- implementation plan section = concrete execution contract.
-
-The plan section is expected to link back to reference anchors in the same file rather than duplicate them.
-
-### 4. Repetition reduced by an embedded Engineering Contract
-
-The original workflow had duplication across GPT implementation instructions and Opus review instructions.
-
-The repo reduces that repetition by embedding a shared Engineering Contract into the prompts that need it.
-
-That contract carries the recurring policies around:
-
-- strict plan adherence,
-- no divergence,
-- no creativity,
-- no architecture changes,
-- no tests unless explicitly asked,
-- source-grounded implementation,
-- backwards compatibility,
-- cross-platform Windows/Linux behavior,
-- verification before claiming completion.
-
-### 5. Human review remains a real gate
-
-The workflow does not end at the AI review loop.
-
-After the AI review/fix loop is done:
-
-- Opus refreshes `REVIEW.md` and `WALKTHROUGH.md`,
-- GPT or Sonnet walks the human through a changed-file checklist file by file and chunk by chunk,
-- only explicitly agreed items go into `FOLLOWUP.md`,
-- only then does GPT implement the human-approved follow-up list.
-
-This is one of the most important characteristics of the repo.
-
-## Repository layout
+## Repository Layout
 
 ```text
 .
 +-- AGENTS.md
 +-- README.md
-+-- LICENSE
-+-- .gitattributes
-+-- archived/
-|   +-- agentic_coding_prompt_pack_refactored.md
 +-- prompts/
-|   +-- README.md
 |   +-- 01_initial_exploration_any_model.md
 |   +-- 02_plan_critique_gpt_gemini.md
 |   +-- 03_plan_revision_verification_gpt_gemini.md
@@ -191,751 +148,39 @@ This is one of the most important characteristics of the repo.
 |   +-- 06_opus_refresh_review_and_walkthrough.md
 |   +-- 07_human_code_walkthrough.md
 |   +-- 08_gpt_implement_human_followup.md
+|   +-- 09_write_focused_tests_any_model.md
 +-- sources/
-    +-- ai_talk.pdf
-    +-- current_skill_set.txt
-    +-- original_scrappy_prompts.txt
-    +-- Prompt Engineering for Claude Sonnet (4.5+) – Analytical Report.pdf
-    +-- Prompting Claude Opus for High-Performance Results.pdf
-    +-- Prompting GPT and Codex for Reliable Results.pdf
-    +-- chat_exports/
-        +-- ChatGPT-Workflow and Skills Integration.json
+|   +-- current_skill_set.txt
+|   +-- original_scrappy_prompts.txt
+|   +-- chat_exports/
+|   +-- *.pdf
++-- archived/
+    +-- agentic_coding_prompt_pack_refactored.md
 ```
 
-### What each top-level area is for
+- `prompts/` is the canonical product surface.
+- `sources/` preserves immutable original/reference inputs and rationale. Never edit files there.
+- `archived/` is historical reference, not the default editing surface.
+- `AGENTS.md` defines maintenance and synchronization rules.
 
-- `README.md`
-  - The repo-level overview you are reading now.
-- `AGENTS.md`
-  - Repository maintenance guidance for future agents editing the pack.
-- `prompts/`
-  - The canonical prompt-pack surface.
-- `sources/`
-  - Raw/reference inputs that explain how the workflow was derived.
-- `archived/`
-  - Historical consolidated artifact, useful for reference or audit, but not the main editing surface.
+## Common Entry Points
 
-## Workflow at a glance
+- Start at 01 when the task still needs clarification.
+- Start at 02 when complete planning artifacts already exist.
+- Start with generated GPT execution when the plan is already locked.
+- Start at 04 when implementation exists and needs the AI review loop.
+- Start at 07 when the AI loop is complete and human review should begin.
+- Start at 08 when `FOLLOWUP.md` already contains only approved work.
+- Start at 09 when the final branch behavior is ready for focused tests.
 
-```mermaid
-flowchart TD
-    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md"]
-    B --> C["Opus planning pass via INITIAL_OPUS_PLANNING_PROMPT.md"]
-    C --> D["FEATURE_SPEC_AND_PLAN.md + GPT_EXECUTION_PROMPT.md"]
-    D --> E["02 Plan critique"]
-    E --> F["OPUS_PLAN_REVISION_REQUEST.md"]
-    F --> G["Opus revision pass via OPUS_PLAN_REVISION_REQUEST.md"]
-    G --> H["Updated plan artifacts + PLAN_REVISION_SUMMARY.md"]
-    H --> I["03 Verify plan revision"]
-    I -- "more plan work needed" --> E
-    I -- "plan locked" --> J["GPT execution via GPT_EXECUTION_PROMPT.md"]
-    J --> K["Implemented branch"]
-    K --> L["04 Opus reviews implemented branch"]
-    L --> M["REVIEW.md + WALKTHROUGH.md + GPT_REVIEW_FIX_PROMPT.md"]
-    M --> N["GPT fix pass via GPT_REVIEW_FIX_PROMPT.md"]
-    N --> O["05 Verify review fixes"]
-    O -- "more review fixes needed" --> L
-    O -- "AI review loop complete" --> P["06 Refresh REVIEW.md + WALKTHROUGH.md"]
-    P --> Q["07 Human walkthrough"]
-    Q --> R["FOLLOWUP.md"]
-    R --> S["08 GPT implements human follow-up"]
-    S --> T["Manual final review"]
-```
+## Maintenance
 
-### Important structural notes
+Read [AGENTS.md](AGENTS.md) before editing the pack. Keep filenames, artifact names, phase order, model roles, skill placement, and intentionally duplicated contracts synchronized.
 
-- Prompt `01` creates the exploration outputs and the final paste-ready Opus planning prompt artifact.
-- There is no separate checked-in prompt file for the main Opus planning phase; that phase is driven by the generated `INITIAL_OPUS_PLANNING_PROMPT.md` artifact.
-- Prompt `02` creates `OPUS_PLAN_REVISION_REQUEST.md`, and that generated artifact is the direct-use Opus revision prompt for the next plan-revision pass.
-- Prompt `03` verifies the latest revision and, if it fails, the workflow returns to `02`.
-- There is no separate checked-in prompt file for the locked GPT execution phase; that phase is driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
-- Prompts `04` and `05` are the AI code review/fix loop.
-- Prompt `04` creates `GPT_REVIEW_FIX_PROMPT.md`, and that generated artifact is the direct-use GPT fix prompt for the next review-fix pass.
-- Prompt `05` verifies the latest fix pass and, if it fails, the workflow returns to `04`.
-- Prompt `06` exists so `REVIEW.md` and `WALKTHROUGH.md` reflect the final post-fix code, not a stale earlier snapshot.
-- Prompts `07` and `08` are a separate human-reviewed final pass, not an extension of the AI review loop.
+Useful references:
 
-## Artifact lifecycle
+- [Historical skill inventory](sources/current_skill_set.txt)
+- [Original prompt source](sources/original_scrappy_prompts.txt)
+- [Historical consolidated prompt pack](archived/agentic_coding_prompt_pack_refactored.md)
 
-One of the fastest ways to understand this repo is to understand the artifact chain.
-
-| Artifact | Created in | Consumed in | Purpose |
-|---|---|---|---|
-| `DRAFT_PLAN.md` | `01` | Opus planning pass via `INITIAL_OPUS_PLANNING_PROMPT.md` | First structured articulation of the task after clarification. |
-| `INITIAL_OPUS_PLANNING_PROMPT.md` | `01` | Opus planning pass | Final paste-ready Opus planning prompt generated during exploration. |
-| `FEATURE_SPEC_AND_PLAN.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05`, `06`, `08` | Combined spec/reference plus execution contract. |
-| `GPT_EXECUTION_PROMPT.md` | Opus planning pass, updated in Opus revision passes via `OPUS_PLAN_REVISION_REQUEST.md` | `02`, `03`, direct GPT execution, `04`, `05` | End-to-end implementation prompt for GPT, including stage/commit/push and create-PR-only-if-missing behavior. |
-| `PLAN_CRITIQUE.md` | `02` | direct Opus revision pass via `OPUS_PLAN_REVISION_REQUEST.md`, `03` | Records critique findings against the planning artifacts. |
-| `OPUS_PLAN_REVISION_REQUEST.md` | `02` | direct Opus revision pass, `03` as verification context | Self-contained request for Opus to revise the plan and GPT prompt. |
-| `PLAN_REVISION_SUMMARY.md` | direct Opus revision pass | `03` | Explains what changed in the planning artifacts after critique. |
-| `PLAN_REVISION_VERIFICATION.md` | `03` | Human decision point before direct GPT execution | Confirms whether the plan is ready for locked execution. |
-| `REVIEW.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Formal post-implementation review document. |
-| `WALKTHROUGH.md` | `04`, refreshed in `06` | direct GPT review-fix pass, `05`, `07`, `08` | Detailed beginner-friendly walkthrough of the change set. |
-| `GPT_REVIEW_FIX_PROMPT.md` | `04` | direct GPT review-fix pass, `05` as verification context | Self-contained request for GPT to fix all valid review findings, including non-blocking issues, then stage/commit/push and create a PR only if missing. |
-| `REVIEW_FIX_VERIFICATION.md` | `05` | `06` | Confirms whether the review-fix pass actually resolved the issues. |
-| `FOLLOWUP.md` | `07` | `08` | Human-approved final follow-up checklist. |
-
-### Why this matters
-
-This repo is not just a stack of prompts. It is a chain of prompt-driven artifacts.
-
-If you skip the artifact model, the prompt pack looks more complicated than it is.
-
-If you follow the artifact model, the workflow becomes much easier to understand:
-
-- one phase creates the contract,
-- the next phase audits the contract,
-- the next phase executes it,
-- the next phase audits the implementation,
-- the last phase lets the human tighten the last mile.
-
-## Skill model
-
-The checked-in skill inventory is summarized in [sources/current_skill_set.txt](sources/current_skill_set.txt).
-
-The chat export makes clear that the intended model is not "use every interesting skill." The intended model is:
-
-- keep a small default set,
-- assign skills by workflow phase,
-- treat skills as support procedures,
-- let the prompt and locked artifacts override the skill.
-
-### Canonical phase-to-skill mapping
-
-| Phase | Skills |
-|---|---|
-| Define / Clarify | `interview-me`, `grill-me`, `idea-refine` |
-| Plan | `spec-driven-development`, `planning-and-task-breakdown`, `context-engineering`, `source-driven-development` |
-| Critique / Lock Plan | `code-review-and-quality`, `code-simplification`, `source-driven-development`, `verification-before-completion` |
-| Execute | `incremental-implementation`, `source-driven-development`, `verification-before-completion` |
-| Review | `code-review-and-quality`, `code-simplification`, `source-driven-development`, `verification-before-completion` |
-| Review Follow-up | `receiving-code-review`, `code-review-and-quality` |
-| Follow-up Execution | `incremental-implementation`, `receiving-code-review`, `verification-before-completion`, `source-driven-development` |
-
-### What the chosen skills are doing in this repo
-
-The chat export provides the rationale behind the chosen stack:
-
-- `interview-me`
-  - Extracts what the user actually wants when the ask is still vague.
-- `grill-me`
-  - Pressure-tests the design rather than accepting the first plausible plan.
-- `idea-refine`
-  - Turns a rough concept into a more concrete proposal.
-- `spec-driven-development`
-  - Forces explicit planning before implementation.
-- `planning-and-task-breakdown`
-  - Turns a broad spec into concrete units of work.
-- `context-engineering`
-  - Helps control what repo context gets loaded and avoids context overload.
-- `source-driven-development`
-  - Grounds framework and library decisions in documentation or source.
-- `incremental-implementation`
-  - Encourages small, verifiable implementation steps.
-- `verification-before-completion`
-  - Prevents "done" claims without actual verification evidence.
-- `code-review-and-quality`
-  - Provides structured review lenses before merge.
-- `code-simplification`
-  - Looks for complexity that can be reduced without changing behavior.
-- `receiving-code-review`
-  - Treats review comments as claims to validate, not blindly execute.
-
-### What was explicitly rejected
-
-The chat export also records several deliberate exclusions:
-
-- no general skill router,
-- no broad autoloading of extra skills,
-- no automatic expansion into unrelated skill categories,
-- no assumption that "popular" skills should replace the workflow's proven set,
-- no blind import of full external skill packs.
-
-The best way to think about the skills in this repo is:
-
-the workflow comes first, the skills are phase-local helpers.
-
-## Prompt pack table of contents
-
-This is the fastest file-by-file map of the prompt pack.
-
-| Step | File | Primary model / role | Use when | Main outputs or result |
-|---|---|---|---|---|
-| README | [prompts/README.md](prompts/README.md) | Human reader | You want the prompt-pack companion README inside `prompts/` | Overview of the pack plus operator instructions |
-| 01 | [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | The idea is still vague and needs clarification | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
-| 02 | [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md) | GPT or Gemini | The Opus planning artifacts already exist and need critique before execution | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
-| 03 | [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md) | GPT or Gemini | You need to verify whether the latest Opus revision actually fixed the critique | `PLAN_REVISION_VERIFICATION.md` |
-| 04 | [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md) | Claude Opus | Implementation is done and the branch needs formal review | `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md` |
-| 05 | [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md) | Claude Opus | The review fixes need an audit before the loop ends | `REVIEW_FIX_VERIFICATION.md` |
-| 06 | [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | The AI review loop is complete and the docs need a final refresh | Refreshed `REVIEW.md`, refreshed `WALKTHROUGH.md` |
-| 07 | [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) | GPT or Claude Sonnet with human in the loop | Final human review and approval pass | Human-vetted `FOLLOWUP.md` |
-| 08 | [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) | GPT | `FOLLOWUP.md` contains only human-approved items | Code changes plus human follow-up implementation summary |
-
-Important note:
-
-- The main Opus planning pass happens between `01` and `02`.
-- It is driven by the generated `INITIAL_OPUS_PLANNING_PROMPT.md` artifact rather than a separate checked-in prompt file.
-- The Opus plan-revision pass happens between `02` and `03` and is driven by the generated `OPUS_PLAN_REVISION_REQUEST.md` artifact.
-- Locked execution happens after `03` and is driven by the generated `GPT_EXECUTION_PROMPT.md` artifact plus `FEATURE_SPEC_AND_PLAN.md`.
-- The GPT review-fix pass happens between `04` and `05` and is driven by the generated `GPT_REVIEW_FIX_PROMPT.md` artifact.
-
-## Prompt-by-prompt deep dive
-
-This section is intentionally detailed so you do not have to reverse-engineer the prompt pack by opening files one at a time.
-
-### Prompts README
-
-File: [prompts/README.md](prompts/README.md)
-
-What it is:
-
-- A prompt-pack companion README that lives inside `prompts/`.
-- It is not one of the actual workflow phases.
-
-What it explains:
-
-- why the pack uses independent prompts,
-- why the Engineering Contract exists,
-- why `FEATURE_SPEC_AND_PLAN.md` is the default planning artifact,
-- why `GPT_EXECUTION_PROMPT.md` remains separate,
-- which skill links are used across the pack,
-- how to run the workflow inside an agent-enabled editor window such as Cursor or Copilot.
-
-Why it exists:
-
-- so the prompt pack can be shared or zipped as a standalone folder,
-- so someone opening only `prompts/` still gets context,
-- so the design decisions travel with the prompts.
-
-### Prompt 01 - Initial exploration
-
-File: [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md)
-
-Primary role:
-
-- Clarify the task before detailed planning begins and generate the final paste-ready Opus planning prompt artifact.
-
-Target model:
-
-- Any capable repo-aware model.
-
-Skills used:
-
-- `interview-me`
-- `grill-me`
-- `idea-refine`
-- `context-engineering`
-
-What it does:
-
-- turns a vague idea into a structured draft,
-- keeps the session interactive,
-- asks one question at a time when needed,
-- encourages codebase exploration instead of unnecessary questioning,
-- explicitly forbids implementation and test writing at this stage,
-- generates the actual `INITIAL_OPUS_PLANNING_PROMPT.md` artifact that is pasted into Opus for the main planning pass.
-
-Artifacts it creates:
-
-- `DRAFT_PLAN.md`
-- `INITIAL_OPUS_PLANNING_PROMPT.md`
-
-Why it matters:
-
-- it prevents the rest of the workflow from starting on a fuzzy task,
-- it produces the draft material that the Opus planning phase expands into a real execution contract,
-- it produces the direct Opus planning prompt artifact itself rather than a helper prompt,
-- it encodes the expectation that the user goal, constraints, non-goals, and definition of done must be clear before planning hardens.
-
-What happens next:
-
-- `INITIAL_OPUS_PLANNING_PROMPT.md` is pasted into Opus.
-- Opus uses that generated prompt plus `DRAFT_PLAN.md` and repository context to create `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
-- The generated Opus planning prompt carries the planning-phase skill links and execution-contract requirements that used to live in separate checked-in planning prompt files.
-
-Use this when:
-
-- the request is underspecified,
-- the repo context is large and you need a scoped task statement first,
-- you want early questioning before locking yourself into a plan.
-
-### Prompt 02 - Plan critique loop
-
-File: [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md)
-
-Primary role:
-
-- Audit the planning artifacts before any implementation begins.
-
-Target model:
-
-- GPT or Gemini.
-
-Skills used:
-
-- `code-review-and-quality`
-- `code-simplification`
-- `source-driven-development`
-- `verification-before-completion`
-
-What it does:
-
-- critiques `FEATURE_SPEC_AND_PLAN.md`,
-- critiques `GPT_EXECUTION_PROMPT.md`,
-- checks for missing questions, edge cases, API risks, scope drift, performance risks, backwards compatibility risks, and prompt looseness,
-- produces both a critique document and a revision request for Opus.
-
-Required outputs:
-
-- `PLAN_CRITIQUE.md`
-- `OPUS_PLAN_REVISION_REQUEST.md`
-
-Why it exists:
-
-- to stop the workflow from moving straight from planning to coding without a structured challenge pass,
-- to make the plan-locking step explicit rather than informal.
-
-What happens next:
-
-- `OPUS_PLAN_REVISION_REQUEST.md` is the direct-use prompt pasted into Opus for the revision pass when critique findings need action.
-- There is no separate checked-in Opus revision prompt file after the fold.
-- `02` is the only phase that should author that prompt.
-- If verification later fails, the workflow returns to `02` instead of creating an alternate revision prompt in `03`.
-- The generated revision request carries the full revision contract: preserve scope, update `FEATURE_SPEC_AND_PLAN.md`, update `GPT_EXECUTION_PROMPT.md`, preserve the Engineering Contract, and produce `PLAN_REVISION_SUMMARY.md`.
-
-### Prompt 03 - Plan revision verification
-
-File: [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md)
-
-Primary role:
-
-- Verify whether the latest Opus revision actually resolved the previous critique.
-
-Target model:
-
-- GPT or Gemini.
-
-Skills used:
-
-- `code-review-and-quality`
-- `code-simplification`
-- `source-driven-development`
-- `verification-before-completion`
-
-What it does:
-
-- compares the previous critique to the revised artifacts,
-- classifies each concern as resolved, partially resolved, not resolved, or invalid,
-- decides whether the workflow is ready to move to execution,
-- if concerns remain, sends the workflow back to `02` instead of creating an alternate revision prompt.
-
-Required output:
-
-- `PLAN_REVISION_VERIFICATION.md`
-
-Conditional output:
-
-- a new `OPUS_PLAN_REVISION_REQUEST.md` if the plan is still not ready.
-
-What happens when the plan is locked:
-
-- the generated `GPT_EXECUTION_PROMPT.md` is pasted directly into GPT,
-- GPT reads `FEATURE_SPEC_AND_PLAN.md`,
-- GPT treats the implementation-plan section as the execution contract and the spec/reference section as reference context,
-- GPT is constrained to no divergence, no creativity, and no architecture changes,
-- GPT runs focused verification and reports a structured execution summary.
-
-Why it exists:
-
-- to close the loop on planning rigor,
-- to avoid the common failure mode where a revised plan is assumed to be fixed without a real audit,
-- to make the handoff into direct GPT execution artifact-driven rather than informal.
-
-### Prompt 04 - Opus reviews implemented branch
-
-File: [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md)
-
-Primary role:
-
-- Perform the post-implementation AI review.
-
-Target model:
-
-- Claude Opus.
-
-Skills used:
-
-- `code-review-and-quality`
-- `code-simplification`
-- `source-driven-development`
-- `verification-before-completion`
-
-What it does:
-
-- compares the current branch against `main`,
-- compares the implementation against the plan artifacts,
-- reviews for readability, quality, performance, backwards compatibility, API behavior, reuse, documentation grounding, comments, test quality, and cross-platform safety,
-- creates both a review artifact and a teaching artifact,
-- generates the direct-use GPT fix prompt for the next pass when review findings need action.
-
-Required outputs:
-
-- `REVIEW.md`
-- `WALKTHROUGH.md`
-- `GPT_REVIEW_FIX_PROMPT.md`
-
-What makes this phase distinctive:
-
-- `REVIEW.md` is the formal decision artifact,
-- `WALKTHROUGH.md` is intentionally line-by-line and beginner-oriented,
-- `GPT_REVIEW_FIX_PROMPT.md` is the real pasted-into-GPT fix prompt after the fold, not a helper note,
-- `04` is the only phase that should author that prompt,
-- the generated GPT fix prompt must address valid findings only.
-
-Why it exists:
-
-- because the workflow does not treat execution as the last quality gate,
-- because review is not just "spot bugs"; it is also about divergence, contract adherence, and maintainability.
-
-### Prompt 05 - Opus verifies review fixes
-
-File: [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md)
-
-Primary role:
-
-- Audit whether the review-fix pass actually resolved the issues.
-
-Target model:
-
-- Claude Opus.
-
-Skills used:
-
-- `code-review-and-quality`
-- `code-simplification`
-- `source-driven-development`
-- `verification-before-completion`
-- `receiving-code-review`
-
-What it does:
-
-- compares the original review findings to the post-fix code,
-- determines whether each required review item is resolved,
-- identifies any newly introduced issues,
-- decides whether the AI review loop should continue or end,
-- if unresolved issues remain, sends the workflow back to `04` instead of creating an alternate fix prompt.
-
-Required output:
-
-- `REVIEW_FIX_VERIFICATION.md`
-
-What the fix prompt from `04` is responsible for:
-
-- reading `REVIEW.md` and `WALKTHROUGH.md`,
-- validating review comments against the actual code rather than blindly obeying them,
-- fixing only valid required findings,
-- preserving scope and backwards compatibility,
-- refusing optional suggestions unless explicitly approved,
-- running focused verification and reporting a structured review-fix summary.
-
-Why `receiving-code-review` belongs here:
-
-- because review comments are treated as claims to validate, not instructions to obey blindly.
-
-### Prompt 06 - Opus refreshes final review docs
-
-File: [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md)
-
-Primary role:
-
-- Refresh the review documentation after the AI review loop is complete.
-
-Target model:
-
-- Claude Opus.
-
-Skills used:
-
-- `code-review-and-quality`
-- `code-simplification`
-- `source-driven-development`
-- `verification-before-completion`
-
-What it does:
-
-- updates `REVIEW.md` so it reflects the final code rather than the pre-fix snapshot,
-- updates `WALKTHROUGH.md` so it matches the final state as well,
-- verifies that both docs actually reflect the end state.
-
-Required outputs:
-
-- refreshed `REVIEW.md`
-- refreshed `WALKTHROUGH.md`
-
-Why it exists:
-
-- because stale review docs become actively misleading during the human walkthrough phase,
-- because the final human reviewer should not be forced to mentally merge old docs with new code.
-
-### Prompt 07 - Human walkthrough
-
-File: [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md)
-
-Primary role:
-
-- Human-in-the-loop final walkthrough and follow-up list creation.
-
-Target model:
-
-- GPT or Claude Sonnet.
-
-Skills used:
-
-- `receiving-code-review`
-- `code-review-and-quality`
-- `code-simplification`
-
-What it does:
-
-- builds the main review list from the changed files in the current PR,
-- uses `WALKTHROUGH.md` only as supporting context for the current file chunk,
-- discards `REVIEW.md` as a review input for this phase,
-- inspects the actual code and diff against `main`,
-- reviews one file at a time and one changed chunk at a time within that file,
-- shows the human a few intelligently selected surrounding lines around each change,
-- also surfaces relevant method definitions when method calls appear in the excerpts,
-- explains what the code does,
-- keeps `RESOLVE` for the end of a fully reviewed file rather than after every chunk,
-- uses `AGREE` to record a follow-up item in `FOLLOWUP.md`,
-- uses `RESOLVE` to advance to the next file and attempt GitHub-side item resolution when `gh` is available and authenticated.
-
-Key artifact rule:
-
-- `FOLLOWUP.md` may contain only explicitly agreed items.
-
-Important human gate:
-
-- the human must type `AGREE` in all caps.
-- the human must type `RESOLVE` in all caps to move to the next checklist item.
-
-Why this phase is special:
-
-- it is not the AI review/fix loop,
-- it is the phase where the user takes control,
-- it converts the final human review into a precise checklist rather than vague comments.
-
-### Prompt 08 - GPT implements human follow-up
-
-File: [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md)
-
-Primary role:
-
-- Implement the human-approved follow-up list.
-
-Target model:
-
-- GPT.
-
-Skills used:
-
-- `incremental-implementation`
-- `source-driven-development`
-- `verification-before-completion`
-- `receiving-code-review`
-
-What it does:
-
-- reads `FOLLOWUP.md`,
-- treats `FOLLOWUP.md` as the execution contract for this phase,
-- uses `REVIEW.md` and `WALKTHROUGH.md` only as supporting context,
-- implements only explicitly listed items,
-- refuses scope expansion,
-- does not restart another AI review loop.
-
-Required final response shape:
-
-- a human follow-up implementation summary with completed items, incomplete items, files changed, verification evidence, docs updated, commits, and remaining manual review notes.
-
-Why it is the final prompt:
-
-- it completes the workflow after the human has made final targeted requests,
-- it deliberately ends with manual review rather than another automated critique loop.
-
-## Engineering contract summary
-
-Many of the prompts repeat a shared Engineering Contract. That repetition is intentional.
-
-At a high level, the contract enforces:
-
-- follow the plan exactly when a plan exists,
-- no divergence,
-- no creativity,
-- no architecture changes,
-- stop and ask when there is ambiguity or conflict,
-- do not change unrelated code unless absolutely necessary,
-- do not introduce third-party libraries without explicit approval,
-- ground framework/library work in real documentation,
-- keep public API changes backwards compatible unless explicitly exempted,
-- do not expose library-specific exceptions in public APIs,
-- keep code DRY and reuse existing structures,
-- do not use assert statements in production code,
-- do not hardcode constants when a better home exists,
-- keep changes cross-platform for Windows and Linux,
-- do not write tests unless explicitly asked,
-- use focused verification,
-- do not claim completion without fresh verification evidence,
-- update related documentation,
-- do not write the changelog.
-
-This contract is a big part of the workflow's personality. If you remove it, you are not just shortening prompts; you are changing the workflow.
-
-## How to use this repo end to end
-
-Use this workflow in the real code repository you want to change, not in this prompt-pack repository.
-
-The checked-in prompt files live here. The runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `FOLLOWUP.md` belong in the target code repository root where the agent can read and update the actual code. Do not place them in subdirectories or alternate paths. Each artifact should include `Created by`, `Created at`, and `Updated at`, preserving the creation fields after first creation and refreshing `Updated at` on every edit.
-
-If you are starting from a vague feature or task idea, the default path is:
-
-1. Start with [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md).
-2. Paste the generated `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus and let it create `FEATURE_SPEC_AND_PLAN.md` plus `GPT_EXECUTION_PROMPT.md`.
-3. Critique the plan with [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md).
-4. Paste the generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus if critique changes are needed.
-5. Verify the revised plan with [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md).
-6. Repeat `02` -> generated `OPUS_PLAN_REVISION_REQUEST.md` pass -> `03` until the plan is truly locked.
-7. Paste the generated `GPT_EXECUTION_PROMPT.md` into GPT and execute against `FEATURE_SPEC_AND_PLAN.md`.
-   That execution phase is expected to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one.
-   It should not stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `GPT_EXECUTION_PROMPT.md` unless you explicitly ask for that.
-8. Review with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md).
-9. Paste the generated `GPT_REVIEW_FIX_PROMPT.md` into GPT if valid review findings need action. That fix pass is meant to address all valid findings, including non-blocking issues and minor nits, not just the high-priority ones, and it should also stage, commit, push, and create a PR only if missing.
-   It should not stage or commit workflow-generated Markdown artifacts such as `REVIEW.md`, `WALKTHROUGH.md`, or `GPT_REVIEW_FIX_PROMPT.md` unless you explicitly ask for that.
-10. Verify the fixes with [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md).
-11. Repeat `04` -> generated `GPT_REVIEW_FIX_PROMPT.md` pass -> `05` until the AI review loop is done. `Suggestions` remain optional unless explicitly approved, but valid issues from both `Blocking Issues` and `Non-Blocking Issues` should be resolved in the fix loop.
-12. Refresh the final review docs with [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md).
-13. Run the human walkthrough with [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) in GPT or Claude Sonnet.
-14. Implement the human-approved follow-up list with [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md).
-   That follow-up execution phase should also stage, commit, push, and create a PR only if the current branch does not already have one.
-   It should not stage or commit workflow-generated Markdown artifacts such as `FOLLOWUP.md` unless you explicitly ask for that.
-15. Perform your final manual review.
-
-### Running it in Cursor or Copilot agent windows
-
-1. Open the real target code repository in Cursor, VS Code with Copilot agent mode, or another editor that gives the model live access to the workspace.
-2. Open this prompt-pack repo in a second window or side tab so you can copy the prompt text from `prompts/`.
-3. Run each phase inside the target code repo window. This repo is the workflow source; the target repo is the execution environment.
-4. Save generated artifacts in the target repo root using the exact filenames the workflow expects. Do not place them in subdirectories or alternate paths. Make sure each artifact includes `Created by`, `Created at`, and `Updated at`, preserving the creation fields after first creation and refreshing `Updated at` on every edit. If the UI does not create files automatically, create them manually and paste the model output into them.
-5. Prefer a fresh chat for each phase or at least for each model handoff. That keeps the context window cleaner and makes the artifact boundary explicit.
-6. For checked-in phases, paste the checked-in prompt file from this repo.
-7. For generated phases, paste the generated artifact itself. The important generated prompts are `INITIAL_OPUS_PLANNING_PROMPT.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `GPT_EXECUTION_PROMPT.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
-8. Do not replace a generated prompt with a different checked-in prompt. If the previous phase failed to generate the right next-phase prompt, go back and fix the previous phase instead of inventing an alternate path.
-9. Keep the model-role boundaries intact: any capable repo-aware model for exploration, GPT or Gemini for critique/verification, Opus for planning/review/revision passes, GPT or Sonnet for the human walkthrough gate, and GPT for execution/fix passes.
-10. Treat the artifact files as the handoff boundary between chats. The next phase should read the files produced by the previous phase rather than relying on hidden chat memory.
-11. In execution phases, expect the model to verify, `git add`, commit, push, and create a PR only if the current branch does not already have one. If it needs a fallback way to check PR existence, it should use GitHub CLI (`gh`) for that fallback.
-12. Also expect execution phases not to stage or commit workflow-generated Markdown artifacts unless you explicitly ask for that.
-
-### Worked example
-
-Example task:
-
-`Add a CSV export button to the orders table in an existing React + Node repository without changing the current API contract or adding tests unless explicitly requested.`
-
-Example operator sequence in an agent UI:
-
-1. Open the product repo in Cursor or Copilot agent mode.
-2. Start a chat with any capable repo-aware model for phase `01` and paste [prompts/01_initial_exploration_any_model.md](prompts/01_initial_exploration_any_model.md).
-3. Under that prompt, add a short operator note such as:
-
-```text
-We are working in the repo currently open in this editor.
-Store generated workflow artifacts in the repo root.
-Task: add a CSV export button to the orders table without changing the current API contract.
-Do not write tests unless they become explicitly approved later.
-```
-
-4. Save the outputs from `01` as `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
-5. Start an Opus chat, paste `INITIAL_OPUS_PLANNING_PROMPT.md`, and let Opus create `FEATURE_SPEC_AND_PLAN.md` plus `GPT_EXECUTION_PROMPT.md`.
-6. Start a GPT or Gemini critique chat, paste [prompts/02_plan_critique_gpt_gemini.md](prompts/02_plan_critique_gpt_gemini.md), and save `PLAN_CRITIQUE.md` plus `OPUS_PLAN_REVISION_REQUEST.md` if the plan is incomplete.
-7. If the critique says the plan missed edge cases such as filter preservation, authorization behavior, or export size constraints, paste `OPUS_PLAN_REVISION_REQUEST.md` into Opus and save the revised planning artifacts.
-8. Run [prompts/03_plan_revision_verification_gpt_gemini.md](prompts/03_plan_revision_verification_gpt_gemini.md). If it still says the plan is weak, go back to `02` rather than pushing forward.
-9. Once the plan is locked, start a GPT execution chat and paste `GPT_EXECUTION_PROMPT.md` to implement the change against `FEATURE_SPEC_AND_PLAN.md`. That pass should verify, `git add`, commit, push, and create a PR only if the branch does not already have one, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
-10. After implementation, start an Opus review chat with [prompts/04_opus_review_branch.md](prompts/04_opus_review_branch.md). Save `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md` if fixes are needed.
-11. If Opus produced `GPT_REVIEW_FIX_PROMPT.md`, paste that generated prompt into a fresh GPT chat and fix every valid issue from `Blocking Issues` and `Non-Blocking Issues`, including minor nits. That fix pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
-12. Run [prompts/05_opus_verify_review_fixes.md](prompts/05_opus_verify_review_fixes.md). If the fixes still fail verification, loop back to `04`.
-13. When the AI review loop is done, run [prompts/06_opus_refresh_review_and_walkthrough.md](prompts/06_opus_refresh_review_and_walkthrough.md), then [prompts/07_human_code_walkthrough.md](prompts/07_human_code_walkthrough.md) in GPT or Claude Sonnet.
-14. If you explicitly approve final follow-up work, save it in `FOLLOWUP.md`, then run [prompts/08_gpt_implement_human_followup.md](prompts/08_gpt_implement_human_followup.md) in GPT to implement only those approved items. That follow-up pass should also verify, `git add`, commit, push, and create a PR only if one does not already exist, but should not commit workflow-generated Markdown artifacts unless you explicitly ask for that.
-15. Finish with your own manual review.
-
-## Common entry points
-
-You do not always need to start at `01`.
-
-Use these shortcuts when appropriate:
-
-- Start with the Opus planning phase directly
-  - if clarification already happened and you already have a clean `DRAFT_PLAN.md` plus a satisfactory Opus planning prompt.
-- Start at `02`
-  - if the planning artifacts already exist and you only want to critique/lock them.
-- Start with direct GPT execution
-  - if the plan is already locked and you already have `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`.
-- Start at `04`
-  - if implementation already exists and you only need the AI review loop.
-- Start at `07`
-  - if the AI review loop is done and you are entering the final human walkthrough.
-- Start at `08`
-  - if `FOLLOWUP.md` already exists and contains only human-approved work.
-
-## What is intentionally not in this repo
-
-This repo intentionally does not try to be:
-
-- a generic skill router,
-- a universal prompt library for every kind of work,
-- a code generator,
-- an automation framework,
-- a single monolithic mega-prompt,
-- a fully automated review replacement for the human.
-
-It also intentionally does not check in runtime workflow artifacts like:
-
-- `DRAFT_PLAN.md`
-- `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
-- `PLAN_CRITIQUE.md`
-- `REVIEW.md`
-- `WALKTHROUGH.md`
-- `FOLLOWUP.md`
-
-Those are outputs of the workflow, not part of the default source pack.
-
-## Maintenance and source material
-
-If you want to maintain or extend the prompt pack itself:
-
-- read [AGENTS.md](AGENTS.md) first,
-- treat `prompts/` as the canonical editing surface,
-- treat `archived/agentic_coding_prompt_pack_refactored.md` as historical/reference material unless you are explicitly updating the archive,
-- use `sources/chat_exports/ChatGPT-Workflow and Skills Integration.json` when you need the rationale behind the current structure,
-- use `sources/original_scrappy_prompts.txt` when you need to confirm that a refactor did not drop important older instructions.
-
-### Most useful source files
-
-- [sources/chat_exports/ChatGPT-Workflow and Skills Integration.json](sources/chat_exports/ChatGPT-Workflow%20and%20Skills%20Integration.json)
-  - Best source for understanding why the current workflow is shaped this way.
-- [sources/current_skill_set.txt](sources/current_skill_set.txt)
-  - Fastest compact view of the intended skill-by-phase mapping.
-- [sources/original_scrappy_prompts.txt](sources/original_scrappy_prompts.txt)
-  - Best source for comparing current prompts against the pre-refactor workflow language.
-- [prompts/README.md](prompts/README.md)
-  - Pack-local overview for anyone entering through the `prompts/` directory.
-- [archived/agentic_coding_prompt_pack_refactored.md](archived/agentic_coding_prompt_pack_refactored.md)
-  - Consolidated historical reference, useful for audit and comparison.
-
-### Bottom line
-
-If you only remember five things about this repo, remember these:
-
-1. This is a workflow repo, not an app repo.
-2. The prompts are intentionally phase-specific and self-contained.
-3. `FEATURE_SPEC_AND_PLAN.md` is the default planning contract.
-4. There are two explicit AI loops and one final human loop.
-5. The workflow ends with human-approved follow-up execution, not blind automation.
+Never edit anything under `sources/`; those files are immutable originals or reference inputs. Treat archive material as historical unless a task explicitly targets the archive.

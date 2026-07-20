@@ -330,7 +330,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -528,7 +528,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -789,7 +789,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -1027,7 +1027,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -1134,7 +1134,7 @@ Tests must validate the right things: architecture, not implementation details.
 
 Mark unnecessary tests that test temporary hacks or changes.
 
-Also make sure the tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky and maintain at least 95% coverage for the new lines.
+Also make sure the tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky and maintain at least 85% coverage for the new lines.
 
 Do not manually run the entire test suite. Focused tests are better.
 
@@ -1282,7 +1282,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -1412,7 +1412,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -1808,7 +1808,7 @@ When you write tests, follow these instructions:
 ```text
 Always keep test code in separate files or folders away from production code. no comingling.
 Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -1984,8 +1984,8 @@ DO NOT WRITE TESTS UNTIL EXPLICITLY ASKED.
 When you write tests, follow these instructions:
 ```
 Always keep test code in separate files or folders away from production code. no comingling.
-Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes. 
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
+Tests must validate the right things (architecture, not implementation details). avoid unnecessary tests that test temporary hacks or changes.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines . Don't manually run the entire test suite. Focused tests are better.
 Tests must also strictly only test one behavior per test/method.
 ```
 
@@ -2009,8 +2009,8 @@ make sure there are comments for every change that is not obvious in terms of re
 
 All changes must be strictly cross platform and must work on both Linux and Windows. 
 
-Tests must validate the right things (architecture, not implementation details). mark unnecessary tests that test temporary hacks or changes. 
-also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 95% coverage for the new lines (don't manually run the entire test suite. Focused tests are better)
+Tests must validate the right things (architecture, not implementation details). mark unnecessary tests that test temporary hacks or changes.
+also make sure the tests for these changes are meaningful, not duplicated, not testing transient/ temporary issues, not flaky and maintain at least 85% coverage for the new lines (don't manually run the entire test suite. Focused tests are better)
 While reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that mutate process-global state such as environment variables, depend on private constants or private helper methods, assert exact error wording unless it is an intentional user-facing contract, encode packaging/layout assumptions that may change, or mirror production logic instead of independently specifying expected behavior. For each concern, classify whether it is a real flake risk, an acceptable contract test, or a maintainability concern, and suggest a behavior-level alternative when practical.
 Tests must also strictly only test one behavior per test/method.
 

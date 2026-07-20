@@ -125,38 +125,10 @@ Use this contract as the single shared engineering standard for planning, execut
 
 ### Tests
 
-- DO NOT WRITE TESTS UNTIL EXPLICITLY ASKED.
-- Do not create, modify, or delete tests unless I explicitly ask for test changes.
-- Running existing focused tests/checks is allowed when the prompt asks for verification.
-- Do not manually run the entire test suite unless I explicitly ask. Focused tests are better.
-
-When I explicitly ask you to write tests, follow these rules:
-
-```text
-Always keep test code in separate files or folders away from production code. No comingling.
-Tests must validate the right things: architecture and behavior, not implementation details.
-Avoid unnecessary tests that test temporary hacks or changes.
-Make sure tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky, and maintain at least 95% coverage for the new lines.
-Do not manually run the entire test suite unless explicitly asked. Focused tests are better.
-Tests must strictly test one behavior per test/method.
-```
-
-When reviewing tests, flag cases that are not obvious flakes but are brittle or too coupled to implementation details. Look for tests that:
-
-- mutate process-global state such as environment variables,
-- depend on private constants or private helper methods,
-- assert exact error wording unless it is an intentional user-facing contract,
-- encode packaging/layout assumptions that may change,
-- mirror production logic instead of independently specifying expected behavior.
-
-For each test concern, classify whether it is:
-
-- a real flake risk,
-- an acceptable contract test,
-- or a maintainability concern.
-
-Suggest a behavior-level alternative when practical.
-
+- Do not create, modify, or delete tests in this follow-up implementation phase.
+- Run only focused existing tests or checks needed to verify approved production changes; do not manually run the entire suite.
+- If `FOLLOWUP.md` contains test-authoring work, leave that work for the final model-agnostic `09_write_focused_tests_any_model.md` phase and state the deferral in the handoff.
+- Phase `09` exclusively owns the detailed test-authoring contract.
 
 ## Prompt
 
@@ -179,7 +151,7 @@ Success criteria:
 - if committing is allowed, each commit strictly corresponds to one approved `FOLLOWUP.md` item and does not mix work from multiple follow-up items,
 - if committing is allowed, commits are small, focused, and split into sensible parts rather than bundled into one broad commit,
 - the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
-- no AI review loop is restarted after this phase; the workflow returns to manual review.
+- no AI review loop is restarted after this phase; the workflow proceeds to the final focused test-writing phase.
 
 Context to read before acting:
 
@@ -258,7 +230,7 @@ Execution rules:
 - do not ask Opus to review this phase,
 - keep interim narration minimal and save the full report for the final response unless blocked.
 
-I will do the final review manually.
+After this phase, I will run `09_write_focused_tests_any_model.md` with any capable repository-aware model. That phase may change test files only. It must not create another prompt or workflow artifact, and I will review its resulting test diff myself.
 
 ## Required final response
 

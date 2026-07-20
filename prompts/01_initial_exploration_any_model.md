@@ -610,37 +610,10 @@ Use this contract as the single shared engineering standard for planning, execut
 
 ### Tests
 
-- DO NOT WRITE TESTS UNTIL EXPLICITLY ASKED.
-- Do not create, modify, or delete tests unless I explicitly ask for test changes.
-- Running existing focused tests/checks is allowed when the prompt asks for verification.
-- Do not manually run the entire test suite unless I explicitly ask. Focused tests are better.
-
-When I explicitly ask you to write tests, follow these rules:
-
-```text
-Always keep test code in separate files or folders away from production code. No comingling.
-Tests must validate the right things: architecture and behavior, not implementation details.
-Avoid unnecessary tests that test temporary hacks or changes.
-Make sure tests for these changes are meaningful, not duplicated, not testing transient/temporary issues, not flaky, and maintain at least 95% coverage for the new lines.
-Do not manually run the entire test suite unless explicitly asked. Focused tests are better.
-Tests must strictly test one behavior per test/method.
-```
-
-When reviewing tests, the generated prompt must instruct Opus to flag cases that are not obvious flakes but are brittle or too coupled to implementation details. It must tell Opus to look for tests that:
-
-- mutate process-global state such as environment variables,
-- depend on private constants or private helper methods,
-- assert exact error wording unless it is an intentional user-facing contract,
-- encode packaging/layout assumptions that may change,
-- mirror production logic instead of independently specifying expected behavior.
-
-For each test concern, it must instruct Opus to classify whether it is:
-
-- a real flake risk,
-- an acceptable contract test,
-- or a maintainability concern.
-
-It must tell Opus to suggest a behavior-level alternative when practical.
+- Do not create, modify, or delete tests in this phase.
+- Run only focused existing tests or checks when needed for verification; do not manually run the entire suite.
+- The generated planning and execution prompts must defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Do not duplicate phase `09`'s test-design, pytest, or coverage contract in generated prompts for earlier phases.
 
 Before finishing, the generated prompt must instruct Opus to verify that:
 
