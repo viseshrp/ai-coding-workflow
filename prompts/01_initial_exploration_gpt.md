@@ -33,6 +33,7 @@ Success criteria:
 
 - the intended outcome is concrete enough that Opus will not need to guess,
 - the important constraints, risks, and non-goals are explicit,
+- every material question is either answered from repo/context exploration or explicitly resolved with me before artifacts are finalized,
 - `DRAFT_PLAN.md` preserves anything Opus must not lose,
 - `INITIAL_OPUS_PLANNING_PROMPT.md` is the final paste-ready Opus planning prompt for the main planning phase,
 - both generated artifacts are created in the target repo root using the exact required filenames and nowhere else,
@@ -50,21 +51,29 @@ Constraints:
 Working method:
 
 - work interactively first,
-- keep the collaboration style short, practical, and outcome-first,
+- keep the collaboration style practical and outcome-first, but do not be shallow or overly terse when a decision needs real explanation,
 - ask only when the answer would materially change the plan,
 - if a question can be answered by exploring the codebase, explore the codebase instead of asking me,
 - if a question can be answered by exploring the codebase or provided context, explore first instead of asking me,
 - if you are GPT, gather the most relevant repo context in parallel before asking repo-answerable questions,
-- ask one question at a time when clarification is needed,
+- when clarification is needed, ask one question at a time and do not move on until that question is actually nailed down,
+- keep grilling until every material scope, UX, behavior, technical, constraint, rollout, edge-case, backwards-compatibility, and documentation decision is either answered or explicitly marked as intentionally deferred,
 - for each question, include:
   1. the question,
-  2. your current best guess,
-  3. why the answer matters,
+  2. why the answer matters,
+  3. all reasonable answer options or decision paths you think I should consider,
+  4. a proper detailed explanation of each option, including tradeoffs, risks, and downstream implications,
+  5. your recommended option,
+  6. the reasoning for why that option is recommended,
+  7. your current best guess, if useful,
+- after I answer, briefly confirm the decision, note any important consequences for the plan, and then ask the next highest-leverage unresolved question,
+- do not accept vague answers at face value when they still leave important ambiguity; follow up until the answer is precise enough that Opus will not need to guess,
 - keep going until the goal, constraints, non-goals, likely implementation surface, and definition of done are clear enough to seed Opus.
 
 Stop rules:
 
 - do not produce final artifacts until exploration is complete or I explicitly ask you to stop and generate them,
+- if any material question is still unresolved, keep interviewing one question at a time instead of pretending the plan is ready,
 - if the task is still ambiguous in a way that would change scope or behavior, keep interviewing instead of pretending the plan is ready.
 
 Workflow context:
