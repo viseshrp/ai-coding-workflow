@@ -133,7 +133,7 @@ Current skill references live in the prompts that use them. [sources/current_ski
 
 Skills support the workflow; they do not widen scope or override prompt constraints.
 
-Every checked-in phase and every generated downstream prompt uses [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md). It keeps chat responses and generated artifacts natural and easy to read: plain words, concrete statements, short readable sentences, and only the technical terms the reader needs. It removes filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure without dropping technical meaning or required detail.
+Every checked-in phase and every generated downstream prompt uses [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/SKILL.md). It applies its editing rules and internal self-check to make writing clearer and more human without flattening voice or technical detail. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
 
 ## Repository Layout
 

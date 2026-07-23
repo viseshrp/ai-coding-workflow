@@ -92,7 +92,7 @@ These are the main design constraints that define this repo:
 
 - No skill router. Skills are listed directly inside the relevant prompts.
 - Prompts are intentionally self-contained, even when that creates duplication.
-- Every checked-in phase prompt and every generated downstream prompt must include `unslop`. Apply it to chat responses and generated artifacts so they use plain words, concrete statements, short readable sentences, and a natural human voice without losing technical meaning or required detail.
+- Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop`. Use its editing principles and `eval.md` self-check for chat responses and generated artifacts. Preserve meaning, voice, technical detail, required output, constraints, and evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
@@ -196,7 +196,7 @@ Expectation:
 
 ### Universal plain-language skill
 
-`unslop` is required in:
+`no-ai-slop` is required in:
 
 - every checked-in phase prompt from `01` through `09`,
 - the generated Opus planning prompt specified by `01`,
@@ -204,7 +204,7 @@ Expectation:
 - the generated Opus revision prompt specified by `02`,
 - the generated GPT review-fix prompt specified by `04`.
 
-Each phase must apply it to chat responses and generated artifacts. Prefer plain words, concrete statements, short readable sentences, and a natural human voice. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure. Do not let style cleanup remove technical meaning, required detail, constraints, or evidence.
+Each phase must apply its editing principles and run its `eval.md` self-check internally. Preserve meaning, voice, technical detail, required output, constraints, and evidence. Write plainly and cut filler, canned AI phrasing, hype, needless jargon, and excess structure. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 
 ### `## Engineering Contract`
 
@@ -426,6 +426,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `85% coverage`
 - `Use only the explicitly linked skills`
 - `Use only the local skills`
+- `no-ai-slop`
 
 ## Default Agent Posture In This Repo
 

@@ -10,7 +10,7 @@ Load these skills from the sibling `../ai-skills-archive` repository:
 - `code-review-and-quality`: `archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md`
 - `source-driven-development`: `archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md`
 - `verification-before-completion`: `archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md`
-- `unslop`: `archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md`
+- `no-ai-slop`: `archives/petergyang__no-ai-slop/snapshot/SKILL.md`
 
 ## Skill Handling Rule
 
@@ -19,10 +19,10 @@ Before inspecting the target change or using a skill:
 1. Record the target repository root so you can return to it.
 2. Run `cd ../ai-skills-archive` from the target repository root.
 3. Run `git pull --ff-only origin main`.
-4. Read every `SKILL.md` listed above completely.
+4. Read every `SKILL.md` listed above completely. Also read `archives/petergyang__no-ai-slop/snapshot/eval.md` before using `no-ai-slop`.
 5. Return to the target repository root before inspecting or changing its files.
 
-If the sibling repository is missing, the pull fails, or a listed skill cannot be read completely, stop and report the blocker. Do not substitute remembered or remote skill content.
+If the sibling repository is missing, the pull fails, a listed skill cannot be read completely, or the required `eval.md` cannot be read, stop and report the blocker. Do not substitute remembered or remote skill content.
 
 Use only the local skills listed in this prompt:
 
@@ -30,7 +30,7 @@ Use only the local skills listed in this prompt:
 - use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
 - use `source-driven-development` only when a pytest or plugin API is version-sensitive or uncertain, and verify it against authoritative documentation,
 - use `verification-before-completion` to require fresh command output before any passing or completion claim,
-- use `unslop` for every chat response and all prose in test names, comments, docstrings, and the final human handoff. Prefer plain words, concrete statements, and short, readable sentences. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure without changing code meaning.
+- use `no-ai-slop` as writing guidance for every chat response and for prose in test names, comments, docstrings, and the final human handoff. Apply its editing principles and run its `eval.md` self-check internally. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them. Preserve code meaning, technical detail, and the required handoff.
 
 The prompt is the contract. Locked task artifacts are the contract for expected behavior. Skills are supporting procedures only.
 

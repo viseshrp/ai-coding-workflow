@@ -6,7 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
+- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -20,7 +20,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-Use `unslop` for every chat response and generated artifact. Prefer plain words, concrete statements, and short, readable sentences. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure. Preserve technical meaning and required detail.
+Use `no-ai-slop` as writing guidance for every chat response and generated artifact. Apply its editing principles and run its self-check internally. Do not use its draft-request, detection-mode, or mandatory `What changed` workflow unless this prompt explicitly asks for them. Preserve meaning, voice, technical detail, and the required output. Write plainly and concretely. Cut filler, canned AI phrasing, hype, needless jargon, and excess structure.
 
 
 ## Engineering Contract
@@ -272,7 +272,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
-- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
+- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/SKILL.md)
 
 The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
 
@@ -283,7 +283,7 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
-- use `unslop` for every chat response and generated artifact, using plain words, concrete statements, short readable sentences, and a natural human voice without dropping technical meaning or required detail.
+- use `no-ai-slop` as writing guidance for every chat response and generated artifact. Apply its editing principles and run its self-check internally, but ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them. Preserve meaning, voice, technical detail, and the required output.
 
 The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 

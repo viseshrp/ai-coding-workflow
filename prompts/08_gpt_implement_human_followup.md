@@ -6,7 +6,7 @@
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
-- [unslop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cursor__plugins/snapshot/pstack/skills/unslop/SKILL.md)
+- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -20,7 +20,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-Use `unslop` for every chat response and generated artifact. Prefer plain words, concrete statements, and short, readable sentences. Keep necessary technical terms, but explain them simply. Remove filler, canned AI phrasing, inflated language, unnecessary jargon, and needless structure. Preserve technical meaning and required detail.
+Use `no-ai-slop` as writing guidance for every chat response and generated artifact. Apply its editing principles and run its self-check internally. Do not use its draft-request, detection-mode, or mandatory `What changed` workflow unless this prompt explicitly asks for them. Preserve meaning, voice, technical detail, and the required output. Write plainly and concretely. Cut filler, canned AI phrasing, hype, needless jargon, and excess structure.
 
 
 ## Engineering Contract
