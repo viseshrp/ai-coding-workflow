@@ -92,7 +92,7 @@ These are the main design constraints that define this repo:
 
 - No skill router. Skills are listed directly inside the relevant prompts.
 - Prompts are intentionally self-contained, even when that creates duplication.
-- Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop`. Use its editing principles and `eval.md` self-check for chat responses and generated artifacts. Preserve meaning, voice, technical detail, required output, constraints, and evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
+- Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
@@ -204,7 +204,7 @@ Expectation:
 - the generated Opus revision prompt specified by `02`,
 - the generated GPT review-fix prompt specified by `04`.
 
-Each phase must apply its editing principles and run its `eval.md` self-check internally. Preserve meaning, voice, technical detail, required output, constraints, and evidence. Write plainly and cut filler, canned AI phrasing, hype, needless jargon, and excess structure. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
+Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document the phase creates or revises, `no-ai-slop` is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Apply its editing principles while drafting, run its evaluator before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if either file cannot be read and applied. Let it win over conflicting writing-style guidance, but preserve the prompt's control over scope, meaning, required structure, artifact names, constraints, and evidence. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 
 ### `## Engineering Contract`
 

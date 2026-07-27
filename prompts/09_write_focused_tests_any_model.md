@@ -30,7 +30,10 @@ Use only the local skills listed in this prompt:
 - use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
 - use `source-driven-development` only when a pytest or plugin API is version-sensitive or uncertain, and verify it against authoritative documentation,
 - use `verification-before-completion` to require fresh command output before any passing or completion claim,
-- use `no-ai-slop` as writing guidance for every chat response and for prose in test names, comments, docstrings, and the final human handoff. Apply its editing principles and run its `eval.md` self-check internally. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them. Preserve code meaning, technical detail, and the required handoff.
+- treat `no-ai-slop` as a hard requirement and the ultimate writing guide for every chat response and for prose in test names, comments, docstrings, and the final human handoff,
+- apply it while drafting and run its `eval.md` self-check before sending the final handoff,
+- let `no-ai-slop` win over conflicting writing-style guidance while this prompt and locked task artifacts continue to control scope, code meaning, technical detail, constraints, evidence, and the required handoff,
+- ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
 The prompt is the contract. Locked task artifacts are the contract for expected behavior. Skills are supporting procedures only.
 
