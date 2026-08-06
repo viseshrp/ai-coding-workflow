@@ -629,7 +629,7 @@ Use this contract as the single shared engineering standard for planning, execut
 - Do not create, modify, or delete tests in this phase.
 - Run only focused existing tests or checks when needed for verification; do not manually run the entire suite.
 - The generated planning and execution prompts must defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
-- Do not duplicate phase `09`'s test-design, pytest, or coverage contract in generated prompts for earlier phases.
+- Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in generated prompts for earlier phases.
 
 Before finishing, the generated prompt must instruct Opus to verify that:
 

@@ -92,6 +92,7 @@ These are the main design constraints that define this repo:
 
 - No skill router. Skills are listed directly inside the relevant prompts.
 - Prompts are intentionally self-contained, even when that creates duplication.
+- Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
@@ -108,8 +109,8 @@ These are the main design constraints that define this repo:
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
 - Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
-- The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, pytest-native APIs where available, and at least 85% coverage for new or changed lines.
-- Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each listed local `SKILL.md` completely, and return to the target repository.
+- The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
+- Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each shared and applicable language-specific local `SKILL.md` completely, and return to the target repository.
 - Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
 - Human review of the phase-`09` test diff is the terminal workflow step. Do not add another AI phase after it.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
@@ -148,8 +149,8 @@ The numbered prompt files define the workflow order and should stay in sequence.
 8. `08_gpt_implement_human_followup.md`
    - Implements only human-approved `FOLLOWUP.md` items.
 9. `09_write_focused_tests_any_model.md`
-   - Writes the smallest meaningful focused pytest test set for the final branch state.
-   - Is explicitly model-agnostic and must not rely on vendor-specific behavior or tooling.
+   - Writes the smallest meaningful focused test set for the final branch state.
+   - Is explicitly model- and language-agnostic and must not rely on vendor-specific behavior, tooling, or a language-specific framework outside its labeled guidance.
    - Pulls and reads its relevant skills from the sibling `../ai-skills-archive` repository before using them.
    - Requires at least 85% coverage for new or changed lines.
    - Changes test files only and generates no downstream prompt or workflow artifact.
@@ -231,7 +232,7 @@ The `### Tests` subsection is deliberately phase-specific:
 - phases `01`, `02`, `03`, `05`, and `08` state only the no-authoring boundary and defer detailed test policy to `09`,
 - phases `04` and `06` carry concise review-only test criteria,
 - phase `09` owns the complete test-authoring contract,
-- do not copy phase `09`'s detailed pytest rules back into every Engineering Contract.
+- do not copy phase `09`'s detailed test-framework or language-specific rules back into every Engineering Contract.
 
 ### Combined planning artifact policy
 

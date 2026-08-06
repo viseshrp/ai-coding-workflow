@@ -95,7 +95,7 @@ Use this contract as the single shared engineering standard for planning, execut
 ### Types
 
 - Use correct types when adding types to code.
-- Keep type hints proportionate and readable. Do not use deeply nested, repetitive, or unnecessarily complex annotations that crowd code or obscure its intent; prefer the simplest accurate type or a well-named type alias when that is clearer.
+- Keep type declarations and annotations proportionate and readable. Do not use deeply nested, repetitive, or unnecessarily complex annotations that crowd code or obscure intent; prefer the simplest accurate type or a well-named type alias when that is clearer.
 - Do not use filler types.
 - Do not use overly generic types just to satisfy a checker.
 - Do not use type-ignore comments to pass CI temporarily.
@@ -187,8 +187,8 @@ Review for:
 
 - readability,
 - quality,
-- idiomatic, Pythonic use of the language and standard library where the code is Python,
-- type hints that clarify rather than crowd the code; flag overly complex annotations when a simpler accurate type or well-named type alias would improve readability,
+- idiomatic use of the target language and its standard library,
+- type declarations and annotations that clarify rather than crowd the code; flag overly complex annotations when a simpler accurate type or well-named type alias would improve readability,
 - backwards compatibility,
 - performance,
 - proper reuse of existing code,
@@ -204,6 +204,12 @@ Review for:
 - bloated comment blocks,
 - cross-platform Linux/Windows safety,
 - test quality, only for tests that already exist or were explicitly requested.
+
+### Language-specific review guidance
+
+#### Python
+
+- When the reviewed code is Python, assess whether it uses the language and standard library idiomatically.
 
 Backwards compatibility is top priority.
 
@@ -231,11 +237,17 @@ Review existing or changed tests; do not author tests in this phase.
 
 - Require the fewest tests that cover distinct changed behavior and material regression risks. Flag duplicate, transient, temporary-hack, or coverage-only tests.
 - Require observable behavior rather than implementation details, one clear behavior per test, and small linear test functions, fixtures, and helpers.
-- Check that tests follow existing pytest configuration and conventions and prefer existing fixtures and native APIs such as `monkeypatch`, `tmp_path`, capture fixtures, `pytest.raises`, `pytest.warns`, parametrization, and an installed mock fixture over hand-rolled Python or standard-library mechanisms.
-- Flag any test that monkeypatches, patches, or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
+- Check that tests follow the existing test framework's configuration and conventions and prefer existing fixtures, native APIs, and installed extensions over hand-rolled test infrastructure.
+- Flag any test that patches or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
 - Limit mocks to impractical external boundaries; flag internal call choreography and implementation-detail mocks.
 - Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or network access, and expected values that mirror production logic.
 - Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only.
+
+### Language-specific test review guidance
+
+#### Python / pytest
+
+- When relevant tests use pytest, check that they follow the existing pytest configuration and prefer existing fixtures and native APIs such as `monkeypatch`, `tmp_path`, capture fixtures, `pytest.raises`, `pytest.warns`, parametrization, and an installed mock fixture over hand-rolled Python or standard-library mechanisms.
 
 Classify each concern as a real flake risk, an acceptable contract test, or a maintainability concern, and suggest a behavior-level alternative when practical.
 

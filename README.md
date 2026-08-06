@@ -120,10 +120,15 @@ Earlier phases may inspect or run focused tests, but they do not author tests. P
 
 - write the fewest nonduplicative tests that cover changed behavior and material regression risks,
 - keep tests behavior-focused, deterministic, isolated, and small enough to read linearly,
-- follow existing pytest configuration and reuse fixtures, native APIs, and installed plugins instead of hand-rolled Python or standard-library mechanisms,
-- never monkeypatch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
+- follow the repository's existing test-framework configuration and reuse its fixtures, native APIs, and installed extensions instead of hand-rolled test infrastructure,
+- never patch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
 - reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
 - change test files only, then hand the test diff directly to a human without another prompt or workflow artifact.
+
+### Language-specific testing guidance
+
+- **Python / pytest:** follow the existing pytest configuration and reuse fixtures, native APIs, and installed plugins instead of hand-rolled Python or standard-library mechanisms. Use `monkeypatch` for external collaborators when it fits; never monkeypatch the subject under test.
+- **Other languages:** follow the repository's established test runner, framework conventions, and installed extensions. Do not introduce or migrate a test framework during phase 09.
 
 The full policy, local-skill loading procedure, stop rules, and verification contract live in [phase 09](prompts/09_write_focused_tests_any_model.md).
 
