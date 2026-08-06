@@ -114,6 +114,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -161,6 +168,7 @@ Success criteria:
 
 - every blocking issue is grounded in specific diff, code, or plan evidence,
 - plan divergence is clearly separated from optional suggestions,
+- every material changed behavior has a documentation-checkpoint result grounded in the actual branch: exact durable documentation and validation, or an evidence-based `Not applicable` decision,
 - the outputs are detailed enough to drive both the review-fix phase and the final human walkthrough.
 
 Constraints:
@@ -194,6 +202,7 @@ Review for:
 - proper reuse of existing code,
 - plan compliance,
 - source/documentation grounding,
+- completion of the documentation checkpoint for every material changed behavior, including durable documentation accuracy, validation, and any `Not applicable` rationale,
 - justified library/framework usage,
 - outdated APIs,
 - public API usability/intuitiveness/naming/blending with existing APIs,
@@ -297,6 +306,8 @@ Every valid review issue must be categorized under either `Blocking Issues` or `
 
 Use `Suggestions` only for optional improvements that are not required in the GPT review-fix pass.
 
+In `## Documentation Review`, record the documentation-checkpoint result for every material changed behavior. Treat missing, inaccurate, or unvalidated required durable documentation as a valid review issue rather than an optional suggestion.
+
 ## Required output 2: `WALKTHROUGH.md`
 
 Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
@@ -380,6 +391,7 @@ Success criteria:
 - all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
 - scope stays within the original implementation and review contract,
 - backwards compatibility is preserved,
+- each fixed or retained material behavior completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - verification evidence is reported clearly,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
@@ -415,6 +427,7 @@ Constraints:
 - no architecture changes,
 - no unrelated refactors,
 - no tests unless explicitly asked,
+- treat a valid documentation-checkpoint gap as a required review fix: update and validate the durable documentation in the same change set, or stop and ask if the required change would exceed the approved scope,
 - stop and ask on ambiguity/conflict/context gaps.
 
 Per-review-item process:
@@ -422,14 +435,16 @@ Per-review-item process:
 1. Verify the review item against the actual code.
 2. Determine whether it is valid.
 3. Implement every valid fix from `Blocking Issues` and `Non-Blocking Issues`, including minor nits that are still valid issues.
-4. Do not implement items from `Suggestions` unless explicitly approved.
-5. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
-6. If a review item requires a design decision not already made, stop and ask.
-7. Check off fixes if a checklist exists.
+4. Complete the documentation checkpoint for the changed behavior before treating the review item as fixed.
+5. Do not implement items from `Suggestions` unless explicitly approved.
+6. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
+7. If a review item requires a design decision not already made, stop and ask.
+8. Check off fixes if a checklist exists.
 
 Focused verification:
 
 - run focused verification relevant to the fixes,
+- run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
@@ -455,7 +470,7 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 
 ## Verification Evidence
 
-## Documentation Updated
+## Documentation Checkpoints
 
 ## Commits Created
 
@@ -465,6 +480,8 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 
 ## Remaining Questions / Blockers
 ```
+
+In `## Documentation Checkpoints`, require GPT to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
 It must explicitly instruct GPT not to claim completion without fresh verification evidence.
 

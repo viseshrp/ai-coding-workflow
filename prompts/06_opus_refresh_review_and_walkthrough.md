@@ -113,6 +113,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -150,6 +157,7 @@ Role:
 Task:
 
 - your job is to update the review and walkthrough documents so they accurately reflect the final code state,
+- confirm that every material changed behavior has a completed documentation checkpoint before final human review,
 - preserve the existing review trail while clearly marking what was fixed during the review loop.
 
 Artifact location rule:
@@ -171,6 +179,7 @@ Success criteria:
 
 - `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
+- `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
 - the refreshed artifacts are detailed, grounded, and internally consistent.
 
 Constraints:
@@ -178,6 +187,7 @@ Constraints:
 - do not modify production code,
 - do not modify tests,
 - do not make new review findings unless you discover something severe that was missed,
+- treat missing, inaccurate, or unvalidated required durable documentation as a severe missed issue; stop and ask rather than finalizing the review artifacts,
 - if you discover a severe missed issue, stop and ask before proceeding.
 
 ## Required output 1: refreshed `REVIEW.md`
@@ -198,7 +208,7 @@ It must include:
 - assert usage,
 - cross-platform review,
 - test review, if applicable,
-- documentation review,
+- documentation review with every material changed behavior's update-and-validation evidence or evidence-based `Not applicable` rationale,
 - any remaining suggestions.
 
 Clearly mark review findings that were fixed during the review loop.

@@ -23,6 +23,9 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+## Documentation checkpoint
+
+Documentation is a required human-review checkpoint, not final cleanup. For every material changed behavior, use the primary PR checklist to record the exact durable documentation update and its validation, or an evidence-based `Not applicable` decision. This phase must not implement documentation changes; a required documentation change becomes a `FOLLOWUP.md` item only after I explicitly type `AGREE`.
 
 ## Prompt
 
@@ -51,6 +54,7 @@ Goal:
 - if GitHub CLI is unavailable or I am not logged in, skip the resolution step without erroring and continue the review,
 - there is a `WALKTHROUGH.md` document that we will use only as a detailed supplement to help me do the human review,
 - use `WALKTHROUGH.md`, the actual code, and the PR changes from GitHub CLI (`gh`) to help me review each file one small chunk at a time,
+- perform a documentation checkpoint for every material changed behavior: identify the affected durable user-, operator-, API-, configuration-, or developer-facing documentation, then record the exact update and validation or an evidence-based `Not applicable` decision in the primary checklist,
 - for each changed chunk, include a few lines selected intelligently around the change so the code is easier to understand,
 - if method calls appear in the shown excerpt, also show the relevant method definitions in separate small excerpts with context,
 - surface any additional relevant information from `WALKTHROUGH.md` alongside the current file chunk under review,
@@ -85,6 +89,7 @@ Success criteria:
 - each chunk includes a few intelligently selected surrounding lines around the change,
 - if method calls appear in the excerpt, the relevant method definitions are also shown in separate small excerpts with context,
 - relevant extra context from `WALKTHROUGH.md` is surfaced alongside the current file chunk,
+- each material changed behavior has an explicit documentation-checkpoint result before its file can be resolved,
 - typing `RESOLVE` in all caps advances the review to the next file only after the current file is fully reviewed,
 - every proposed follow-up item includes a detailed step-by-step plan and is specific enough to implement directly,
 - nothing is added to `FOLLOWUP.md` unless I type `AGREE` in all caps.
@@ -101,6 +106,7 @@ Constraints:
 - use the manual diff against `main` only for verification/reference,
 - do not let `WALKTHROUGH.md` replace or reorder the changed-file checklist,
 - do not use `FOLLOWUP.md` as the main review checklist,
+- do not resolve a file until its material changed behavior has a documentation-checkpoint result in the primary checklist; record required documentation work in `FOLLOWUP.md` only after I type `AGREE`, and record an evidence-based `Not applicable` decision in the primary checklist when no durable documentation change is needed,
 - use `WALKTHROUGH.md` only to gather context that helps the human review,
 - use `WALKTHROUGH.md` as supplemental context only; actual code and the PR changes from GitHub CLI (`gh`) win,
 - keep the review terse and brief without losing detail,
@@ -123,6 +129,7 @@ Review loop:
 - let us review the PR one file at a time,
 - for the current file, gather any relevant context from `WALKTHROUGH.md`,
 - after gathering context from `WALKTHROUGH.md`, inspect the corresponding actual code, the PR changes from GitHub CLI (`gh`), and the manual diff against `main` only as verification/reference,
+- identify the durable documentation affected by each material changed behavior and record its update-and-validation requirement or evidence-based `Not applicable` rationale in the primary checklist,
 - break the current file into logical changed chunks and review one chunk at a time in file order,
 - for each changed chunk, show a few intelligently selected surrounding lines around the change,
 - if method calls appear in the shown excerpt, show the relevant method definitions in separate small excerpts with context,
@@ -146,8 +153,9 @@ Response format for each review step:
 7. `Walkthrough Notes For This Chunk`
 8. `Human Review Concern`
 9. `Independent Human Review Judgment`
-10. `Exact Next Step Plan`
-11. `File Review Status`
+10. `Documentation Checkpoint`
+11. `Exact Next Step Plan`
+12. `File Review Status`
 
 For each review turn:
 
@@ -168,13 +176,14 @@ For each review turn:
 15. Explain the human review concern, if any.
 16. Use the manual diff against `main` only to verify or cross-check the PR data from GitHub CLI (`gh`); do not use it as the primary review source.
 17. Give an independent human-review judgment based only on `WALKTHROUGH.md`, the actual code, and the PR changes from GitHub CLI (`gh`), using the manual diff against `main` only for verification/reference.
-18. Discuss and propose exact next steps as a detailed step-by-step plan.
-19. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
-20. Only after the current file is fully reviewed, ask whether I want to `RESOLVE` that file.
-21. If I type `RESOLVE`, mark the current file resolved and proceed to the next file.
-22. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
-23. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
-24. After `RESOLVE`, immediately display the review for the next file starting with its first chunk.
+18. Record the documentation checkpoint for each material changed behavior: exact durable documentation and validation, or an evidence-based `Not applicable` rationale.
+19. Discuss and propose exact next steps as a detailed step-by-step plan.
+20. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
+21. Only after the current file is fully reviewed and its documentation checkpoint is recorded, ask whether I want to `RESOLVE` that file.
+22. If I type `RESOLVE`, mark the current file resolved and proceed to the next file.
+23. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
+24. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
+25. After `RESOLVE`, immediately display the review for the next file starting with its first chunk.
 
 “Agreed” means I must explicitly type `AGREE` in all-caps.
 
@@ -209,6 +218,7 @@ Each item must include:
 - why we agreed to it,
 - acceptance criteria,
 - verification needed,
+- documentation checkpoint: exact durable documentation file/section, update, and validation, or the evidence-based `Not applicable` rationale,
 - any risks or constraints.
 
 Do not include speculative items.

@@ -24,6 +24,9 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+## Documentation checkpoint
+
+Documentation is a required planning checkpoint, not final cleanup. During exploration, identify the documentation impact of each likely implementation step and carry it into both generated planning artifacts as an exact durable documentation update and validation, or an evidence-based `Not applicable` decision.
 
 ## Prompt
 
@@ -116,6 +119,7 @@ Create `DRAFT_PLAN.md` in the target repo root with:
 - open questions,
 - decisions already made,
 - likely files/modules involved, if known,
+- documentation impact for each likely implementation step, including the exact durable documentation to update or an evidence-based `Not applicable` rationale,
 - risks,
 - definition of done,
 - anything that Opus must not lose.
@@ -257,6 +261,7 @@ Final self-check:
 
 - verify that the planning artifacts are explicit about success criteria, stop rules, and verification,
 - verify that the implementation plan is detailed enough to drive end-to-end GPT execution,
+- verify that every implementation step has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - verify that the prompt and plan remain within the original requested scope.
 
 Inside `## Prompt`, after the core sections above, the generated Opus prompt must also include these requirement blocks in substance.
@@ -277,7 +282,7 @@ Required planning depth:
 - where each change should go,
 - order of changes,
 - verification commands/checks,
-- documentation updates.
+- a documentation checkpoint for every implementation step: exact durable documentation files/sections and validation, or an evidence-based `Not applicable` decision.
 
 Required design-question pass:
 
@@ -330,7 +335,8 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - why the change is needed,
    - link to relevant spec/reference anchor inside the same file,
    - dependencies on previous steps,
-   - verification relevant to that step.
+   - verification relevant to that step,
+   - documentation checkpoint for that step: exact durable documentation file/section, required update, and validation, or an evidence-based `Not applicable` decision.
 4. Source/documentation grounding section:
    - identify the version if possible,
    - cite the official docs/source consulted,
@@ -345,10 +351,12 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - what failures should be pasted back without paraphrasing,
    - no full test-suite run unless explicitly asked.
 6. Documentation update plan:
-   - likely docs folder/file(s),
-   - how you found them,
+   - a mapping from every implementation step to its documentation checkpoint,
+   - likely docs folder/file(s) and how you found them,
    - exact sections to update or create,
-   - reminder not to write the changelog.
+   - applicable docs build, link check, rendering check, or other focused validation,
+   - when no durable documentation change is needed, the evidence-based reason it is `Not applicable`,
+   - reminder that documentation must be completed in the same change set and that the changelog is not updated unless explicitly requested.
 
 Required output 2: `GPT_EXECUTION_PROMPT.md`
 
@@ -421,7 +429,7 @@ Success criteria:
 
 - only the planned changes are implemented,
 - the smallest correct changes are made,
-- required documentation updates are completed,
+- every implementation-plan step completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
@@ -479,7 +487,8 @@ Execution rules:
 - run focused linter/smoke/build checks described by the plan,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
-- update related documentation as described in the plan,
+- before marking each implementation-plan step complete, complete its documentation checkpoint: update the exact durable documentation and run its focused validation, or record an evidence-based `Not applicable` decision,
+- do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
@@ -506,7 +515,7 @@ The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structu
 
 ## Verification Evidence
 
-## Documentation Updated
+## Documentation Checkpoints
 
 ## Commits Created
 
@@ -518,6 +527,8 @@ The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structu
 
 ## Suggestions Not Implemented Because Out Of Scope
 ```
+
+In `## Documentation Checkpoints`, require GPT to list each implementation-plan step's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
 It must explicitly instruct GPT not to claim completion without fresh verification evidence.
 
@@ -608,6 +619,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Look for the correct docs folder by backtracking from GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
+
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before an implementation-plan step can be marked complete, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by that step.
+- Update the exact durable documentation files/sections in the same change set and validate them with the applicable docs build, link check, rendering check, or focused repository check when available.
+- If no durable documentation change is needed, record an evidence-based `Not applicable` decision. Code comments, commit messages, and workflow artifacts do not substitute for durable documentation.
 
 ### Cross-platform behavior
 

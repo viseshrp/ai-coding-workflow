@@ -114,6 +114,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -146,6 +153,7 @@ Role:
 Task:
 
 - verify whether GPT satisfied all previously raised concerns, including the previously raised review findings,
+- verify that every material changed behavior still has a completed documentation checkpoint,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
 Artifact location rule:
@@ -170,6 +178,7 @@ Success criteria:
 
 - each prior finding is checked against the actual changed code,
 - the status of each finding is explicit and evidence-based,
+- each documentation-checkpoint result is checked against the actual branch, including the durable documentation and validation evidence or the `Not applicable` rationale,
 - any newly introduced issue is surfaced instead of hidden inside a pass verdict.
 
 Constraints:
@@ -186,6 +195,8 @@ For each prior review finding:
 - explain evidence from code,
 - identify any new issues introduced by the fix.
 
+For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
+
 ## Required output: `REVIEW_FIX_VERIFICATION.md`
 
 Create `REVIEW_FIX_VERIFICATION.md` in the target repo root.
@@ -197,12 +208,15 @@ Use this structure:
 
 ## Verdict
 - All valid blocking and non-blocking review findings resolved: Yes/No
+- Documentation checkpoints complete: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
 ## Finding-by-Finding Verification
 
 | Original Finding | Status | Evidence | Remaining Action |
 |---|---|---|---|
+
+## Documentation Checkpoint Verification
 
 ## New Issues Introduced
 
@@ -220,4 +234,4 @@ If anything remains unresolved:
 - state that `04` is the only phase that should author `GPT_REVIEW_FIX_PROMPT.md`,
 - if the existing `GPT_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
 
-If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
+If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved and every documentation checkpoint is complete, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.

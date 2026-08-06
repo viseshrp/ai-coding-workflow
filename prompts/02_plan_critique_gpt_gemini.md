@@ -113,6 +113,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -145,6 +152,7 @@ Success criteria:
 
 - every material concern is grounded in specific plan text, GPT-prompt text, or concrete repo evidence,
 - blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
+- the plan and generated GPT prompt give every implementation step a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - the output follows the exact artifact structure below.
 
 Constraints:
@@ -199,7 +207,7 @@ Review for:
 - cross-platform Linux/Windows risks,
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
-- missing documentation update plan,
+- missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
 - anything in the GPT prompt that gives GPT too much freedom.
 
 ## Required output 1: `PLAN_CRITIQUE.md`
@@ -230,6 +238,8 @@ Use this structure:
 ## Performance / Complexity Risks
 
 ## Source Documentation Grounding Issues
+
+## Documentation Checkpoint Gaps
 
 ## GPT Prompt Risks
 
@@ -345,6 +355,7 @@ Success criteria:
 - every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
 - the revised plan stays within original scope,
 - the revised GPT prompt remains strict enough to prevent divergence during execution,
+- the revised plan and GPT prompt preserve a documentation checkpoint for every implementation step, including exact durable documentation/validation or an evidence-based `Not applicable` decision,
 - the revised planning artifacts still belong only in the target repo root and do not introduce any alternate artifact path,
 - the revised planning artifacts preserve or add `Created by`, `Created at`, and `Updated at` metadata correctly,
 - the revised GPT prompt preserves explicit instructions to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
@@ -379,6 +390,7 @@ And also:
 - do not silently drop any critique item,
 - ground plan detail in the code and context you actually inspected,
 - preserve or strengthen the `GPT_EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether a pull request already exists for the current branch, and create a pull request only if none exists,
+- preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,
 - preserve or strengthen the artifact-metadata rule that all workflow-generated Markdown artifacts include `Created by`, `Created at`, and `Updated at`, preserving creation fields and refreshing `Updated at` on edits,
 - preserve or strengthen the `GPT_EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
@@ -408,6 +420,8 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 
 ## Changes Made To GPT_EXECUTION_PROMPT.md
 
+## Documentation Checkpoints Updated
+
 ## Remaining Risks
 
 ## Ready For Another Critique Pass?
@@ -420,6 +434,7 @@ Final checks:
 - verify that the updated plan is still within original scope,
 - verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
 - verify that the GPT prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- verify that every implementation step still has a documentation checkpoint with durable documentation validation or an evidence-based `Not applicable` decision,
 - verify that no test-writing is introduced unless explicitly asked,
 - verify that all skill links relevant to the generated GPT prompt remain present,
 - verify that the GPT prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,

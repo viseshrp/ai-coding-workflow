@@ -109,6 +109,7 @@ These are the main design constraints that define this repo:
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
 - Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
+- Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phase `09` may only verify and escalate a gap because its test-only scope forbids documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each shared and applicable language-specific local `SKILL.md` completely, and return to the target repository.
 - Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
@@ -233,6 +234,10 @@ The `### Tests` subsection is deliberately phase-specific:
 - phases `04` and `06` carry concise review-only test criteria,
 - phase `09` owns the complete test-authoring contract,
 - do not copy phase `09`'s detailed test-framework or language-specific rules back into every Engineering Contract.
+
+### Documentation checkpoint
+
+Documentation is a cross-phase completion gate. Keep a named documentation-checkpoint rule in every checked-in prompt and every generated downstream prompt. Planning, critique, review, verification, and the human walkthrough must identify the documentation impact and require an explicit update-or-not-applicable result; implementation, fix, and follow-up phases must complete and validate applicable durable documentation in the same change set. Phase `09` must verify that prior documentation checkpoints passed and stop/escalate if they did not, without editing documentation.
 
 ### Combined planning artifact policy
 
@@ -409,6 +414,7 @@ Before finishing a change, verify:
 - `README.md` matches the actual prompt set and workflow,
 - no file under `sources/` was modified, added, renamed, moved, or deleted,
 - any new wording did not accidentally add scope or remove guardrails,
+- every phase has an explicit documentation checkpoint appropriate to its write permissions,
 - Markdown remains readable and copy-paste ready.
 
 ## Suggested Search Targets When Maintaining This Repo
@@ -428,6 +434,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `Use only the explicitly linked skills`
 - `Use only the local skills`
 - `no-ai-slop`
+- `Documentation checkpoint`
 
 ## Default Agent Posture In This Repo
 

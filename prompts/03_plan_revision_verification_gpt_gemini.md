@@ -113,6 +113,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -145,6 +152,7 @@ Success criteria:
 
 - each prior concern is checked against the revised artifacts and linked to concrete evidence,
 - the verdict is explicit about both readiness and remaining gaps,
+- every implementation step in the revised plan and GPT prompt has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - the output follows the exact structure below.
 
 Constraints:
@@ -168,6 +176,7 @@ Working method:
 - if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
 - quote or clearly point to where each concern was addressed,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
+- verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,
 - if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
 
 Task:
@@ -201,12 +210,15 @@ Use this structure:
 
 ## Verdict
 - All previous concerns resolved: Yes/No
+- Documentation checkpoints complete: Yes/No
 - Ready for GPT execution: Yes/No
 
 ## Concern-by-Concern Verification
 
 | Concern | Status | Evidence | Remaining Action |
 |---|---|---|---|
+
+## Documentation Checkpoint Verification
 
 ## Remaining Blocking Issues
 
@@ -224,4 +236,4 @@ If any issue remains:
 - state that `02` is the only phase that should author `OPUS_PLAN_REVISION_REQUEST.md`,
 - if the existing `OPUS_PLAN_REVISION_REQUEST.md` was missing, weak, or failed to preserve the needed revision instructions, call that out as a failure in the upstream critique/request phase rather than compensating for it here.
 
-If no issue remains, state clearly that the plan is ready for GPT execution.
+If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for GPT execution.

@@ -113,6 +113,13 @@ Use this contract as the single shared engineering standard for planning, execut
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
+### Documentation checkpoint
+
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
+
 ### Cross-platform behavior
 
 - All changes must be strictly cross-platform and must work on both Linux and Windows.
@@ -146,7 +153,7 @@ Success criteria:
 - only approved `FOLLOWUP.md` items are implemented,
 - each completed item is checked off only after the change and its verification are done,
 - the smallest correct changes are made,
-- required documentation updates are completed,
+- each completed `FOLLOWUP.md` item completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
@@ -184,6 +191,7 @@ Constraints:
 - workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
 - go on and address all items in `FOLLOWUP.md` while checking them off the list,
 - only implement items that are explicitly present in `FOLLOWUP.md`,
+- before checking off an item, complete the documentation checkpoint specified by that item; if it is missing or ambiguous, stop and ask instead of silently treating documentation as `Not applicable`,
 - do not add new follow-up items,
 - do not expand scope,
 - do not implement optional suggestions unless they are explicitly in `FOLLOWUP.md`,
@@ -221,7 +229,8 @@ Execution rules:
 - run focused verification relevant to the approved follow-up items,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
-- update related documentation as required by the approved follow-up items,
+- before marking each approved item complete, update and validate the exact durable documentation in the same change set, or report the item's evidence-based `Not applicable` decision,
+- do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
@@ -250,7 +259,7 @@ After this phase, I will run `09_write_focused_tests_any_model.md` with any capa
 
 ## Verification Evidence
 
-## Documentation Updated
+## Documentation Checkpoints
 
 ## Commits Created
 
@@ -266,5 +275,7 @@ After this phase, I will run `09_write_focused_tests_any_model.md` with any capa
 ```
 
 In `## Commits Created`, list each commit together with the exact `FOLLOWUP.md` item it corresponds to.
+
+In `## Documentation Checkpoints`, list each completed `FOLLOWUP.md` item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
 Do not claim completion without fresh verification evidence.

@@ -82,6 +82,7 @@ Use a fresh chat for each major phase or model handoff. The artifact files, not 
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
 - Do not stage or commit workflow-generated Markdown artifacts unless explicitly requested.
 - Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
+- Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phase 09 verifies this status but cannot edit documentation.
 - Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
 
 ## Artifact Chain
@@ -113,6 +114,15 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - Model roles stay explicit: any capable repo-aware model for exploration and final test writing; GPT or Gemini for plan critique/verification; Opus for planning, revision, and AI review; GPT or Sonnet for the human walkthrough; GPT for implementation, fixes, and follow-up.
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
 - The final automated phase adds the smallest meaningful focused test set. A human reviews those tests, and the workflow ends without another prompt or artifact.
+
+## Documentation Checkpoints
+
+Documentation follows the same gate discipline as code and verification:
+
+- Planning phases identify the durable user-, operator-, API-, configuration-, and developer-facing documentation affected by every implementation step, or explain why none applies.
+- Implementation, review-fix, and human-follow-up phases update and validate the affected documentation in the same change set before they mark the step complete.
+- Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
+- Phase 09 remains test-file-only. It must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
 
 ## Testing Policy
 

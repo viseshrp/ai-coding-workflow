@@ -79,6 +79,13 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - Do not make assumptions to force a test to pass.
 - The resulting test diff will be reviewed directly by a human. That human review ends the workflow.
 
+### Documentation checkpoint
+
+- Before test work, verify that every material changed behavior already has a documentation-checkpoint result from an earlier phase: exact durable documentation updated and validated, or an evidence-based `Not applicable` decision.
+- Inspect the changed behavior and the relevant durable documentation closely enough to validate that result; do not treat code comments, commit messages, or workflow artifacts as substitutes.
+- This phase may not edit documentation. If a required durable documentation update is missing, inaccurate, unvalidated, or lacks an evidence-based `Not applicable` decision, stop and ask for it to be resolved in an authorized implementation or follow-up stage before continuing.
+- State the documentation-checkpoint status in the final human-review handoff.
+
 ### Minimum test set
 
 - Write the fewest tests that provide meaningful confidence.
@@ -190,6 +197,7 @@ Context to read before acting:
 - existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `FOLLOWUP.md`, if present,
+- durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
 - relevant public documentation or source for test-runner, framework, coverage-tool, or extension APIs when their use is uncertain.
 
 Success criteria:
@@ -200,6 +208,7 @@ Success criteria:
 - existing test-framework native APIs or installed extensions replace hand-rolled test infrastructure where available,
 - fresh evidence shows the focused tests pass,
 - fresh evidence shows at least 85% coverage for new or changed lines,
+- every material changed behavior has a verified prior documentation-checkpoint result,
 - no production or configuration files are changed,
 - no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
 - any intended test changes are committed and pushed, and a pull request is created only if missing,
@@ -207,7 +216,7 @@ Success criteria:
 
 Working method:
 
-1. Inspect the branch diff, repository instructions, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, and installed extensions.
+1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, and installed extensions. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
 2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
 3. Build a compact behavior-to-test matrix containing:
    - changed behavior or regression risk,
@@ -226,6 +235,7 @@ Working method:
 Stop rules:
 
 - Stop and ask if expected behavior is ambiguous or conflicts with code, plans, or follow-up decisions.
+- Stop and ask if any material changed behavior lacks a complete documentation checkpoint; do not edit documentation in this test-only phase or silently waive the requirement.
 - Stop and ask if meaningful testing requires a production-code, dependency, plugin, build, or configuration change.
 - Stop and ask if the repository has no established test runner or framework that can exercise the changed behavior without adding dependencies.
 - Stop and ask if unrelated baseline failures prevent reliable focused verification.
@@ -242,6 +252,7 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - why this is the minimum test set,
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
+- the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
 - any blocker or existing-test concern that was deliberately left unchanged.
 
 End with: `Tests are ready for human review.`
