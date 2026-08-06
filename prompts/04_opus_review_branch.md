@@ -95,6 +95,7 @@ Use this contract as the single shared engineering standard for planning, execut
 ### Types
 
 - Use correct types when adding types to code.
+- Keep type hints proportionate and readable. Do not use deeply nested, repetitive, or unnecessarily complex annotations that crowd code or obscure its intent; prefer the simplest accurate type or a well-named type alias when that is clearer.
 - Do not use filler types.
 - Do not use overly generic types just to satisfy a checker.
 - Do not use type-ignore comments to pass CI temporarily.
@@ -186,6 +187,8 @@ Review for:
 
 - readability,
 - quality,
+- idiomatic, Pythonic use of the language and standard library where the code is Python,
+- type hints that clarify rather than crowd the code; flag overly complex annotations when a simpler accurate type or well-named type alias would improve readability,
 - backwards compatibility,
 - performance,
 - proper reuse of existing code,
