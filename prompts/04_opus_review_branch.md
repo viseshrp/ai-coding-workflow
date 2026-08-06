@@ -101,6 +101,18 @@ Use this contract as the single shared engineering standard for planning, execut
 - Do not use type-ignore comments to pass CI temporarily.
 - Do not add sloppy code like `typing.Cast` or cast types in code just to satisfy type checkers.
 
+### Python
+
+Apply this subsection only when the target repository uses Python.
+
+The following typing coverage is a hard requirement:
+
+- Every parameter, including `*args` and `**kwargs`, and return value of an added or changed function or method must have an explicit, accurate type hint. Treat `self` and `cls` as implicit; do not annotate them solely for this requirement.
+- Every added or changed class variable, class attribute, instance attribute, and module-level mutable or optional state must have an explicit, accurate type hint. A trivial immutable module constant may remain inferred unless the configured type checker needs an annotation.
+- Declare instance-attribute types at class scope where feasible; do not add `self.attribute: Type` annotations inside a method merely to satisfy this requirement.
+- Do not type annotate local variables inside function or method bodies. Rely on inference; add a local annotation only to resolve a real configured type-checker error.
+- Keep required annotations simple and accurate. Do not add advanced type constructs or type-only refactors unless the configured type checker requires them.
+
 ### Comments and documentation
 
 - Always add detailed and brief comments for code where comments make the code easier to understand.
@@ -219,6 +231,8 @@ Review for:
 #### Python
 
 - When the reviewed code is Python, assess whether it uses the language and standard library idiomatically.
+- Treat missing or inaccurate type hints on any added or changed function or method parameter, including `*args` and `**kwargs`, return value, class variable, class attribute, instance attribute, or module-level mutable or optional state as a blocking finding. Do not require `self`, `cls`, or trivial immutable module constants to be annotated.
+- Flag local variable annotations inside function or method bodies unless a real configured type-checker error requires them. Also flag advanced, crowded, or type-only annotations that are not required by that checker.
 
 Backwards compatibility is top priority.
 
@@ -284,6 +298,8 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 ## Source Documentation Grounding
 
 ## Code Quality / Readability
+
+## Python Typing Review
 
 ## Reuse / DRY / Duplication
 

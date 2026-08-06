@@ -27,6 +27,17 @@ Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving
 
 Documentation is a required human-review checkpoint, not final cleanup. For every material changed behavior, use the primary PR checklist to record the exact durable documentation update and its validation, or an evidence-based `Not applicable` decision. This phase must not implement documentation changes; a required documentation change becomes a `FOLLOWUP.md` item only after I explicitly type `AGREE`.
 
+## Language-specific review guidance
+
+### Python
+
+When the current PR's changed code uses Python, add an explicit typing-compliance check to the primary checklist:
+
+- Every parameter, including `*args` and `**kwargs`, and return value of an added or changed function or method must have an explicit, accurate type hint. Treat `self` and `cls` as implicit; do not require annotations for them.
+- Every added or changed class variable, class attribute, instance attribute, and module-level mutable or optional state must have an explicit, accurate type hint. A trivial immutable module constant may remain inferred unless the configured type checker needs an annotation.
+- Instance-attribute types should be declared at class scope where feasible. Do not require local-variable or `self.attribute: Type` annotations inside function or method bodies unless a real configured type-checker error requires one.
+- Required annotations must stay simple and accurate; do not accept advanced type constructs or type-only refactors that the configured type checker does not require.
+
 ## Prompt
 
 Role:

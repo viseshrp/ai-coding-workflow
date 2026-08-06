@@ -122,6 +122,11 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 #### Python / pytest
 
 - When the changed code and relevant tests use Python with pytest, inspect the repository's pytest configuration, existing fixtures, plugins, and test conventions before writing tests.
+- Treat the following as hard requirements for added or changed Python test code:
+  - Every parameter, including `*args` and `**kwargs`, and return value of a function or method must have an explicit, accurate type hint. Treat `self` and `cls` as implicit; do not annotate them solely for this requirement.
+  - Every class variable, class attribute, instance attribute, and module-level mutable or optional state must have an explicit, accurate type hint. A trivial immutable module constant may remain inferred unless the configured type checker needs an annotation.
+  - Declare instance-attribute types at class scope where feasible. Do not type annotate local variables or add `self.attribute: Type` annotations inside function or method bodies unless a real configured type-checker error requires one.
+  - Keep required annotations simple and accurate. Do not add advanced type constructs or type-only refactors unless the configured type checker requires them.
 - Prefer:
   - fixtures over manual setup/teardown or `unittest.TestCase` lifecycle methods,
   - `monkeypatch` over directly mutating environment variables, module globals, attributes, dictionaries, or the working directory,

@@ -611,7 +611,13 @@ Use this contract as the single shared engineering standard for planning, execut
 
 Apply this subsection only when the target repository uses Python.
 
-- Any type hints added during implementation must be simple, accurate, and only as extensive as needed for the repository's configured type-checker tests or checks to pass. Do not add extra annotations, advanced type constructs, or type-only refactors beyond that.
+The following typing coverage is a hard requirement:
+
+- Every parameter, including `*args` and `**kwargs`, and return value of an added or changed function or method must have an explicit, accurate type hint. Treat `self` and `cls` as implicit; do not annotate them solely for this requirement.
+- Every added or changed class variable, class attribute, instance attribute, and module-level mutable or optional state must have an explicit, accurate type hint. A trivial immutable module constant may remain inferred unless the configured type checker needs an annotation.
+- Declare instance-attribute types at class scope where feasible; do not add `self.attribute: Type` annotations inside a method merely to satisfy this requirement.
+- Do not type annotate local variables inside function or method bodies. Rely on inference; add a local annotation only to resolve a real configured type-checker error.
+- Keep required annotations simple and accurate. Do not add advanced type constructs or type-only refactors unless the configured type checker requires them.
 
 ### Comments and documentation
 
