@@ -607,6 +607,12 @@ Use this contract as the single shared engineering standard for planning, execut
 - Do not use type-ignore comments to pass CI temporarily.
 - Do not add sloppy code like `typing.Cast` or cast types in code just to satisfy type checkers.
 
+### Python
+
+Apply this subsection only when the target repository uses Python.
+
+- Any type hints added during implementation must be simple, accurate, and only as extensive as needed for the repository's configured type-checker tests or checks to pass. Do not add extra annotations, advanced type constructs, or type-only refactors beyond that.
+
 ### Comments and documentation
 
 - Always add detailed and brief comments for code where comments make the code easier to understand.
