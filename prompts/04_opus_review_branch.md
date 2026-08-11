@@ -167,6 +167,8 @@ Task:
 - Compare the current branch against `main` and against the locked planning artifacts.
 - Aggregate all changes in the current branch that are newly added and do a thorough code review.
 - Identify real defects, plan divergence, and high-value follow-up suggestions without expanding scope.
+- Identify all possible regressions within the scope of the current branch's changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
+- Identify meta content introduced or changed by the branch, such as comments, docstrings, documentation, or user-facing text that describes the branch, task, implementation process, or the fact that a change was made instead of describing the resulting code or behavior.
 
 Context to review:
 
