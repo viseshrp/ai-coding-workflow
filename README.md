@@ -71,6 +71,8 @@ The main Opus planning pass, Opus plan-revision pass, locked GPT execution pass,
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
 11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.
 
+You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
+
 Use a fresh chat for each major phase or model handoff. The artifact files, not hidden chat history, are the handoff boundary.
 
 ## Operator Rules

@@ -12,7 +12,7 @@
 
 Use only the explicitly linked skills listed in this prompt.
 
-The prompt is the contract. The locked task artifact is the contract for execution. Skills are supporting procedures only.
+The prompt is the contract. When locked task artifacts are present, they are authoritative review context. Their absence does not block this phase. Skills are supporting procedures only.
 
 If a skill conflicts with this prompt, this prompt wins.
 
@@ -20,7 +20,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-`no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
+`no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and any available locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
@@ -164,41 +164,52 @@ Role:
 
 Task:
 
-- Compare the current branch against `main` and against the locked planning artifacts.
+- Compare the current branch against `main` and against any available locked planning artifacts.
 - Aggregate all changes in the current branch that are newly added and do a thorough code review.
-- Identify real defects, plan divergence, and high-value follow-up suggestions without expanding scope.
+- Identify real defects, plan divergence when a plan is available, and high-value follow-up suggestions without expanding scope.
 - Identify all possible regressions within the scope of the current branch's changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
 - Identify meta content introduced or changed by the branch, such as comments, docstrings, documentation, or user-facing text that describes the branch, task, implementation process, or the fact that a change was made instead of describing the resulting code or behavior.
+- Complete the review even when no prior planning or execution artifacts exist. The current branch diff and repository evidence are sufficient to start this workflow at phase `04`.
 
 Context to review:
 
+- the current branch diff against the head of `main`,
+- affected code, callers, public interfaces, configuration, durable documentation, and existing tests,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
 - `GPT_EXECUTION_PROMPT.md`, if present.
 
+The named planning and execution artifacts are optional. Do not require, recreate, or ask for them merely because they are absent.
+
 Success criteria:
 
-- every blocking issue is grounded in specific diff, code, or plan evidence,
-- plan divergence is clearly separated from optional suggestions,
+- every blocking issue is grounded in specific diff, code, repository contract, or available plan evidence,
+- plan divergence is clearly separated from optional suggestions when a plan is available; when no plan is available, its absence is recorded without becoming a finding or blocker,
 - every material changed behavior has a documentation-checkpoint result grounded in the actual branch: exact durable documentation and validation, or an evidence-based `Not applicable` decision,
+- the review and generated review-fix prompt remain usable without any artifact from an earlier workflow phase,
 - the outputs are detailed enough to drive both the review-fix phase and the final human walkthrough.
 
 Constraints:
 
 - do not modify code during this phase,
 - backwards compatibility is top priority,
+- do not stop or ask for input solely because prior-phase artifacts are absent,
+- do not invent undocumented intent; evaluate objective correctness and repository compatibility, and label genuinely intent-dependent conclusions as open questions,
 - do not turn preferences into blocking findings unless they are justified by real risk or contract mismatch.
 
 Working method:
 
 - compare the current branch against the head of `main`,
-- inspect actual code and actual diff before judging,
-- flag divergence and issues,
+- establish the review basis from the diff and repository evidence before judging,
+- inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
+- when planning artifacts are available, audit compliance with them; when they are absent, use the branch diff as the scope boundary and existing behavior, public APIs, documentation, configuration, and tests as evidence,
+- flag plan divergence only when an available planning artifact provides evidence of divergence,
 - quote or clearly point to the exact evidence for each material finding,
 - separate confirmed issues from preferences, open questions, and optional suggestions,
-- after checking 100% compliance with the plan and ensuring no divergence, provide suggestions.
+- do not recreate missing prior-phase artifacts or treat their absence as a review defect,
+- after checking 100% compliance with any available plan, or completing the full evidence-based review when no plan is available, provide suggestions,
 - do not make any changes you propose until I give the go-ahead.
 
 This branch will be merged into main.
@@ -214,8 +225,8 @@ Review for:
 - backwards compatibility,
 - performance,
 - proper reuse of existing code,
-- plan compliance,
-- minimal change scope and blast radius; flag changes to surrounding code unless they are absolutely necessary for the branch's approved behavior,
+- plan compliance when planning artifacts are available; otherwise record that plan compliance was not assessed,
+- minimal change scope and blast radius; flag changes to surrounding code unless they are absolutely necessary for the branch's changed behavior or an available task contract,
 - source/documentation grounding,
 - every string transformation in code is documented with concrete examples showing representative input and expected output,
 - completion of the documentation checkpoint for every material changed behavior, including durable documentation accuracy, validation, and any `Not applicable` rationale,
@@ -287,6 +298,8 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 
 ## Verdict
 
+## Review Basis
+
 ## Plan Compliance
 
 ## Blocking Issues
@@ -325,6 +338,10 @@ Put suggestions directly below the relevant review findings.
 Every valid review issue must be categorized under either `Blocking Issues` or `Non-Blocking Issues`.
 
 Use `Suggestions` only for optional improvements that are not required in the GPT review-fix pass.
+
+In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence.
+
+In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
 In `## Documentation Review`, record the documentation-checkpoint result for every material changed behavior. Treat missing, inaccurate, or unvalidated required durable documentation as a valid review issue rather than an optional suggestion.
 
@@ -376,14 +393,15 @@ The generated GPT prompt must include a `## Skill Handling Rule` that instructs 
 
 - use only the explicitly linked skills listed in the prompt,
 - treat the prompt as the contract,
-- treat locked task artifacts as the contract for execution,
+- treat locked task artifacts as the contract for execution when they are present,
+- proceed from `REVIEW.md`, `WALKTHROUGH.md`, and the current branch diff when prior planning or execution artifacts are absent,
 - use skills as supporting procedures only,
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 - treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
-- let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
+- let `no-ai-slop` win over conflicting writing-style guidance while the prompt and any available locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
 The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter.
@@ -409,7 +427,7 @@ Success criteria:
 
 - each implemented fix is validated against the actual review finding and the current code,
 - all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
-- scope stays within the original implementation and review contract,
+- scope stays within the review contract and, when available, the original implementation contract,
 - backwards compatibility is preserved,
 - each fixed or retained material behavior completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - verification evidence is reported clearly,
@@ -426,9 +444,11 @@ Context to read before acting:
 - `GPT_EXECUTION_PROMPT.md`, if present,
 - current branch diff against `main`.
 
+The planning and execution artifacts are optional inputs. When present, treat them as authoritative according to this prompt. Their absence is not a blocker and must not trigger a request for them.
+
 Execution posture:
 
-- understand the context of the current PR before editing,
+- understand the context of the current branch or PR before editing,
 - inspect the actual code and review artifacts before deciding whether a finding is valid,
 - read likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
@@ -439,8 +459,8 @@ Constraints:
 - do not blindly implement every review comment,
 - address all valid review findings in `Blocking Issues` and `Non-Blocking Issues`,
 - do not implement optional suggestions unless explicitly approved,
-- keep all fixes within the original implementation scope,
-- preserve plan scope,
+- keep all fixes within the scope established by `REVIEW.md` and the current branch diff; when the original implementation scope can be established from available planning artifacts, preserve it too,
+- preserve plan scope when a plan is available,
 - preserve backwards compatibility,
 - workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
 - workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
@@ -457,7 +477,7 @@ Per-review-item process:
 3. Implement every valid fix from `Blocking Issues` and `Non-Blocking Issues`, including minor nits that are still valid issues.
 4. Complete the documentation checkpoint for the changed behavior before treating the review item as fixed.
 5. Do not implement items from `Suggestions` unless explicitly approved.
-6. If a review item is wrong, stale, or conflicts with the plan/code reality, stop and ask.
+6. If a review item is wrong, stale, or conflicts with an available plan or code reality, stop and ask.
 7. If a review item requires a design decision not already made, stop and ask.
 8. Check off fixes if a checklist exists.
 
