@@ -11,7 +11,7 @@ Load these skills from the sibling `../ai-skills-archive` repository:
 - `code-review-and-quality`: `archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md`
 - `source-driven-development`: `archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md`
 - `verification-before-completion`: `archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md`
-- `no-ai-slop`: `archives/petergyang__no-ai-slop/snapshot/SKILL.md`
+- `no-ai-slop`: `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md`
 
 ### Python / pytest
 
@@ -28,7 +28,7 @@ Before inspecting the target change in detail or using a skill:
 1. Record the target repository root so you can return to it, and use only repository metadata or changed file paths to identify applicable language categories.
 2. Run `cd ../ai-skills-archive` from the target repository root.
 3. Run `git pull --ff-only origin main`.
-4. Read every `SKILL.md` in the Shared section and every applicable language subsection completely. Also read `archives/petergyang__no-ai-slop/snapshot/eval.md` before using `no-ai-slop`.
+4. Read every `SKILL.md` in the Shared section and every applicable language subsection completely. Also read `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md` before using `no-ai-slop`.
 5. Return to the target repository root before inspecting or changing its files.
 
 If the sibling repository is missing, the pull fails, a required skill cannot be read completely, or the required `eval.md` cannot be read, stop and report the blocker. Do not substitute remembered or remote skill content.
