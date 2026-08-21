@@ -39,6 +39,10 @@ jobs:
               line[10:] if line.startswith('          ') else line
               for line in embedded.splitlines()
           )
+          script = script.replace(
+              "`design-taste-frontend` is linked directly from canonical phases",
+              "[`design-taste-frontend`](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) is linked directly from canonical phases",
+          )
           exec(compile(script, str(workflow_path), 'exec'), {'__name__': '__main__'})
           PYRUN
 
