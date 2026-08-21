@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -24,6 +25,12 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+
+## Conditional Frontend Design
+
+`design-taste-frontend` is conditional. Use it only when the task's locked planning artifacts concern a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces.
+
+When it applies, verify that every frontend-design critique item was actually resolved in the revised `Frontend Design Contract`, that the contract is concrete enough for execution, and that the revision did not introduce new aesthetic choices, dependencies, information-architecture changes, route changes, analytics changes, or form-contract changes without approval. This phase verifies the locked design contract; it does not invent a new design direction.
 
 ## Engineering Contract
 

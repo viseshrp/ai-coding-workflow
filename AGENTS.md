@@ -91,6 +91,7 @@ If a task appears to require changing a source file, stop and ask instead of mod
 These are the main design constraints that define this repo:
 
 - No skill router. Skills are listed directly inside the relevant prompts.
+- `design-taste-frontend` is an explicitly linked conditional skill, not a router: include it only in phases `01`-`06` and `08`, plus the generated planning/execution/review-fix prompts specified by `01`, `02`, and `04`; do not add it to `07` or `09`. Apply it only to eligible landing/marketing, portfolio, editorial/brand, or explicitly approved redesign surfaces, and never let it override the locked plan, existing brand/design system, accessibility requirements, repository conventions, or dependency-approval rules.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -207,6 +208,28 @@ Expectation:
 - the generated GPT review-fix prompt specified by `04`.
 
 Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document the phase creates or revises, `no-ai-slop` is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Apply its editing principles while drafting, run its evaluator before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if either file cannot be read and applied. Let it win over conflicting writing-style guidance, but preserve the prompt's control over scope, meaning, required structure, artifact names, constraints, and evidence. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
+
+### Conditional frontend design skill
+
+`design-taste-frontend` is required as a conditional link in:
+
+- checked-in prompts `01` through `06` and `08`,
+- the generated Opus planning prompt specified by `01`,
+- the generated GPT execution prompt specified by `01` and preserved/revised by `02`,
+- the generated Opus revision prompt specified by `02`,
+- the generated GPT review-fix prompt specified by `04`.
+
+Do not add it to `07_human_code_walkthrough.md`; that phase is intentionally an independent human review gate. Do not add it to `09_write_focused_tests_any_model.md`; that phase is test-file-only. Do not update `sources/current_skill_set.txt`; `sources/` is immutable.
+
+Applicability is narrow: landing/marketing pages, portfolios, editorial/brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards/admin interfaces, data tables, multi-step forms, native mobile interfaces, and general refactoring.
+
+When applicable, the workflow must turn the skill's guidance into a locked `Frontend Design Contract` during planning. Explicit user instructions, locked artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies outrank skill defaults. The skill must never authorize a broader redesign, new dependency, information-architecture/route change, analytics-event change, or form-contract change that the user did not approve.
+
+Review phases must distinguish objective failures from subjective taste: accessibility, responsive breakage, overflow, explicit brief/plan violations, SEO/route/analytics/form regressions, unapproved dependencies, and measurable performance regressions are findings; alternate aesthetic preferences remain suggestions unless explicitly locked.
+
+Canonical skill link: [https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
+
+Do not substitute `gpt-tasteskill` or other specialized skills from the same upstream repository into the standard workflow without an explicit user request; their stronger aesthetic or implementation mandates can conflict with this repo's locked-plan and dependency-approval model.
 
 ### `## Engineering Contract`
 

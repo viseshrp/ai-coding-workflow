@@ -6,6 +6,7 @@
 - [grill-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grill-me/SKILL.md)
 - [idea-refine](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/idea-refine/SKILL.md)
 - [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,14 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+## Conditional Frontend Design
+
+`design-taste-frontend` is conditional. Use it only when the requested work concerns a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.
+
+When it applies, use it during exploration to make the design intent concrete before planning: identify the page kind, audience, visual direction, references, existing brand assets, preserve-vs-overhaul mode, responsive expectations, accessibility and reduced-motion constraints, asset strategy, SEO/route/analytics/form-contract preservation requirements, and any design-system or dependency decision that requires explicit approval. Existing repository conventions, the current brand/design system, accessibility requirements, explicit user instructions, and approved dependencies override the skill's defaults.
+
+Carry the result forward as a locked `Frontend Design Contract` in `DRAFT_PLAN.md` and require the generated Opus planning prompt to preserve and deepen that contract inside `FEATURE_SPEC_AND_PLAN.md`. The skill may make suggestions, but it must not expand a targeted UI task into a redesign or authorize new dependencies, information-architecture changes, route changes, analytics changes, or form-contract changes.
 
 ## Documentation checkpoint
 
@@ -123,6 +132,7 @@ Create `DRAFT_PLAN.md` in the target repo root with:
 - risks,
 - definition of done,
 - anything that Opus must not lose.
+- for qualifying frontend-design work, a `Frontend Design Contract` that locks page kind, audience, visual direction, brand/design-system constraints, responsive/accessibility/motion expectations, asset strategy, preservation requirements, approved dependencies, and rendered-verification expectations.
 
 ## Output artifact 2: `INITIAL_OPUS_PLANNING_PROMPT.md`
 
@@ -155,6 +165,7 @@ In `## Skills`, it must explicitly include these skill links:
 - [context-engineering](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/context-engineering/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 In `## Skill Handling Rule`, it must instruct the target agent to:
@@ -170,6 +181,10 @@ In `## Skill Handling Rule`, it must instruct the target agent to:
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+- treat `design-taste-frontend` as conditional: use it only for landing or marketing pages, portfolios, editorial or brand pages, or explicitly approved visual redesigns of those surfaces;
+- do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring;
+- when it applies, let explicit user instructions, locked task artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults;
+- never let it introduce an unapproved dependency, change information architecture/routes/analytics/form contracts, or expand a targeted UI task into a broader redesign.
 
 In `## Default Planning Artifact Reduction`, it must instruct Opus to default to one combined planning artifact instead of separate spec and implementation plan files.
 
@@ -358,6 +373,21 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - when no durable documentation change is needed, the evidence-based reason it is `Not applicable`,
    - reminder that documentation must be completed in the same change set and that the changelog is not updated unless explicitly requested.
 
+For qualifying frontend-design work, `FEATURE_SPEC_AND_PLAN.md` must also include a `## Frontend Design Contract` section that locks:
+
+- page kind and audience,
+- intended visual direction and reference signals,
+- existing brand assets and design-system constraints,
+- preserve-vs-overhaul mode for redesigns,
+- layout, typography, spacing, color, motion, and density decisions that are actually required by the brief,
+- responsive/mobile behavior, keyboard/focus behavior, contrast, reduced-motion expectations, and relevant loading/empty/error states,
+- asset/image strategy,
+- SEO, route, navigation, analytics-event, and form-contract preservation requirements where applicable,
+- every approved third-party design or motion dependency,
+- representative desktop/mobile rendered-verification steps and objective success criteria.
+
+The contract must distinguish locked requirements from optional visual suggestions. It must not use `design-taste-frontend` to expand scope, select an unapproved dependency, or silently change information architecture, routes, analytics, form contracts, or existing brand constraints.
+
 Required output 2: `GPT_EXECUTION_PROMPT.md`
 
 - create `GPT_EXECUTION_PROMPT.md` in the target repo root,
@@ -388,6 +418,7 @@ The generated Opus prompt must also require that the generated `GPT_EXECUTION_PR
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs GPT to:
@@ -403,6 +434,10 @@ The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` 
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+- treat `design-taste-frontend` as conditional: use it only for landing or marketing pages, portfolios, editorial or brand pages, or explicitly approved visual redesigns of those surfaces;
+- do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring;
+- when it applies, let explicit user instructions, locked task artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults;
+- never let it introduce an unapproved dependency, change information architecture/routes/analytics/form contracts, or expand a targeted UI task into a broader redesign.
 
 The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `GPT_EXECUTION_PROMPT.md`.
 

@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -24,6 +25,14 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+
+## Conditional Frontend Design
+
+`design-taste-frontend` is conditional. Apply it only when the locked plan concerns a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not apply it to backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.
+
+When it applies, critique the plan's `Frontend Design Contract` for concrete page/audience intent, brand and design-system preservation, layout and typography direction, responsive behavior, accessibility and reduced motion, asset strategy, performance, SEO/routes/analytics/form-contract preservation, dependency approval, and rendered-verification expectations. Treat explicit brief or plan violations as findings; treat alternative aesthetic preferences as suggestions unless the user or locked plan made them requirements. Never use the skill to broaden scope or introduce an unapproved dependency or redesign.
+
+Require any generated Opus revision prompt to preserve this conditional skill rule and to repair the `Frontend Design Contract` without changing the task's approved scope.
 
 ## Engineering Contract
 
@@ -296,6 +305,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
@@ -311,6 +321,10 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+- treat `design-taste-frontend` as conditional: use it only for landing or marketing pages, portfolios, editorial or brand pages, or explicitly approved visual redesigns of those surfaces;
+- do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring;
+- when it applies, let explicit user instructions, locked task artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults;
+- never let it introduce an unapproved dependency, change information architecture/routes/analytics/form contracts, or expand a targeted UI task into a broader redesign.
 
 The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 
@@ -408,6 +422,13 @@ And also:
 - preserve or strengthen the `GPT_EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
 - if the revised `GPT_EXECUTION_PROMPT.md` needs a fallback instruction for checking whether a pull request already exists for the current branch, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
 - preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
+
+Conditional frontend-design revision requirements:
+
+- when the task qualifies for `design-taste-frontend`, preserve and update the existing `Frontend Design Contract` rather than replacing it with a new aesthetic direction,
+- resolve valid frontend critique items with concrete, repo-grounded requirements and verification,
+- keep subjective alternatives as suggestions unless the user or locked plan made them requirements,
+- do not introduce unapproved dependencies, information-architecture changes, route changes, analytics changes, form-contract changes, or a broader redesign.
 
 Required outputs:
 

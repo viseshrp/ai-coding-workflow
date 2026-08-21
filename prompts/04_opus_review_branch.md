@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -24,6 +25,16 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+
+## Conditional Frontend Design Review
+
+`design-taste-frontend` is conditional. Use it only when the branch changes a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not apply it to backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.
+
+When it applies, review the implementation against the locked `Frontend Design Contract`, the actual repository design system/brand, and the skill's applicable pre-flight checks. Inspect rendered UI at representative desktop and mobile sizes when the environment supports rendering or browser/screenshot inspection. Check responsive behavior, overflow, contrast, keyboard/focus behavior, reduced motion, visual consistency, loading/empty/error states when relevant, dependency/design-system correctness, and obvious performance regressions. If rendered inspection is unavailable, state which visual claims remain unverified rather than pretending they passed.
+
+Classify accessibility failures, broken responsive behavior, explicit plan/brief violations, SEO/route/analytics/form-contract regressions, unapproved dependencies, and measurable performance regressions as real findings. Keep subjective alternative fonts, compositions, motion styles, or aesthetic directions as suggestions unless they were explicitly locked in the plan. Never turn this review into a new redesign.
+
+Require any generated GPT review-fix prompt to use this skill only for valid frontend-design findings already recorded in `REVIEW.md`; it must fix those findings without inventing a broader visual rewrite.
 
 ## Engineering Contract
 
@@ -387,6 +398,7 @@ The generated GPT prompt must include these skill links explicitly:
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated GPT prompt must include a `## Skill Handling Rule` that instructs GPT to:
@@ -403,6 +415,18 @@ The generated GPT prompt must include a `## Skill Handling Rule` that instructs 
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and any available locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+- treat `design-taste-frontend` as conditional: use it only for landing or marketing pages, portfolios, editorial or brand pages, or explicitly approved visual redesigns of those surfaces;
+- do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring;
+- when it applies, let explicit user instructions, locked task artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults;
+- never let it introduce an unapproved dependency, change information architecture/routes/analytics/form contracts, or expand a targeted UI task into a broader redesign.
+
+For qualifying frontend-design work, the generated GPT review-fix prompt must additionally require GPT to:
+
+- use `design-taste-frontend` only for frontend findings already recorded in `REVIEW.md`,
+- treat the locked `Frontend Design Contract` and existing brand/design system as authoritative,
+- fix objective accessibility, responsive, contrast, state, performance, design-system, dependency, SEO/route/analytics/form-contract, and explicit plan/brief violations that the review identified,
+- avoid introducing a new aesthetic direction or implementing optional design suggestions unless the human explicitly approved them,
+- re-check representative rendered desktop/mobile behavior when the environment supports it and state any visual dimensions that remain unverified.
 
 The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter.
 

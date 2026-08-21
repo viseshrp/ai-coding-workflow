@@ -152,6 +152,25 @@ Skills support the workflow; they do not widen scope or override prompt constrai
 
 Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
 
+## Conditional Frontend Design Skill
+
+The workflow includes [`design-taste-frontend`](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) as an explicitly linked but conditional supporting skill. It applies only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. It does not apply to backend-only work, dashboards/admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.
+
+Placement is deliberate:
+
+- **01** uses it to clarify visual intent and create a locked `Frontend Design Contract`.
+- The **generated Opus planning prompt** preserves and deepens that contract in `FEATURE_SPEC_AND_PLAN.md`.
+- **02** critiques the contract; **03** verifies the revision without inventing new design choices.
+- The **generated GPT execution prompt** receives the skill conditionally, but the locked plan remains the execution contract and all dependency/design decisions must already be approved.
+- **04** uses it for evidence-based frontend review, including rendered desktop/mobile checks when available; the generated GPT review-fix prompt may use it only for recorded frontend findings.
+- **05** verifies those fixes without reopening subjective design direction.
+- **06** performs the final applicable frontend pre-flight.
+- **08** may use it only for explicitly human-approved frontend follow-up items.
+- **07** intentionally does not use it so the human walkthrough remains independent.
+- **09** intentionally does not use it because that phase is test-file-only.
+
+For every phase, explicit user instructions, locked artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults. The skill cannot authorize scope expansion, a broader redesign, a new dependency, or silent changes to information architecture, routes, analytics events, or form contracts.
+
 ## Repository Layout
 
 ```text
