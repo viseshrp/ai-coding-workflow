@@ -1,0 +1,178 @@
+name: Integrate conditional design-taste frontend skill
+
+on:
+  push:
+    branches:
+      - integrate-design-taste-frontend
+    paths:
+      - .github/workflows/integrate-design-taste.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: integrate-design-taste-frontend
+          fetch-depth: 0
+
+      - name: Patch prompt pack
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          SKILL_URL = "https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md"
+          DESIGN_SKILL_LINE = f"- [design-taste-frontend]({SKILL_URL})"
+          NO_SLOP_PREFIX = "- [no-ai-slop]("
+
+          prompt_sections = {
+              "prompts/01_initial_exploration_any_model.md": """## Conditional Frontend Design\n\n`design-taste-frontend` is conditional. Use it only when the requested work concerns a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.\n\nWhen it applies, use it during exploration to make the design intent concrete before planning: identify the page kind, audience, visual direction, references, existing brand assets, preserve-vs-overhaul mode, responsive expectations, accessibility and reduced-motion constraints, asset strategy, SEO/route/analytics/form-contract preservation requirements, and any design-system or dependency decision that requires explicit approval. Existing repository conventions, the current brand/design system, accessibility requirements, explicit user instructions, and approved dependencies override the skill's defaults.\n\nCarry the result forward as a locked `Frontend Design Contract` in `DRAFT_PLAN.md` and require the generated Opus planning prompt to preserve and deepen that contract inside `FEATURE_SPEC_AND_PLAN.md`. The skill may make suggestions, but it must not expand a targeted UI task into a redesign or authorize new dependencies, information-architecture changes, route changes, analytics changes, or form-contract changes.\n""",
+              "prompts/02_plan_critique_gpt_gemini.md": """## Conditional Frontend Design\n\n`design-taste-frontend` is conditional. Apply it only when the locked plan concerns a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not apply it to backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.\n\nWhen it applies, critique the plan's `Frontend Design Contract` for concrete page/audience intent, brand and design-system preservation, layout and typography direction, responsive behavior, accessibility and reduced motion, asset strategy, performance, SEO/routes/analytics/form-contract preservation, dependency approval, and rendered-verification expectations. Treat explicit brief or plan violations as findings; treat alternative aesthetic preferences as suggestions unless the user or locked plan made them requirements. Never use the skill to broaden scope or introduce an unapproved dependency or redesign.\n\nRequire any generated Opus revision prompt to preserve this conditional skill rule and to repair the `Frontend Design Contract` without changing the task's approved scope.\n""",
+              "prompts/03_plan_revision_verification_gpt_gemini.md": """## Conditional Frontend Design\n\n`design-taste-frontend` is conditional. Use it only when the task's locked planning artifacts concern a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces.\n\nWhen it applies, verify that every frontend-design critique item was actually resolved in the revised `Frontend Design Contract`, that the contract is concrete enough for execution, and that the revision did not introduce new aesthetic choices, dependencies, information-architecture changes, route changes, analytics changes, or form-contract changes without approval. This phase verifies the locked design contract; it does not invent a new design direction.\n""",
+              "prompts/04_opus_review_branch.md": """## Conditional Frontend Design Review\n\n`design-taste-frontend` is conditional. Use it only when the branch changes a landing or marketing page, portfolio, editorial or brand page, or an explicitly approved visual redesign of those surfaces. Do not apply it to backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.\n\nWhen it applies, review the implementation against the locked `Frontend Design Contract`, the actual repository design system/brand, and the skill's applicable pre-flight checks. Inspect rendered UI at representative desktop and mobile sizes when the environment supports rendering or browser/screenshot inspection. Check responsive behavior, overflow, contrast, keyboard/focus behavior, reduced motion, visual consistency, loading/empty/error states when relevant, dependency/design-system correctness, and obvious performance regressions. If rendered inspection is unavailable, state which visual claims remain unverified rather than pretending they passed.\n\nClassify accessibility failures, broken responsive behavior, explicit plan/brief violations, SEO/route/analytics/form-contract regressions, unapproved dependencies, and measurable performance regressions as real findings. Keep subjective alternative fonts, compositions, motion styles, or aesthetic directions as suggestions unless they were explicitly locked in the plan. Never turn this review into a new redesign.\n\nRequire any generated GPT review-fix prompt to use this skill only for valid frontend-design findings already recorded in `REVIEW.md`; it must fix those findings without inventing a broader visual rewrite.\n""",
+              "prompts/05_opus_verify_review_fixes.md": """## Conditional Frontend Design Verification\n\n`design-taste-frontend` is conditional. Use it only when `REVIEW.md` contains valid findings for an eligible landing/marketing, portfolio, editorial/brand, or explicitly approved redesign surface. Re-check the exact frontend findings against the current branch and the locked `Frontend Design Contract`, including rendered behavior when the environment supports it.\n\nDo not introduce new aesthetic preferences or reopen design direction during verification. A new issue may be raised only when it is a concrete regression caused or exposed by the review-fix changes, not because the skill suggests a different look.\n""",
+              "prompts/06_opus_refresh_review_and_walkthrough.md": """## Conditional Frontend Design Final Check\n\n`design-taste-frontend` is conditional. Use it only when the branch contains eligible landing/marketing, portfolio, editorial/brand, or explicitly approved redesign work. Re-run the applicable final frontend pre-flight against the finished branch and locked `Frontend Design Contract`, using rendered desktop/mobile evidence when available.\n\nRefresh `REVIEW.md` and `WALKTHROUGH.md` with the final verified state, but do not introduce a new aesthetic direction, unapproved dependency, or redesign suggestion as a required change. Any remaining subjective preference belongs in `Suggestions`, not in blocking or non-blocking fix requirements.\n""",
+              "prompts/08_gpt_implement_human_followup.md": """## Conditional Frontend Design Follow-Up\n\n`design-taste-frontend` is conditional. Use it only when `FOLLOWUP.md` contains an explicitly human-approved item for a landing/marketing page, portfolio, editorial/brand page, or explicitly approved redesign surface. Apply it only to the approved frontend item and the locked design contract.\n\nDo not use the skill to broaden the follow-up into a redesign, add an unapproved dependency, change information architecture/routes/analytics/form contracts, or revisit already-approved aesthetic decisions. The human-approved `FOLLOWUP.md`, locked plan, existing brand/design system, accessibility requirements, and repository conventions remain authoritative.\n""",
+          }
+
+          generated_rule_bullets = [
+              "- treat `design-taste-frontend` as conditional: use it only for landing or marketing pages, portfolios, editorial or brand pages, or explicitly approved visual redesigns of those surfaces;",
+              "- do not use it for backend-only work, dashboards, admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring;",
+              "- when it applies, let explicit user instructions, locked task artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults;",
+              "- never let it introduce an unapproved dependency, change information architecture/routes/analytics/form contracts, or expand a targeted UI task into a broader redesign.",
+          ]
+
+          def add_design_skill_before_no_slop(text: str) -> str:
+              lines = text.splitlines()
+              out: list[str] = []
+              for line in lines:
+                  if line.startswith(NO_SLOP_PREFIX):
+                      if not out or out[-1] != DESIGN_SKILL_LINE:
+                          out.append(DESIGN_SKILL_LINE)
+                  out.append(line)
+              return "\n".join(out) + "\n"
+
+          def add_generated_rule_bullets(text: str) -> str:
+              marker = "- ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them."
+              if generated_rule_bullets[0] in text:
+                  return text
+              lines = text.splitlines()
+              out: list[str] = []
+              for line in lines:
+                  out.append(line)
+                  if line == marker:
+                      out.extend(generated_rule_bullets)
+              return "\n".join(out) + "\n"
+
+          def insert_section(text: str, section: str, preferred_marker: str) -> str:
+              heading = section.splitlines()[0]
+              if heading in text:
+                  return text
+              if preferred_marker not in text:
+                  raise RuntimeError(f"Missing insertion marker {preferred_marker!r}")
+              return text.replace(preferred_marker, section.rstrip() + "\n\n" + preferred_marker, 1)
+
+          for filename, section in prompt_sections.items():
+              path = Path(filename)
+              text = path.read_text(encoding="utf-8")
+              text = add_design_skill_before_no_slop(text)
+              if filename in {
+                  "prompts/01_initial_exploration_any_model.md",
+                  "prompts/02_plan_critique_gpt_gemini.md",
+                  "prompts/04_opus_review_branch.md",
+              }:
+                  text = add_generated_rule_bullets(text)
+              marker = "## Documentation checkpoint" if filename.endswith("01_initial_exploration_any_model.md") else "## Engineering Contract"
+              text = insert_section(text, section, marker)
+              path.write_text(text, encoding="utf-8")
+
+          # Phase 01: carry a concrete design contract into both planning artifacts and the generated Opus/GPT handoff.
+          p01 = Path("prompts/01_initial_exploration_any_model.md")
+          text = p01.read_text(encoding="utf-8")
+          draft_marker = "- anything that Opus must not lose."
+          draft_extra = "- for qualifying frontend-design work, a `Frontend Design Contract` that locks page kind, audience, visual direction, brand/design-system constraints, responsive/accessibility/motion expectations, asset strategy, preservation requirements, approved dependencies, and rendered-verification expectations."
+          if draft_extra not in text:
+              text = text.replace(draft_marker, draft_marker + "\n" + draft_extra, 1)
+
+          contract_block = """For qualifying frontend-design work, `FEATURE_SPEC_AND_PLAN.md` must also include a `## Frontend Design Contract` section that locks:\n\n- page kind and audience,\n- intended visual direction and reference signals,\n- existing brand assets and design-system constraints,\n- preserve-vs-overhaul mode for redesigns,\n- layout, typography, spacing, color, motion, and density decisions that are actually required by the brief,\n- responsive/mobile behavior, keyboard/focus behavior, contrast, reduced-motion expectations, and relevant loading/empty/error states,\n- asset/image strategy,\n- SEO, route, navigation, analytics-event, and form-contract preservation requirements where applicable,\n- every approved third-party design or motion dependency,\n- representative desktop/mobile rendered-verification steps and objective success criteria.\n\nThe contract must distinguish locked requirements from optional visual suggestions. It must not use `design-taste-frontend` to expand scope, select an unapproved dependency, or silently change information architecture, routes, analytics, form contracts, or existing brand constraints.\n\n"""
+          output2_marker = "Required output 2: `GPT_EXECUTION_PROMPT.md`"
+          if contract_block.strip() not in text:
+              text = text.replace(output2_marker, contract_block + output2_marker, 1)
+          p01.write_text(text, encoding="utf-8")
+
+          # Phase 02: require revision to preserve/repair the locked frontend design contract.
+          p02 = Path("prompts/02_plan_critique_gpt_gemini.md")
+          text = p02.read_text(encoding="utf-8")
+          revision_block = """Conditional frontend-design revision requirements:\n\n- when the task qualifies for `design-taste-frontend`, preserve and update the existing `Frontend Design Contract` rather than replacing it with a new aesthetic direction,\n- resolve valid frontend critique items with concrete, repo-grounded requirements and verification,\n- keep subjective alternatives as suggestions unless the user or locked plan made them requirements,\n- do not introduce unapproved dependencies, information-architecture changes, route changes, analytics changes, form-contract changes, or a broader redesign.\n\n"""
+          required_outputs_marker = "Required outputs:\n"
+          if revision_block.strip() not in text:
+              text = text.replace(required_outputs_marker, revision_block + required_outputs_marker, 1)
+          p02.write_text(text, encoding="utf-8")
+
+          # Phase 04: ensure the generated GPT review-fix handoff remains constrained to recorded frontend findings.
+          p04 = Path("prompts/04_opus_review_branch.md")
+          text = p04.read_text(encoding="utf-8")
+          fix_block = """For qualifying frontend-design work, the generated GPT review-fix prompt must additionally require GPT to:\n\n- use `design-taste-frontend` only for frontend findings already recorded in `REVIEW.md`,\n- treat the locked `Frontend Design Contract` and existing brand/design system as authoritative,\n- fix objective accessibility, responsive, contrast, state, performance, design-system, dependency, SEO/route/analytics/form-contract, and explicit plan/brief violations that the review identified,\n- avoid introducing a new aesthetic direction or implementing optional design suggestions unless the human explicitly approved them,\n- re-check representative rendered desktop/mobile behavior when the environment supports it and state any visual dimensions that remain unverified.\n\n"""
+          embed_marker = "The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter."
+          if fix_block.strip() not in text:
+              text = text.replace(embed_marker, fix_block + embed_marker, 1)
+          p04.write_text(text, encoding="utf-8")
+
+          # README: document the conditional integration and phase placement.
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8")
+          readme_section = f"""## Conditional Frontend Design Skill\n\nThe workflow includes [`design-taste-frontend`]({SKILL_URL}) as an explicitly linked but conditional supporting skill. It applies only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. It does not apply to backend-only work, dashboards/admin interfaces, data tables, multi-step forms, native mobile interfaces, or general refactoring.\n\nPlacement is deliberate:\n\n- **01** uses it to clarify visual intent and create a locked `Frontend Design Contract`.\n- The **generated Opus planning prompt** preserves and deepens that contract in `FEATURE_SPEC_AND_PLAN.md`.\n- **02** critiques the contract; **03** verifies the revision without inventing new design choices.\n- The **generated GPT execution prompt** receives the skill conditionally, but the locked plan remains the execution contract and all dependency/design decisions must already be approved.\n- **04** uses it for evidence-based frontend review, including rendered desktop/mobile checks when available; the generated GPT review-fix prompt may use it only for recorded frontend findings.\n- **05** verifies those fixes without reopening subjective design direction.\n- **06** performs the final applicable frontend pre-flight.\n- **08** may use it only for explicitly human-approved frontend follow-up items.\n- **07** intentionally does not use it so the human walkthrough remains independent.\n- **09** intentionally does not use it because that phase is test-file-only.\n\nFor every phase, explicit user instructions, locked artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies override the skill's defaults. The skill cannot authorize scope expansion, a broader redesign, a new dependency, or silent changes to information architecture, routes, analytics events, or form contracts.\n\n"""
+          marker = "## Repository Layout"
+          if "## Conditional Frontend Design Skill" not in text:
+              text = text.replace(marker, readme_section + marker, 1)
+          readme.write_text(text, encoding="utf-8")
+
+          # AGENTS.md: preserve the integration rules for future prompt-pack maintenance.
+          agents = Path("AGENTS.md")
+          text = agents.read_text(encoding="utf-8")
+          core_marker = "- No skill router. Skills are listed directly inside the relevant prompts."
+          core_extra = "- `design-taste-frontend` is an explicitly linked conditional skill, not a router: include it only in phases `01`-`06` and `08`, plus the generated planning/execution/review-fix prompts specified by `01`, `02`, and `04`; do not add it to `07` or `09`. Apply it only to eligible landing/marketing, portfolio, editorial/brand, or explicitly approved redesign surfaces, and never let it override the locked plan, existing brand/design system, accessibility requirements, repository conventions, or dependency-approval rules."
+          if core_extra not in text:
+              text = text.replace(core_marker, core_marker + "\n" + core_extra, 1)
+
+          agents_section = f"""### Conditional frontend design skill\n\n`design-taste-frontend` is required as a conditional link in:\n\n- checked-in prompts `01` through `06` and `08`,\n- the generated Opus planning prompt specified by `01`,\n- the generated GPT execution prompt specified by `01` and preserved/revised by `02`,\n- the generated Opus revision prompt specified by `02`,\n- the generated GPT review-fix prompt specified by `04`.\n\nDo not add it to `07_human_code_walkthrough.md`; that phase is intentionally an independent human review gate. Do not add it to `09_write_focused_tests_any_model.md`; that phase is test-file-only. Do not update `sources/current_skill_set.txt`; `sources/` is immutable.\n\nApplicability is narrow: landing/marketing pages, portfolios, editorial/brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards/admin interfaces, data tables, multi-step forms, native mobile interfaces, and general refactoring.\n\nWhen applicable, the workflow must turn the skill's guidance into a locked `Frontend Design Contract` during planning. Explicit user instructions, locked artifacts, the existing brand/design system, repository conventions, accessibility requirements, and approved dependencies outrank skill defaults. The skill must never authorize a broader redesign, new dependency, information-architecture/route change, analytics-event change, or form-contract change that the user did not approve.\n\nReview phases must distinguish objective failures from subjective taste: accessibility, responsive breakage, overflow, explicit brief/plan violations, SEO/route/analytics/form regressions, unapproved dependencies, and measurable performance regressions are findings; alternate aesthetic preferences remain suggestions unless explicitly locked.\n\nCanonical skill link: [{SKILL_URL}]({SKILL_URL})\n\nDo not substitute `gpt-tasteskill` or other specialized skills from the same upstream repository into the standard workflow without an explicit user request; their stronger aesthetic or implementation mandates can conflict with this repo's locked-plan and dependency-approval model.\n\n"""
+          sync_marker = "### `## Engineering Contract`"
+          if "### Conditional frontend design skill" not in text:
+              text = text.replace(sync_marker, agents_section + sync_marker, 1)
+          agents.write_text(text, encoding="utf-8")
+
+          # Hard assertions: no accidental edits to excluded surfaces and all intended files contain the integration.
+          expected = list(prompt_sections) + ["README.md", "AGENTS.md"]
+          for filename in expected:
+              content = Path(filename).read_text(encoding="utf-8")
+              if "design-taste-frontend" not in content:
+                  raise RuntimeError(f"design skill missing from {filename}")
+          for excluded in ["prompts/07_human_code_walkthrough.md", "prompts/09_write_focused_tests_any_model.md", "sources/current_skill_set.txt"]:
+              if "design-taste-frontend" in Path(excluded).read_text(encoding="utf-8"):
+                  raise RuntimeError(f"conditional design skill unexpectedly present in {excluded}")
+          PY
+
+      - name: Show focused diff summary
+        shell: bash
+        run: |
+          git diff --check
+          git status --short
+          git diff --stat
+
+      - name: Commit integration
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- AGENTS.md README.md prompts/01_initial_exploration_any_model.md prompts/02_plan_critique_gpt_gemini.md prompts/03_plan_revision_verification_gpt_gemini.md prompts/04_opus_review_branch.md prompts/05_opus_verify_review_fixes.md prompts/06_opus_refresh_review_and_walkthrough.md prompts/08_gpt_implement_human_followup.md
+          if git diff --cached --quiet; then
+            echo "No integration changes to commit."
+            exit 0
+          fi
+          git commit -m "Integrate conditional frontend design skill"
+          git push origin HEAD:integrate-design-taste-frontend
