@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,31 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+
+## Conditional Frontend-Design Applicability
+
+`design-taste-frontend` is a conditional domain skill. Apply it only when the task affects one or more of these eligible surfaces:
+
+- a landing or marketing page,
+- a portfolio,
+- an editorial or brand page,
+- an explicitly approved visual redesign of one of those surfaces.
+
+Do not apply it to backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, or general refactors. For a mixed task, apply it only to the eligible public-facing surface.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility requirements, SEO and analytics contracts, and dependency-approval rules override every skill default. The skill never authorizes:
+
+- a new dependency or design system without explicit approval,
+- route, slug, primary-navigation, form-field, or analytics-event changes,
+- a content or information-architecture rewrite,
+- architecture changes or scope expansion,
+- replacing objective requirements with subjective taste.
+
+If applicability is false, do not use the skill and record `Frontend design: Not applicable` in the relevant phase artifact.
+
+In this final refresh phase, rerun the applicable rendered frontend preflight against the final branch and locked contract. Refresh the review evidence without adding new aesthetic preferences. A newly discovered objective regression is a severe missed issue; a different taste preference is not.
 
 
 ## Engineering Contract
@@ -170,6 +196,7 @@ Task:
 
 - your job is to update the review and walkthrough documents so they accurately reflect the final code state,
 - confirm that every material changed behavior has a completed documentation checkpoint before final human review,
+- when frontend design applies, rerun the final rendered preflight against the locked contract at representative desktop and mobile viewports without introducing new aesthetic preferences,
 - preserve the existing review trail while clearly marking what was fixed during the review loop.
 
 Artifact location rule:
@@ -192,6 +219,7 @@ Success criteria:
 - `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
+- when frontend design applies, `REVIEW.md` records the final rendered viewports, tooling, objective preflight result, and any unverified limitation,
 - the refreshed artifacts are detailed, grounded, and internally consistent.
 
 Constraints:
@@ -220,6 +248,7 @@ It must include:
 - assumptions surfaced,
 - assert usage,
 - cross-platform review,
+- frontend design review with `Not applicable` or the locked baseline, rendered viewports, tooling, responsive and accessibility evidence, objective failures, and any limitation,
 - test review, if applicable,
 - documentation review with every material changed behavior's update-and-validation evidence or evidence-based `Not applicable` rationale,
 - any remaining suggestions.
@@ -240,4 +269,4 @@ Format it properly for easy readability and to ease cognitive overload while rev
 
 The walkthrough must be suitable as a supplement for my human review and potentially as PR-description source material.
 
-Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state.
+Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state. When frontend design applies, also verify that the recorded rendered preflight matches the final branch and does not add unapproved taste requirements.

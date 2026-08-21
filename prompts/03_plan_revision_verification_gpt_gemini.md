@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,31 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+
+## Conditional Frontend-Design Applicability
+
+`design-taste-frontend` is a conditional domain skill. Apply it only when the task affects one or more of these eligible surfaces:
+
+- a landing or marketing page,
+- a portfolio,
+- an editorial or brand page,
+- an explicitly approved visual redesign of one of those surfaces.
+
+Do not apply it to backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, or general refactors. For a mixed task, apply it only to the eligible public-facing surface.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility requirements, SEO and analytics contracts, and dependency-approval rules override every skill default. The skill never authorizes:
+
+- a new dependency or design system without explicit approval,
+- route, slug, primary-navigation, form-field, or analytics-event changes,
+- a content or information-architecture rewrite,
+- architecture changes or scope expansion,
+- replacing objective requirements with subjective taste.
+
+If applicability is false, do not use the skill and record `Frontend design: Not applicable` in the relevant phase artifact.
+
+In this verification phase, verify the previously agreed frontend-design decisions and the revised `Frontend Design Contract`; do not reopen aesthetic direction or introduce new preferences. Confirm that the execution prompt cannot use the skill to add dependencies or widen scope.
 
 
 ## Engineering Contract
@@ -165,6 +191,7 @@ Success criteria:
 - each prior concern is checked against the revised artifacts and linked to concrete evidence,
 - the verdict is explicit about both readiness and remaining gaps,
 - every implementation step in the revised plan and GPT prompt has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
+- frontend-design applicability is explicit and, when applicable, the revised `Frontend Design Contract` is complete, unchanged in approved scope, and enforced by the GPT prompt without unapproved dependencies or protected-surface changes,
 - the output follows the exact structure below.
 
 Constraints:
@@ -189,6 +216,8 @@ Working method:
 - quote or clearly point to where each concern was addressed,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
 - verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,
+- when frontend design applies, verify the contract, conditional skill gate, approved dependencies, protected routes and behavior, and rendered-validation plan; when it does not, verify the explicit `Not applicable` decision,
+- do not introduce or require a new aesthetic preference during verification,
 - if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
 
 Task:
@@ -223,6 +252,7 @@ Use this structure:
 ## Verdict
 - All previous concerns resolved: Yes/No
 - Documentation checkpoints complete: Yes/No
+- Frontend design contract complete: Yes/No/Not applicable
 - Ready for GPT execution: Yes/No
 
 ## Concern-by-Concern Verification
@@ -231,6 +261,8 @@ Use this structure:
 |---|---|---|---|
 
 ## Documentation Checkpoint Verification
+
+## Frontend Design Contract Verification
 
 ## Remaining Blocking Issues
 
