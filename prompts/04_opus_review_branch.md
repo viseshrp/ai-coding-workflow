@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,31 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and any available locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+
+## Conditional Frontend-Design Applicability
+
+`design-taste-frontend` is a conditional domain skill. Apply it only when the task affects one or more of these eligible surfaces:
+
+- a landing or marketing page,
+- a portfolio,
+- an editorial or brand page,
+- an explicitly approved visual redesign of one of those surfaces.
+
+Do not apply it to backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, or general refactors. For a mixed task, apply it only to the eligible public-facing surface.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility requirements, SEO and analytics contracts, and dependency-approval rules override every skill default. The skill never authorizes:
+
+- a new dependency or design system without explicit approval,
+- route, slug, primary-navigation, form-field, or analytics-event changes,
+- a content or information-architecture rewrite,
+- architecture changes or scope expansion,
+- replacing objective requirements with subjective taste.
+
+If applicability is false, do not use the skill and record `Frontend design: Not applicable` in the relevant phase artifact.
+
+In this branch-review phase, use the skill only for eligible visual frontend surfaces. Review the rendered result at representative desktop and mobile viewports when repository tooling permits. Ground blocking findings in the locked contract, accessibility, responsive correctness, functionality, performance, SEO, analytics, or repository requirements. Keep uncontracted aesthetic preferences in `Suggestions`.
 
 
 ## Engineering Contract
@@ -189,6 +215,7 @@ Success criteria:
 - plan divergence is clearly separated from optional suggestions when a plan is available; when no plan is available, its absence is recorded without becoming a finding or blocker,
 - every material changed behavior has a documentation-checkpoint result grounded in the actual branch: exact durable documentation and validation, or an evidence-based `Not applicable` decision,
 - the review and generated review-fix prompt remain usable without any artifact from an earlier workflow phase,
+- when frontend design applies, objective visual findings are grounded in rendered evidence and the locked contract or repository requirements; uncontracted aesthetic alternatives remain suggestions,
 - the outputs are detailed enough to drive both the review-fix phase and the final human walkthrough.
 
 Constraints:
@@ -208,6 +235,7 @@ Working method:
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
 - quote or clearly point to the exact evidence for each material finding,
 - separate confirmed issues from preferences, open questions, and optional suggestions,
+- when frontend design applies, inspect the rendered UI at representative desktop and mobile viewports using existing repository tooling when available; if tooling is unavailable, record the limitation and do not claim rendered verification,
 - do not recreate missing prior-phase artifacts or treat their absence as a review defect,
 - after checking 100% compliance with any available plan, or completing the full evidence-based review when no plan is available, provide suggestions,
 - do not make any changes you propose until I give the go-ahead.
@@ -240,6 +268,18 @@ Review for:
 - bloated comment blocks,
 - cross-platform Linux/Windows safety,
 - test quality, only for tests that already exist or were explicitly requested.
+
+
+### Conditional frontend-design review
+
+Apply this subsection only when the task passes the applicability gate.
+
+- Establish the review baseline from the locked `Frontend Design Contract` when present, then existing brand and design-system conventions, actual rendered behavior, accessibility, responsive correctness, functionality, performance, SEO, analytics, and repository evidence.
+- Inspect representative desktop and mobile viewports with existing browser, preview, screenshot, or end-to-end tooling when available.
+- Review typography, hierarchy, layout, spacing, color and surface consistency, motion and reduced-motion behavior, imagery, loading and empty and error states, keyboard behavior, contrast, overflow, viewport stability, and Core Web Vitals risk only where relevant to the changed surface.
+- Treat contract violations, accessibility failures, overflow, broken responsive behavior, functional regressions, unapproved dependencies, SEO or analytics breakage, and measurable performance regressions as real findings.
+- Treat a different font, composition, animation, card treatment, or aesthetic direction as a suggestion unless the user or locked contract required it.
+- Do not use the skill to demand a redesign outside the branch scope.
 
 ### Language-specific review guidance
 
@@ -326,6 +366,8 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 
 ## Cross-Platform Review
 
+## Frontend Design Review
+
 ## Test Review
 
 ## Documentation Review
@@ -344,6 +386,8 @@ In `## Review Basis`, list the branch comparison used, the repository evidence i
 In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
 In `## Documentation Review`, record the documentation-checkpoint result for every material changed behavior. Treat missing, inaccurate, or unvalidated required durable documentation as a valid review issue rather than an optional suggestion.
+
+In `## Frontend Design Review`, state `Not applicable` when the gate is false. When it is true, record the locked baseline, rendered viewports and tooling, objective failures, responsive and accessibility evidence, performance or SEO or analytics risks, and any unverified limitation. Keep uncontracted aesthetic alternatives in `Suggestions`.
 
 ## Required output 2: `WALKTHROUGH.md`
 
@@ -378,6 +422,7 @@ The generated GPT prompt must use a clear title and contain these top-level sect
 
 - `## Skills`
 - `## Skill Handling Rule`
+- `## Conditional Frontend-Design Applicability`
 - `## Engineering Contract`
 - `## Prompt`
 
@@ -387,6 +432,7 @@ The generated GPT prompt must include these skill links explicitly:
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated GPT prompt must include a `## Skill Handling Rule` that instructs GPT to:
@@ -399,10 +445,24 @@ The generated GPT prompt must include a `## Skill Handling Rule` that instructs 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- load and apply `design-taste-frontend` only when the task matches the `## Conditional Frontend-Design Applicability` gate,
+- when it applies, treat the locked `Frontend Design Contract` and existing repository design system as authoritative; use the skill only as a supporting design and validation procedure,
+- when it does not apply, do not use it and record `Frontend design: Not applicable`,
+- never let it authorize a dependency, redesign, route, navigation, information-architecture, content, form, analytics, or architecture change beyond the user-approved artifacts.
 - treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and any available locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+In `## Conditional Frontend-Design Applicability`, it must instruct the target agent to:
+
+- apply `design-taste-frontend` only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces,
+- exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, and general refactors,
+- apply the skill only to eligible public-facing surfaces in a mixed task,
+- let the user request, locked artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and dependency-approval rules override skill defaults,
+- prohibit the skill from authorizing dependencies, design-system changes, route or slug changes, primary-navigation changes, form-field changes, analytics-event changes, content or information-architecture rewrites, architecture changes, or scope expansion,
+- record `Frontend design: Not applicable` and skip the skill when the gate is false.
 
 The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter.
 
@@ -426,6 +486,7 @@ Goal:
 Success criteria:
 
 - each implemented fix is validated against the actual review finding and the current code,
+- when valid frontend-design findings exist, each fix also satisfies the locked contract and is rechecked at the affected rendered viewports without expanding into a redesign,
 - all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
 - scope stays within the review contract and, when available, the original implementation contract,
 - backwards compatibility is preserved,
@@ -481,6 +542,15 @@ Per-review-item process:
 7. If a review item requires a design decision not already made, stop and ask.
 8. Check off fixes if a checklist exists.
 
+
+Conditional frontend-design fix process:
+
+- apply `design-taste-frontend` only when `REVIEW.md` contains valid findings for an eligible visual frontend surface,
+- use the exact accepted finding, current code, and any locked `Frontend Design Contract` as the fix boundary,
+- do not implement optional aesthetic suggestions or redesign adjacent sections,
+- do not add a dependency or change the design system, routes, navigation, content, information architecture, forms, analytics, or architecture unless the accepted finding and approved contract explicitly require it,
+- recheck each affected desktop and mobile viewport with existing repository tooling when available and report any unverified limitation.
+
 Focused verification:
 
 - run focused verification relevant to the fixes,
@@ -512,6 +582,8 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 
 ## Documentation Checkpoints
 
+## Frontend Design Verification
+
 ## Commits Created
 
 ## Push Status
@@ -522,6 +594,8 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 ```
 
 In `## Documentation Checkpoints`, require GPT to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
+
+In `## Frontend Design Verification`, require GPT to state `Not applicable` when no eligible frontend finding was fixed. Otherwise require the contract or accepted finding, affected viewports, tooling, rendered results, accessibility and responsive checks, and any unverified limitation.
 
 It must explicitly instruct GPT not to claim completion without fresh verification evidence.
 

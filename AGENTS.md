@@ -91,6 +91,7 @@ If a task appears to require changing a source file, stop and ask instead of mod
 These are the main design constraints that define this repo:
 
 - No skill router. Skills are listed directly inside the relevant prompts.
+- `design-taste-frontend` is a conditional domain skill. Keep its applicability gate explicit in each prompt that uses it; never turn it into a universal style layer or an implicit router.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -207,6 +208,27 @@ Expectation:
 - the generated GPT review-fix prompt specified by `04`.
 
 Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document the phase creates or revises, `no-ai-slop` is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Apply its editing principles while drafting, run its evaluator before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if either file cannot be read and applied. Let it win over conflicting writing-style guidance, but preserve the prompt's control over scope, meaning, required structure, artifact names, constraints, and evidence. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
+
+
+### Conditional frontend-design skill
+
+[`design-taste-frontend`](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) is linked directly from canonical phases `01` through `06` and `08`, and from the generated Opus planning, Opus revision, GPT execution, and GPT review-fix prompts specified by those phases.
+
+Synchronization requirements:
+
+- Keep the same eligible surfaces everywhere: landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces.
+- Keep the same exclusions everywhere: backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, and general refactors.
+- Keep the user request, locked artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and dependency approval above skill defaults.
+- Preserve the rule that the skill cannot authorize dependencies, design-system changes, routes, slugs, primary navigation, form fields, analytics events, content, information architecture, architecture, or scope expansion.
+- Planning must translate applicable guidance into a locked `Frontend Design Contract`; execution and fix phases consume that contract rather than inventing a design.
+- Review phases must separate objective failures from uncontracted aesthetic preferences and use rendered desktop and mobile evidence when repository tooling permits.
+- Do not add the skill to `07_human_code_walkthrough.md`; that gate must remain an independent human review.
+- Do not add the skill to `09_write_focused_tests_any_model.md`; that phase remains test-file-only.
+- Do not update `sources/current_skill_set.txt`; it is immutable historical input.
+- Do not add `gpt-taste` to the standard workflow. Its mandatory randomization, AIDA structure, and GSAP-heavy defaults conflict with locked-plan execution and dependency approval.
+- Specialized sibling skills such as `image-to-code`, `brandkit`, or `redesign-existing-projects` require explicit task-specific authorization and must not be pulled in automatically.
+
+If the applicability model changes, review every canonical phase, every generated downstream prompt contract, `README.md`, and this maintenance guide in the same patch.
 
 ### `## Engineering Contract`
 

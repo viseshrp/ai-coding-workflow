@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,31 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+
+## Conditional Frontend-Design Applicability
+
+`design-taste-frontend` is a conditional domain skill. Apply it only when the task affects one or more of these eligible surfaces:
+
+- a landing or marketing page,
+- a portfolio,
+- an editorial or brand page,
+- an explicitly approved visual redesign of one of those surfaces.
+
+Do not apply it to backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, or general refactors. For a mixed task, apply it only to the eligible public-facing surface.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility requirements, SEO and analytics contracts, and dependency-approval rules override every skill default. The skill never authorizes:
+
+- a new dependency or design system without explicit approval,
+- route, slug, primary-navigation, form-field, or analytics-event changes,
+- a content or information-architecture rewrite,
+- architecture changes or scope expansion,
+- replacing objective requirements with subjective taste.
+
+If applicability is false, do not use the skill and record `Frontend design: Not applicable` in the relevant phase artifact.
+
+In this critique phase, verify that an eligible visual frontend plan contains a complete, source-grounded `Frontend Design Contract`. Treat missing objective requirements, unapproved dependencies, and unauthorized brand, route, content, information-architecture, form, or analytics changes as critique findings. Keep purely subjective alternatives non-blocking unless the user or locked plan made them requirements.
 
 
 ## Engineering Contract
@@ -220,6 +246,9 @@ Review for:
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
+- missing or incomplete frontend-design applicability and `Frontend Design Contract` decisions for an eligible surface,
+- frontend instructions that authorize an unapproved dependency, design-system switch, redesign, route, navigation, content, information-architecture, form, analytics, or architecture change,
+- subjective design preferences presented as blocking requirements without support from the user, locked plan, accessibility, responsive correctness, functionality, performance, SEO, analytics, or repository contracts,
 - anything in the GPT prompt that gives GPT too much freedom.
 
 ## Required output 1: `PLAN_CRITIQUE.md`
@@ -253,6 +282,8 @@ Use this structure:
 
 ## Documentation Checkpoint Gaps
 
+## Frontend Design Contract Review
+
 ## GPT Prompt Risks
 
 ## Simplification Opportunities
@@ -283,6 +314,7 @@ The generated Opus revision prompt must use a clear title and contain these top-
 
 - `## Skills`
 - `## Skill Handling Rule`
+- `## Conditional Frontend-Design Applicability`
 - `## Default Planning Artifact Reduction`
 - `## Engineering Contract`
 - `## Prompt`
@@ -296,6 +328,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
@@ -307,10 +340,24 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- load and apply `design-taste-frontend` only when the task matches the `## Conditional Frontend-Design Applicability` gate,
+- when it applies, treat the locked `Frontend Design Contract` and existing repository design system as authoritative; use the skill only as a supporting design and validation procedure,
+- when it does not apply, do not use it and record `Frontend design: Not applicable`,
+- never let it authorize a dependency, redesign, route, navigation, information-architecture, content, form, analytics, or architecture change beyond the user-approved artifacts.
 - treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+In `## Conditional Frontend-Design Applicability`, it must instruct the target agent to:
+
+- apply `design-taste-frontend` only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces,
+- exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, and general refactors,
+- apply the skill only to eligible public-facing surfaces in a mixed task,
+- let the user request, locked artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and dependency-approval rules override skill defaults,
+- prohibit the skill from authorizing dependencies, design-system changes, route or slug changes, primary-navigation changes, form-field changes, analytics-event changes, content or information-architecture rewrites, architecture changes, or scope expansion,
+- record `Frontend design: Not applicable` and skip the skill when the gate is false.
 
 The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 
@@ -409,6 +456,17 @@ And also:
 - if the revised `GPT_EXECUTION_PROMPT.md` needs a fallback instruction for checking whether a pull request already exists for the current branch, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
 - preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 
+
+Conditional frontend-design revision requirements:
+
+- preserve the established applicability decision instead of silently changing whether the skill applies,
+- when applicable, repair and retain the dedicated `## Frontend Design Contract` in `FEATURE_SPEC_AND_PLAN.md`,
+- ensure the contract locks objective design decisions, protected existing behavior, approved dependencies, and representative rendered-validation viewports,
+- remove or escalate any design instruction that would expand scope, switch dependencies or design systems, or alter routes, navigation, content, information architecture, forms, analytics, or architecture without approval,
+- keep subjective alternatives as optional suggestions unless the user or locked plan made them requirements,
+- preserve `Frontend design: Not applicable` when the task is outside the eligible surfaces,
+- preserve or strengthen the generated GPT execution prompt's conditional design-skill gate and rendered-verification requirements.
+
 Required outputs:
 
 Update or create:
@@ -444,6 +502,7 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 Final checks:
 
 - verify that the updated plan is still within original scope,
+- verify that frontend-design applicability is explicit and any `Frontend Design Contract` is complete, approved, and enforced consistently by `GPT_EXECUTION_PROMPT.md`,
 - verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
 - verify that the GPT prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
 - verify that every implementation step still has a documentation checkpoint with durable documentation validation or an evidence-based `Not applicable` decision,

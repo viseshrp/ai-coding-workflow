@@ -6,6 +6,7 @@
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+- [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) (conditional; apply only under the frontend-design applicability gate below)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -23,6 +24,31 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
+
+
+## Conditional Frontend-Design Applicability
+
+`design-taste-frontend` is a conditional domain skill. Apply it only when the task affects one or more of these eligible surfaces:
+
+- a landing or marketing page,
+- a portfolio,
+- an editorial or brand page,
+- an explicitly approved visual redesign of one of those surfaces.
+
+Do not apply it to backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile interfaces, or general refactors. For a mixed task, apply it only to the eligible public-facing surface.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility requirements, SEO and analytics contracts, and dependency-approval rules override every skill default. The skill never authorizes:
+
+- a new dependency or design system without explicit approval,
+- route, slug, primary-navigation, form-field, or analytics-event changes,
+- a content or information-architecture rewrite,
+- architecture changes or scope expansion,
+- replacing objective requirements with subjective taste.
+
+If applicability is false, do not use the skill and record `Frontend design: Not applicable` in the relevant phase artifact.
+
+In this follow-up phase, apply the skill only when an explicitly approved `FOLLOWUP.md` item concerns an eligible visual frontend surface. The approved item and any locked `Frontend Design Contract` control the change. Do not turn the skill into permission for a broader redesign, new dependency, or unapproved content, route, navigation, form, analytics, or architecture change.
 
 
 ## Engineering Contract
@@ -163,6 +189,7 @@ Goal:
 Success criteria:
 
 - only approved `FOLLOWUP.md` items are implemented,
+- when an approved item is eligible frontend-design work, the fix stays within that item and any locked `Frontend Design Contract`,
 - each completed item is checked off only after the change and its verification are done,
 - the smallest correct changes are made,
 - each completed `FOLLOWUP.md` item completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
@@ -203,6 +230,7 @@ Constraints:
 - workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
 - go on and address all items in `FOLLOWUP.md` while checking them off the list,
 - only implement items that are explicitly present in `FOLLOWUP.md`,
+- use `design-taste-frontend` only for an explicitly approved eligible frontend item; do not apply it to other follow-up work or use it to broaden the item,
 - before checking off an item, complete the documentation checkpoint specified by that item; if it is missing or ambiguous, stop and ask instead of silently treating documentation as `Not applicable`,
 - do not add new follow-up items,
 - do not expand scope,
@@ -239,6 +267,7 @@ Execution rules:
 - do not make unrelated refactors,
 - do not write tests unless `FOLLOWUP.md` explicitly asks for tests,
 - run focused verification relevant to the approved follow-up items,
+- for an eligible frontend-design item, validate the affected rendered desktop and mobile viewports using existing repository tooling when available and report any unverified limitation,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
 - before marking each approved item complete, update and validate the exact durable documentation in the same change set, or report the item's evidence-based `Not applicable` decision,
@@ -273,6 +302,8 @@ After this phase, I will run `09_write_focused_tests_any_model.md` with any capa
 
 ## Documentation Checkpoints
 
+## Frontend Design Verification
+
 ## Commits Created
 
 ## Push Status
@@ -289,5 +320,7 @@ After this phase, I will run `09_write_focused_tests_any_model.md` with any capa
 In `## Commits Created`, list each commit together with the exact `FOLLOWUP.md` item it corresponds to.
 
 In `## Documentation Checkpoints`, list each completed `FOLLOWUP.md` item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
+
+In `## Frontend Design Verification`, state `Not applicable` when no approved eligible frontend item was implemented. Otherwise list the approved item, locked contract, affected viewports, tooling, rendered checks, accessibility and responsive results, and any limitation.
 
 Do not claim completion without fresh verification evidence.
