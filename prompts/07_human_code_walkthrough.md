@@ -5,6 +5,7 @@
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -18,6 +19,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail-review` only after the independent human-review judgment for the current changed chunk has been recorded. Use it as a secondary over-engineering check, verify each result against the actual code, and present valid results through this walkthrough's `AGREE` and `FOLLOWUP.md` gates. Do not emit its standalone one-line report or line-count score. Never let line reduction weaken clarity, explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, or the test-review contract.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -101,6 +104,7 @@ Success criteria:
 - if method calls appear in the excerpt, the relevant method definitions are also shown in separate small excerpts with context,
 - relevant extra context from `WALKTHROUGH.md` is surfaced alongside the current file chunk,
 - each material changed behavior has an explicit documentation-checkpoint result before its file can be resolved,
+- each changed chunk receives a secondary `ponytail-review` simplification check only after the independent human-review judgment,
 - typing `RESOLVE` in all caps advances the review to the next file only after the current file is fully reviewed,
 - every proposed follow-up item includes a detailed step-by-step plan and is specific enough to implement directly,
 - nothing is added to `FOLLOWUP.md` unless I type `AGREE` in all caps.
@@ -145,6 +149,7 @@ Review loop:
 - for each changed chunk, show a few intelligently selected surrounding lines around the change,
 - if method calls appear in the shown excerpt, show the relevant method definitions in separate small excerpts with context,
 - surface any additional relevant `WALKTHROUGH.md` information alongside the current file chunk,
+- after recording the independent human-review judgment, apply `ponytail-review` to the current changed chunk and verify any result against the surrounding code and required behavior,
 - discuss and agree on exact next steps with a detailed step-by-step plan,
 - once a specific item is agreed, add only that item to `FOLLOWUP.md`,
 - when the current file is fully reviewed, ask whether I want to `RESOLVE` that file and move on,
@@ -164,9 +169,10 @@ Response format for each review step:
 7. `Walkthrough Notes For This Chunk`
 8. `Human Review Concern`
 9. `Independent Human Review Judgment`
-10. `Documentation Checkpoint`
-11. `Exact Next Step Plan`
-12. `File Review Status`
+10. `Ponytail Simplification Check`
+11. `Documentation Checkpoint`
+12. `Exact Next Step Plan`
+13. `File Review Status`
 
 For each review turn:
 
@@ -187,14 +193,15 @@ For each review turn:
 15. Explain the human review concern, if any.
 16. Use the manual diff against `main` only to verify or cross-check the PR data from GitHub CLI (`gh`); do not use it as the primary review source.
 17. Give an independent human-review judgment based only on `WALKTHROUGH.md`, the actual code, and the PR changes from GitHub CLI (`gh`), using the manual diff against `main` only for verification/reference.
-18. Record the documentation checkpoint for each material changed behavior: exact durable documentation and validation, or an evidence-based `Not applicable` rationale.
-19. Discuss and propose exact next steps as a detailed step-by-step plan.
-20. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
-21. Only after the current file is fully reviewed and its documentation checkpoint is recorded, ask whether I want to `RESOLVE` that file.
-22. If I type `RESOLVE`, mark the current file resolved and proceed to the next file.
-23. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
-24. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
-25. After `RESOLVE`, immediately display the review for the next file starting with its first chunk.
+18. Only after that independent judgment, apply `ponytail-review` to the current changed chunk and verify any simplification result against the actual code and required behavior.
+19. Record the documentation checkpoint for each material changed behavior: exact durable documentation and validation, or an evidence-based `Not applicable` rationale.
+20. Discuss and propose exact next steps as a detailed step-by-step plan.
+21. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
+22. Only after the current file is fully reviewed and its documentation checkpoint is recorded, ask whether I want to `RESOLVE` that file.
+23. If I type `RESOLVE`, mark the current file resolved and proceed to the next file.
+24. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
+25. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
+26. After `RESOLVE`, immediately display the review for the next file starting with its first chunk.
 
 “Agreed” means I must explicitly type `AGREE` in all-caps.
 

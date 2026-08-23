@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -19,6 +20,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail` in lite mode during critique. Use its minimum-solution ladder to identify simpler safe plan options, but present them for approval instead of silently changing scope. Never use it to weaken explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, or documentation checkpoints. Ignore its output-format and test-writing rules; this prompt owns the artifacts and test boundary.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -211,6 +214,7 @@ Review for:
 - unnecessary brute-force or quadratic operations,
 - poor reuse / DRY violations,
 - failure to reuse existing code,
+- plan steps that skip an earlier applicable `ponytail` rung: unnecessary work, missed standard-library or native-platform support, unjustified dependencies, speculative abstractions or configuration, or avoidable files and boilerplate,
 - separation-of-concerns violations,
 - missing documentation grounding for library/framework usage,
 - outdated API usage,
@@ -260,6 +264,8 @@ Use this structure:
 ## Final Recommendation
 ```
 
+In `## Simplification Opportunities`, record the first applicable `ponytail` rung for each concrete opportunity and distinguish an approved-scope correction from an optional scope reduction.
+
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
 Create `OPUS_PLAN_REVISION_REQUEST.md` in the target repo root as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
@@ -296,6 +302,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
@@ -307,6 +314,9 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- apply `ponytail` in full mode after understanding the critique, artifacts, and relevant code, using its ladder to apply required simplifications that preserve the approved scope,
+- preserve `ponytail` full-mode handling in the revised `GPT_EXECUTION_PROMPT.md`,
+- never let `ponytail` remove or weaken explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, or documentation checkpoints, and ignore its output-format and test-writing rules,
 - treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,

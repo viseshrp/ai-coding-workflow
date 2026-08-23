@@ -4,6 +4,7 @@
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
@@ -20,6 +21,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail-review` only to the review-fix diff after verifying the original findings. Use it to detect unnecessary complexity introduced by the fixes, verify each result against the actual code, and report valid results through this prompt's verification structure. Do not emit its standalone one-line report or line-count score. Never let line reduction weaken clarity, explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, or the test-review contract.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -190,6 +193,7 @@ Success criteria:
 
 - each prior finding is checked against the actual changed code,
 - the status of each finding is explicit and evidence-based,
+- the fixes introduced no unnecessary dependency, abstraction, configuration, file, boilerplate, missed reuse, or other removable changed-scope complexity,
 - each documentation-checkpoint result is checked against the actual branch, including the durable documentation and validation evidence or the `Not applicable` rationale,
 - any newly introduced issue is surfaced instead of hidden inside a pass verdict.
 
@@ -205,7 +209,8 @@ For each prior review finding:
 - inspect the actual changed code,
 - classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
 - explain evidence from code,
-- identify any new issues introduced by the fix.
+- identify any new issues introduced by the fix,
+- apply `ponytail-review` to the review-fix diff and verify every reported simplification against the required behavior and scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
 

@@ -6,6 +6,7 @@
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+- [ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -19,6 +20,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail` in full mode only within the human-approved `FOLLOWUP.md` items. Use its minimum-solution ladder after understanding the relevant code to make the smallest safe change that satisfies each item. Never let it reinterpret or omit an approved item or weaken explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, or documentation checkpoints. Ignore its output-format and test-writing rules; this prompt owns the final response and phase `09` owns test authoring.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -164,7 +167,7 @@ Success criteria:
 
 - only approved `FOLLOWUP.md` items are implemented,
 - each completed item is checked off only after the change and its verification are done,
-- the smallest correct changes are made,
+- the smallest correct changes are made by applying the `ponytail` ladder within each approved item,
 - each completed `FOLLOWUP.md` item completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,

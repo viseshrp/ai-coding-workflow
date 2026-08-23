@@ -97,6 +97,7 @@ These are the main design constraints that define this repo:
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
+- Ponytail is a bounded minimum-solution aid: lite mode belongs in exploration and plan checks; full mode belongs in planning, plan revision, locked execution, review-fix, and approved follow-up implementation; `ponytail-review` belongs in changed-scope review and verification. The phase prompt and locked artifacts always win. Never import Ponytail's standalone output format or test-writing rules, and never load Ponytail in phase `09`.
 - The workflow uses explicit model-role boundaries:
   - Any capable repo-aware model for the initial exploration/grilling and final test-writing phases.
   - GPT or Gemini for meta critique/verification in some phases.
@@ -267,6 +268,18 @@ If you rename or materially redefine one of these, update every downstream consu
 The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and high-value.
 
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
+
+### Ponytail
+
+Use the archived Ponytail skills only in these surfaces:
+
+- `ponytail` lite mode: checked-in phases `01`, `02`, and `03`.
+- `ponytail` full mode: the generated Opus planning prompt, generated Opus plan-revision prompt, generated GPT execution prompt, generated GPT review-fix prompt, and checked-in phase `08`.
+- `ponytail-review`: checked-in phases `04`, `05`, `06`, and `07`; phase `07` applies it only after the independent human judgment for the current chunk.
+
+Ponytail must not remove or weaken explicit requirements, approved scope, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, required artifact structures, or phase-specific test rules. Its standalone one-line output, line-count score, terse-response rule, and test-writing rule do not apply in this workflow.
+
+Do not add Ponytail to phase `09`. `ponytail-audit` and `ponytail-debt` may be user-provided inputs to a separate cleanup task that starts at phase `01`; they do not run inside the normal branch workflow. Do not add `ponytail-gain`, `ponytail-help`, or ultra mode to canonical prompts.
 
 ### Skill inventory
 

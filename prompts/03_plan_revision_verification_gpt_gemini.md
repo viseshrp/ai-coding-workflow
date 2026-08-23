@@ -6,6 +6,7 @@
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 ## Skill Handling Rule
@@ -19,6 +20,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail` in lite mode during verification. Use its minimum-solution ladder to check that required simplifications were applied and that the revision introduced no new unnecessary work. Never use it to weaken explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, or documentation checkpoints. Ignore its output-format and test-writing rules; this prompt owns the artifact and test boundary.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -164,6 +167,7 @@ Success criteria:
 
 - each prior concern is checked against the revised artifacts and linked to concrete evidence,
 - the verdict is explicit about both readiness and remaining gaps,
+- required simplifications are present, the revised plan uses the first applicable `ponytail` rung, and no new unjustified abstraction, dependency, configuration layer, helper, file, or boilerplate was introduced,
 - every implementation step in the revised plan and GPT prompt has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - the output follows the exact structure below.
 
@@ -188,6 +192,7 @@ Working method:
 - if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
 - quote or clearly point to where each concern was addressed,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
+- verify any `ponytail` simplification concern against the revised plan, `GPT_EXECUTION_PROMPT.md`, and relevant repository evidence,
 - verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,
 - if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
 

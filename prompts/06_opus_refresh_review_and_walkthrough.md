@@ -4,6 +4,7 @@
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
@@ -19,6 +20,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail-review` to the final changed-scope diff only to revalidate the existing complexity and simplification conclusions. Verify each result against the actual code and integrate it into the required review sections. Do not emit its standalone one-line report or line-count score. Never let line reduction weaken clarity, explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, or the test-review contract.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -169,6 +172,7 @@ Role:
 Task:
 
 - your job is to update the review and walkthrough documents so they accurately reflect the final code state,
+- revalidate the final diff with `ponytail-review` so resolved complexity findings stay resolved and no severe removable complexity introduced by the fix loop is missed,
 - confirm that every material changed behavior has a completed documentation checkpoint before final human review,
 - preserve the existing review trail while clearly marking what was fixed during the review loop.
 
@@ -192,6 +196,7 @@ Success criteria:
 - `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
+- `REVIEW.md` accurately reflects the final changed-scope over-engineering and simplification status,
 - the refreshed artifacts are detailed, grounded, and internally consistent.
 
 Constraints:

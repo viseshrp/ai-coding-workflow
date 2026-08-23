@@ -115,6 +115,7 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
 - Model roles stay explicit: any capable repo-aware model for exploration and final test writing; GPT or Gemini for plan critique/verification; Opus for planning, revision, and AI review; GPT or Sonnet for the human walkthrough; GPT for implementation, fixes, and follow-up.
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
+- Ponytail supplies a bounded minimum-solution check: lite mode for exploration and plan checks, full mode for planning and approved implementation, and `ponytail-review` for changed-scope review. Prompt contracts and locked artifacts always win.
 - The final automated phase adds the smallest meaningful focused test set. A human reviews those tests, and the workflow ends without another prompt or artifact.
 
 ## Documentation Checkpoints
@@ -151,6 +152,10 @@ Current skill references live in the prompts that use them. [sources/current_ski
 Skills support the workflow; they do not widen scope or override prompt constraints.
 
 Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
+
+[Ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md) applies its minimum-solution ladder in phases `01`–`03`, generated planning/revision/execution prompts, generated review-fix prompts, and phase `08`. [Ponytail review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md) checks changed-scope over-engineering in phases `04`–`07`, after the independent human judgment in phase `07`.
+
+Ponytail never overrides explicit requirements, locked scope, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, artifact formats, or test policy. Phase `09` does not load Ponytail because its repository-native test and 85% changed-line coverage contract is authoritative. `ponytail-audit` and `ponytail-debt` may supply input to a separate phase-`01` cleanup task; they are not part of a normal feature run.
 
 ## Repository Layout
 

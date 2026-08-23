@@ -4,6 +4,7 @@
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
+- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
@@ -19,6 +20,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+Apply `ponytail-review` only as a changed-scope over-engineering pass after the correctness review. Verify each result against the actual code, then integrate valid results into this prompt's required review sections and severity rules. Do not emit its standalone one-line report or line-count score. Never let line reduction weaken clarity, explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, documentation checkpoints, or the test-review contract.
 
 `no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and any available locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -236,6 +239,7 @@ Review for:
 - assumptions in code,
 - assert statements in production code,
 - reinvention/duplication of existing code,
+- removable changed-scope complexity identified by `ponytail-review`, including dead flexibility, missed standard-library or native-platform support, unnecessary dependencies, speculative abstractions or configuration, and equivalent logic that can be clearer with less code,
 - comment quality and missing comments where code is not obvious,
 - bloated comment blocks,
 - cross-platform Linux/Windows safety,
@@ -345,6 +349,8 @@ In `## Plan Compliance`, assess each available planning artifact. If none exists
 
 In `## Documentation Review`, record the documentation-checkpoint result for every material changed behavior. Treat missing, inaccurate, or unvalidated required durable documentation as a valid review issue rather than an optional suggestion.
 
+Integrate verified `ponytail-review` findings into `## Performance / Complexity Review`, `## Code Quality / Readability`, `## Reuse / DRY / Duplication`, and the appropriate severity section. Keep optional scope reductions in `## Suggestions`.
+
 ## Required output 2: `WALKTHROUGH.md`
 
 Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
@@ -387,6 +393,7 @@ The generated GPT prompt must include these skill links explicitly:
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
+- [ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
 The generated GPT prompt must include a `## Skill Handling Rule` that instructs GPT to:
@@ -399,6 +406,8 @@ The generated GPT prompt must include a `## Skill Handling Rule` that instructs 
 - let the prompt win if a skill conflicts with it,
 - stop and ask instead of silently choosing if a conflict is material,
 - never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- apply `ponytail` in full mode only within valid `REVIEW.md` findings and any available locked implementation scope, using its ladder to make the smallest safe fix,
+- never let `ponytail` reinterpret or omit a valid finding or weaken explicit requirements, correctness, validation, error handling, security, accessibility, backwards compatibility, performance constraints, or documentation checkpoints, and ignore its output-format and test-writing rules,
 - treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
 - apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and any available locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
@@ -428,6 +437,7 @@ Success criteria:
 - each implemented fix is validated against the actual review finding and the current code,
 - all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
 - scope stays within the review contract and, when available, the original implementation contract,
+- each valid finding is resolved with the smallest safe change after applying the `ponytail` ladder,
 - backwards compatibility is preserved,
 - each fixed or retained material behavior completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - verification evidence is reported clearly,
