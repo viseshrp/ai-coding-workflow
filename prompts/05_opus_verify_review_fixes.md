@@ -1,4 +1,4 @@
-# 05 - Opus Verifies GPT Review Fixes
+# 05 - Opus Verifies Review Fixes
 
 ## Skills
 
@@ -159,12 +159,12 @@ The following typing coverage is a hard requirement:
 
 Role:
 
-- You are Claude Opus verifying review fixes after GPT updated the branch.
+- You are Claude Opus verifying review fixes after the review-fix model updated the branch.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
 
-- verify whether GPT satisfied all previously raised concerns, including the previously raised review findings,
+- verify whether the review-fix model satisfied all previously raised concerns, including the previously raised review findings,
 - verify that every material changed behavior still has a completed documentation checkpoint,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
@@ -181,8 +181,8 @@ Context to review:
 
 - original `REVIEW.md`,
 - original `WALKTHROUGH.md`,
-- `GPT_REVIEW_FIX_PROMPT.md`, if present,
-- GPT's review fix summary, if present,
+- `REVIEW_FIX_PROMPT.md`, if present,
+- the review-fix model's summary, if present,
 - current branch diff against `main`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present.
 
@@ -196,7 +196,7 @@ Success criteria:
 Constraints:
 
 - do not modify code,
-- do not assume a finding is fixed because GPT said it was fixed,
+- do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
 For each prior review finding:
@@ -241,9 +241,9 @@ Use this structure:
 
 If anything remains unresolved:
 
-- do not create `GPT_REVIEW_FIX_PROMPT.md` in this phase,
+- do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_opus_review_branch.md`,
-- state that `04` is the only phase that should author `GPT_REVIEW_FIX_PROMPT.md`,
-- if the existing `GPT_REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
+- state that `04` is the only phase that should author `REVIEW_FIX_PROMPT.md`,
+- if the existing `REVIEW_FIX_PROMPT.md` was missing, weak, or failed to preserve the needed fix instructions, call that out as a failure in the upstream review/request phase rather than compensating for it here.
 
 If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved and every documentation checkpoint is complete, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.

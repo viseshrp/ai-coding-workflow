@@ -1,5 +1,7 @@
 # 07 - Human Code Walkthrough + FOLLOWUP.md Creation
 
+This human walkthrough phase is intentionally model-agnostic. Use the same human-led review contract with any capable repository-aware model.
+
 ## Skills
 
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
@@ -42,7 +44,7 @@ When the current PR's changed code uses Python, add an explicit typing-complianc
 
 Role:
 
-- You are GPT or Claude Sonnet helping me run the final human walkthrough of a PR.
+- You are a capable repository-aware model helping me run the final human walkthrough of a PR.
 - This is a human review session. Help me do my own review of the code and diff.
 - Be structured, explicit, and evidence-driven.
 - Be terse and brief without losing detail as you move through the review.

@@ -1,4 +1,6 @@
-# 03 - Plan Revision Verification - GPT or Gemini
+# 03 - Plan Revision Verification - Any Model
+
+This plan-verification phase is intentionally model-agnostic. Use the same evidence-based verification contract with any capable repository-aware model.
 
 ## Skills
 
@@ -158,13 +160,13 @@ The following typing coverage is a hard requirement:
 
 Goal:
 
-- determine whether Opus actually addressed the previous plan critique and whether the planning artifacts are now ready for GPT execution.
+- determine whether Opus actually addressed the previous plan critique and whether the planning artifacts are now ready for implementation.
 
 Success criteria:
 
 - each prior concern is checked against the revised artifacts and linked to concrete evidence,
 - the verdict is explicit about both readiness and remaining gaps,
-- every implementation step in the revised plan and GPT prompt has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
+- every implementation step in the revised plan and execution prompt has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - the output follows the exact structure below.
 
 Constraints:
@@ -179,13 +181,13 @@ Context to review:
 - the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
 - `PLAN_REVISION_SUMMARY.md`,
 - the updated `FEATURE_SPEC_AND_PLAN.md`,
-- the updated `GPT_EXECUTION_PROMPT.md`,
+- the updated `EXECUTION_PROMPT.md`,
 - original draft plan/interviewing notes if available.
 
 Working method:
 
-- if you are GPT, inspect the revised artifacts and any needed repo files in parallel before finalizing,
-- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
+- inspect the revised artifacts and any needed repository files before finalizing; inspect independent files in parallel when your available tools make that efficient,
+- stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to where each concern was addressed,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
 - verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,
@@ -193,9 +195,9 @@ Working method:
 
 Task:
 
-- determine whether the revised plan and revised GPT prompt satisfy all previously raised concerns,
+- determine whether the revised plan and revised execution prompt satisfy all previously raised concerns,
 - produce `PLAN_REVISION_VERIFICATION.md`,
-- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_gpt_gemini.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
+- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_any_model.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
 
 Artifact location rule:
 
@@ -223,7 +225,7 @@ Use this structure:
 ## Verdict
 - All previous concerns resolved: Yes/No
 - Documentation checkpoints complete: Yes/No
-- Ready for GPT execution: Yes/No
+- Ready for implementation: Yes/No
 
 ## Concern-by-Concern Verification
 
@@ -244,8 +246,8 @@ Use this structure:
 If any issue remains:
 
 - do not create `OPUS_PLAN_REVISION_REQUEST.md` in this phase,
-- state explicitly that the workflow must return to `02_plan_critique_gpt_gemini.md`,
+- state explicitly that the workflow must return to `02_plan_critique_any_model.md`,
 - state that `02` is the only phase that should author `OPUS_PLAN_REVISION_REQUEST.md`,
 - if the existing `OPUS_PLAN_REVISION_REQUEST.md` was missing, weak, or failed to preserve the needed revision instructions, call that out as a failure in the upstream critique/request phase rather than compensating for it here.
 
-If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for GPT execution.
+If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for implementation.

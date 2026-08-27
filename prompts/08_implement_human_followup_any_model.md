@@ -1,4 +1,6 @@
-# 08 - GPT Implements Human-Approved FOLLOWUP.md
+# 08 - Implement Human-Approved FOLLOWUP.md - Any Model
+
+This follow-up implementation phase is intentionally model-agnostic. Use the same locked-scope, verification, Git, and human-approval contract with any capable repository-aware coding model.
 
 ## Skills
 
@@ -245,7 +247,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether a pull request already exists for the current branch before creating one,
@@ -253,7 +255,7 @@ Execution rules:
 - if you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that,
 - do not create a duplicate pull request for the same branch,
 - do not create a new AI review prompt,
-- do not ask Opus to review this phase,
+- do not run another AI review in this phase,
 - keep interim narration minimal and save the full report for the final response unless blocked.
 
 After this phase, I will run `09_write_focused_tests_any_model.md` with any capable repository-aware model. That phase may change test files only. It must not create another prompt or workflow artifact, and I will review its resulting test diff myself.

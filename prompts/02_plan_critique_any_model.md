@@ -1,4 +1,6 @@
-# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — GPT or Gemini
+# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — Any Model
+
+This planning-critique phase is intentionally model-agnostic. Use the same evidence-based review and artifact-generation contract with any capable repository-aware model.
 
 ## Skills
 
@@ -158,13 +160,13 @@ The following typing coverage is a hard requirement:
 
 Goal:
 
-- determine whether the planning artifacts are ready to lock for GPT execution.
+- determine whether the planning artifacts are ready to lock for implementation.
 
 Success criteria:
 
-- every material concern is grounded in specific plan text, GPT-prompt text, or concrete repo evidence,
+- every material concern is grounded in specific plan text, execution-prompt text, or concrete repo evidence,
 - blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
-- the plan and generated GPT prompt give every implementation step a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
+- the plan and generated execution prompt give every implementation step a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - the output follows the exact artifact structure below.
 
 Constraints:
@@ -177,14 +179,14 @@ Constraints:
 Context to review:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
-- `GPT_EXECUTION_PROMPT.md`,
+- `EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
 - relevant repository context if needed.
 
 Working method:
 
-- if you are GPT, inspect the planning artifacts and any necessary repo files in parallel before finalizing,
-- if you are GPT or Gemini, stay grounded in the supplied artifacts and any repo context you inspect,
+- inspect the planning artifacts and any necessary repository files before finalizing; inspect independent files in parallel when your available tools make that efficient,
+- stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to the exact passage that triggered each blocking issue,
 - separate confirmed issues, inferences, and open questions,
 - prefer concrete execution risks over generic style commentary.
@@ -192,7 +194,7 @@ Working method:
 Task:
 
 - critique the plan, not execute it,
-- decide whether the artifacts are good enough to lock for GPT execution,
+- decide whether the artifacts are good enough to lock for implementation,
 - produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
 
 ## Review dimensions
@@ -220,7 +222,7 @@ Review for:
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
-- anything in the GPT prompt that gives GPT too much freedom.
+- anything in the execution prompt that gives the implementation model too much freedom.
 
 ## Required output 1: `PLAN_CRITIQUE.md`
 
@@ -253,7 +255,7 @@ Use this structure:
 
 ## Documentation Checkpoint Gaps
 
-## GPT Prompt Risks
+## Execution Prompt Risks
 
 ## Simplification Opportunities
 
@@ -262,7 +264,7 @@ Use this structure:
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
-Create `OPUS_PLAN_REVISION_REQUEST.md` in the target repo root as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `GPT_EXECUTION_PROMPT.md`.
+Create `OPUS_PLAN_REVISION_REQUEST.md` in the target repo root as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
 
 There is no separate checked-in Opus revision prompt file after this critique step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the revision pass.
 
@@ -315,7 +317,7 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
+- `EXECUTION_PROMPT.md`
 
 It must state that:
 
@@ -350,7 +352,7 @@ Role:
 
 Task:
 
-- Update the planning artifacts so they are ready for locked GPT execution.
+- Update the planning artifacts so they are ready for locked implementation.
 - Apply valid critique items without expanding scope.
 
 Context to read before answering:
@@ -358,7 +360,7 @@ Context to read before answering:
 - `PLAN_CRITIQUE.md`, if present,
 - `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
 - current `FEATURE_SPEC_AND_PLAN.md`,
-- current `GPT_EXECUTION_PROMPT.md`,
+- current `EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
 - relevant repository context.
 
@@ -366,19 +368,19 @@ Success criteria:
 
 - every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
 - the revised plan stays within original scope,
-- the revised GPT prompt remains strict enough to prevent divergence during execution,
-- the revised plan and GPT prompt preserve a documentation checkpoint for every implementation step, including exact durable documentation/validation or an evidence-based `Not applicable` decision,
+- the revised execution prompt remains strict enough to prevent divergence during execution,
+- the revised plan and execution prompt preserve a documentation checkpoint for every implementation step, including exact durable documentation/validation or an evidence-based `Not applicable` decision,
 - the revised planning artifacts still belong only in the target repo root and do not introduce any alternate artifact path,
 - the revised planning artifacts preserve or add `Created by`, `Created at`, and `Updated at` metadata correctly,
-- the revised GPT prompt preserves explicit instructions to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
-- the revised GPT prompt preserves explicit instructions not to stage or commit workflow-generated Markdown artifacts unless I explicitly ask for that,
+- the revised execution prompt preserves explicit instructions to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
+- the revised execution prompt preserves explicit instructions not to stage or commit workflow-generated Markdown artifacts unless I explicitly ask for that,
 - no detail from the current plan artifacts, critique, or draft-plan lineage is silently dropped.
 
 Constraints:
 
 - do not implement code,
 - do not write tests,
-- do not loosen the GPT prompt,
+- do not loosen the execution prompt,
 - do not use the critique as permission to change architecture unless I explicitly approve,
 - keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
 
@@ -396,17 +398,17 @@ And also:
 
 - read `PLAN_CRITIQUE.md`,
 - read the current `FEATURE_SPEC_AND_PLAN.md`,
-- read the current `GPT_EXECUTION_PROMPT.md`,
+- read the current `EXECUTION_PROMPT.md`,
 - apply all valid critique items,
 - ask if a critique item requires a design decision from me,
 - do not silently drop any critique item,
 - ground plan detail in the code and context you actually inspected,
-- preserve or strengthen the `GPT_EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether a pull request already exists for the current branch, and create a pull request only if none exists,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether a pull request already exists for the current branch, and create a pull request only if none exists,
 - preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,
 - preserve or strengthen the artifact-metadata rule that all workflow-generated Markdown artifacts include `Created by`, `Created at`, and `Updated at`, preserving creation fields and refreshing `Updated at` on edits,
-- preserve or strengthen the `GPT_EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
-- if the revised `GPT_EXECUTION_PROMPT.md` needs a fallback instruction for checking whether a pull request already exists for the current branch, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
+- if the revised `EXECUTION_PROMPT.md` needs a fallback instruction for checking whether a pull request already exists for the current branch, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
 - preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 
 Required outputs:
@@ -414,7 +416,7 @@ Required outputs:
 Update or create:
 
 - `FEATURE_SPEC_AND_PLAN.md` in the target repo root
-- `GPT_EXECUTION_PROMPT.md` in the target repo root
+- `EXECUTION_PROMPT.md` in the target repo root
 - `PLAN_REVISION_SUMMARY.md` in the target repo root
 
 The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use this structure:
@@ -430,7 +432,7 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 
 ## Changes Made To FEATURE_SPEC_AND_PLAN.md
 
-## Changes Made To GPT_EXECUTION_PROMPT.md
+## Changes Made To EXECUTION_PROMPT.md
 
 ## Documentation Checkpoints Updated
 
@@ -438,19 +440,19 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 
 ## Ready For Another Critique Pass?
 
-## Ready For GPT Execution?
+## Ready For Implementation?
 ```
 
 Final checks:
 
 - verify that the updated plan is still within original scope,
 - verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
-- verify that the GPT prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- verify that the execution prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
 - verify that every implementation step still has a documentation checkpoint with durable documentation validation or an evidence-based `Not applicable` decision,
 - verify that no test-writing is introduced unless explicitly asked,
-- verify that all skill links relevant to the generated GPT prompt remain present,
-- verify that the GPT prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,
-- verify that the GPT prompt still forbids committing workflow-generated Markdown artifacts by default,
+- verify that all skill links relevant to the generated execution prompt remain present,
+- verify that the execution prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,
+- verify that the execution prompt still forbids committing workflow-generated Markdown artifacts by default,
 - verify that the Engineering Contract remains intact or stricter.
 
 Do not ask Opus to implement code.

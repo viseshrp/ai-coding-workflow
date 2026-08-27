@@ -32,7 +32,7 @@ Documentation is a required planning checkpoint, not final cleanup. During explo
 
 You are helping me perform the initial exploration phase for an agentic coding workflow.
 
-This exploration prompt is intentionally model-agnostic. Use the same interviewing, grilling, clarification, and artifact-generation contract regardless of whether the model is GPT, Claude, Gemini, or another capable repo-aware model.
+This exploration prompt is intentionally model-agnostic. Use the same interviewing, grilling, clarification, and artifact-generation contract with any capable repo-aware model.
 
 Goal:
 
@@ -96,7 +96,7 @@ My workflow is:
 4. I paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus.
 5. Opus then uses the draft plan plus repo context as seed context to create:
    - `FEATURE_SPEC_AND_PLAN.md`
-   - `GPT_EXECUTION_PROMPT.md`
+   - `EXECUTION_PROMPT.md`
 
 Use the linked skills as supporting procedures:
 
@@ -139,7 +139,7 @@ Do not generate:
 - a helper prompt,
 - a seed-only prompt that expects later normalization,
 - a meta prompt for another model,
-- planning artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `GPT_EXECUTION_PROMPT.md` in this exploration phase.
+- planning artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `EXECUTION_PROMPT.md` in this exploration phase.
 
 The generated Opus prompt must use a clear title and contain these top-level sections:
 
@@ -180,7 +180,7 @@ It must also instruct Opus that every workflow-generated Markdown artifact must 
 It must require:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
+- `EXECUTION_PROMPT.md`
 
 It must state that:
 
@@ -211,7 +211,7 @@ Role:
 Task:
 
 - Perform the main planning work itself. Do not generate a meta prompt for another model.
-- Your job is to create the detailed planning artifacts that will become the contract for GPT execution.
+- Your job is to create the detailed planning artifacts that will become the contract for implementation.
 - Critique the current draft plan, ask any remaining design questions in one batch, then produce the locked planning artifacts after my answers.
 - The initial interviewing output plan must be made into a more detailed implementation plan.
 
@@ -225,8 +225,8 @@ Context to read before answering:
 Success criteria:
 
 - the generated Opus prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
-- `FEATURE_SPEC_AND_PLAN.md` is concrete enough that GPT can execute without inventing missing detail,
-- `GPT_EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves GPT no ambiguity about scope, stop rules, or verification,
+- `FEATURE_SPEC_AND_PLAN.md` is concrete enough for a capable implementation model to execute without inventing missing detail,
+- `EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves the implementation model no ambiguity about scope, stop rules, or verification,
 - no important detail from the draft plan is dropped,
 - scope stays within the requested change,
 - the prompt preserves the current scope while letting Opus deepen detail inside that scope.
@@ -260,7 +260,7 @@ Working method:
 Final self-check:
 
 - verify that the planning artifacts are explicit about success criteria, stop rules, and verification,
-- verify that the implementation plan is detailed enough to drive end-to-end GPT execution,
+- verify that the implementation plan is detailed enough to drive end-to-end implementation,
 - verify that every implementation step has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - verify that the prompt and plan remain within the original requested scope.
 
@@ -358,14 +358,14 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - when no durable documentation change is needed, the evidence-based reason it is `Not applicable`,
    - reminder that documentation must be completed in the same change set and that the changelog is not updated unless explicitly requested.
 
-Required output 2: `GPT_EXECUTION_PROMPT.md`
+Required output 2: `EXECUTION_PROMPT.md`
 
-- create `GPT_EXECUTION_PROMPT.md` in the target repo root,
-- make it the final direct-use prompt that I will paste into GPT for locked execution,
+- create `EXECUTION_PROMPT.md` in the target repo root,
+- make it the final direct-use prompt for locked implementation by any capable repository-aware coding model,
 - make it self-contained,
 - do not generate a helper prompt, summary, wrapper note, partial contract, or any prompt that expects another checked-in execution prompt file,
-- there is no separate checked-in GPT execution prompt file after this planning step,
-- require it to instruct GPT to:
+- there is no separate checked-in execution prompt file after this planning step,
+- require it to instruct the implementation model to:
   1. read `FEATURE_SPEC_AND_PLAN.md`,
   2. treat the implementation plan section inside `FEATURE_SPEC_AND_PLAN.md` as the execution contract,
   3. treat the spec/reference section inside `FEATURE_SPEC_AND_PLAN.md` as reference context,
@@ -376,21 +376,21 @@ Required output 2: `GPT_EXECUTION_PROMPT.md`
   8. stop and ask on ambiguity/conflict/context gaps,
   9. use the full Engineering Contract below.
 
-The generated `GPT_EXECUTION_PROMPT.md` must use a clear title and contain these top-level sections:
+The generated `EXECUTION_PROMPT.md` must use a clear title and contain these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `## Prompt`
 
-The generated Opus prompt must also require that the generated `GPT_EXECUTION_PROMPT.md` explicitly include these skill links:
+The generated Opus prompt must also require that the generated `EXECUTION_PROMPT.md` explicitly include these skill links:
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs GPT to:
+The generated `EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs the implementation model to:
 
 - use only the explicitly linked skills listed in the prompt,
 - treat the prompt as the contract,
@@ -404,11 +404,11 @@ The generated `GPT_EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` 
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `GPT_EXECUTION_PROMPT.md`.
+The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `EXECUTION_PROMPT.md`.
 
-The generated GPT prompt must require the following Engineering Contract verbatim or stricter:
+The generated execution prompt must require the following Engineering Contract verbatim or stricter:
 
-Inside `## Prompt`, the generated `GPT_EXECUTION_PROMPT.md` must use clear sections for:
+Inside `## Prompt`, the generated `EXECUTION_PROMPT.md` must use clear sections for:
 
 - goal,
 - success criteria,
@@ -419,7 +419,7 @@ Inside `## Prompt`, the generated `GPT_EXECUTION_PROMPT.md` must use clear secti
 - execution rules,
 - required final response.
 
-Inside those sections, the generated Opus prompt must require `GPT_EXECUTION_PROMPT.md` to instruct GPT as follows.
+Inside those sections, the generated Opus prompt must require `EXECUTION_PROMPT.md` to instruct the implementation model as follows.
 
 Goal:
 
@@ -439,7 +439,7 @@ Success criteria:
 Context to read before acting:
 
 - `FEATURE_SPEC_AND_PLAN.md`,
-- `GPT_EXECUTION_PROMPT.md`, if present as saved artifact context,
+- `EXECUTION_PROMPT.md`, if present as saved artifact context,
 - relevant repository context.
 
 Execution posture:
@@ -496,7 +496,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether a pull request already exists for the current branch before creating one,
@@ -507,10 +507,10 @@ Execution rules:
 
 Required final response:
 
-The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structure:
+The generated `EXECUTION_PROMPT.md` must require this exact response structure:
 
 ```markdown
-# GPT Execution Summary
+# Implementation Summary
 
 ## What Changed
 
@@ -533,9 +533,9 @@ The generated `GPT_EXECUTION_PROMPT.md` must require this exact response structu
 ## Suggestions Not Implemented Because Out Of Scope
 ```
 
-In `## Documentation Checkpoints`, require GPT to list each implementation-plan step's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
+In `## Documentation Checkpoints`, require the implementation model to list each implementation-plan step's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
-It must explicitly instruct GPT not to claim completion without fresh verification evidence.
+It must explicitly instruct the implementation model not to claim completion without fresh verification evidence.
 
 ## Engineering Contract
 
@@ -668,8 +668,8 @@ The following typing coverage is a hard requirement:
 
 Before finishing, the generated prompt must instruct Opus to verify that:
 
-- `FEATURE_SPEC_AND_PLAN.md` is sufficient for GPT execution,
-- `GPT_EXECUTION_PROMPT.md` contains every implementation rule above,
+- `FEATURE_SPEC_AND_PLAN.md` is sufficient for implementation,
+- `EXECUTION_PROMPT.md` contains every implementation rule above,
 - no details from the draft plan were dropped.
 
 If the task is still ambiguous, keep interviewing instead of pretending the plan is ready.

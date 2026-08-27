@@ -1,6 +1,6 @@
 # 09 - Write Minimal Focused Tests - Any Model
 
-This final test-writing prompt is intentionally model- and language-agnostic. Apply the same evidence, scope, test-design, verification, Git, and human-handoff contract whether the model is GPT, Claude, Gemini, or another capable repository-aware coding model, and whether the target repository uses Python, JavaScript, Java, Rust, or another language. Do not rely on vendor-specific tools, hidden reasoning formats, model-specific behavior, or a language-specific test framework unless its labeled guidance applies.
+This final test-writing prompt is intentionally model- and language-agnostic. Apply the same evidence, scope, test-design, verification, Git, and human-handoff contract with any capable repository-aware coding model, regardless of whether the target repository uses Python, JavaScript, Java, Rust, or another language. Do not rely on vendor-specific tools, hidden reasoning formats, model-specific behavior, or a language-specific test framework unless its labeled guidance applies.
 
 ## Skills
 
@@ -169,7 +169,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 
 - Review the final diff before staging.
 - Stage only intended test files and test-local support code.
-- Do not stage or commit workflow-generated Markdown artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask.
+- Do not stage or commit workflow-generated Markdown artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask.
 - When test changes are needed, create one focused test commit unless separate logical test groups clearly justify more.
 - If fresh evidence proves that zero test changes are needed, do not create an empty commit.
 - Use a detailed commit message and description.

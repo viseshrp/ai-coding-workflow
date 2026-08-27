@@ -179,7 +179,7 @@ Context to review:
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
-- `GPT_EXECUTION_PROMPT.md`, if present.
+- `EXECUTION_PROMPT.md`, if present.
 
 The named planning and execution artifacts are optional. Do not require, recreate, or ask for them merely because they are absent.
 
@@ -337,7 +337,7 @@ Put suggestions directly below the relevant review findings.
 
 Every valid review issue must be categorized under either `Blocking Issues` or `Non-Blocking Issues`.
 
-Use `Suggestions` only for optional improvements that are not required in the GPT review-fix pass.
+Use `Suggestions` only for optional improvements that are not required in the review-fix pass.
 
 In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence.
 
@@ -355,15 +355,15 @@ I WANT LINE BY LINE WITH ENGLISH BASED EXPLANATION NEXT TO EACH LINE OF CODE. TH
 
 Format it properly for easy readability and to ease cognitive overload while reviewing.
 
-## Required output 3: `GPT_REVIEW_FIX_PROMPT.md`
+## Required output 3: `REVIEW_FIX_PROMPT.md`
 
-Create `GPT_REVIEW_FIX_PROMPT.md` in the target repo root as the final direct-use prompt for GPT to fix all valid review findings from `REVIEW.md`, including both `Blocking Issues` and `Non-Blocking Issues`.
+Create `REVIEW_FIX_PROMPT.md` in the target repo root as the final direct-use prompt for any capable repository-aware coding model to fix all valid review findings from `REVIEW.md`, including both `Blocking Issues` and `Non-Blocking Issues`.
 
-There is no separate checked-in GPT review-fix prompt file after this review step. `GPT_REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
+There is no separate checked-in review-fix prompt file after this review step. `REVIEW_FIX_PROMPT.md` itself must be the final paste-ready prompt for the next fix pass.
 
-This phase is the only place that should author `GPT_REVIEW_FIX_PROMPT.md`.
+This phase is the only place that should author `REVIEW_FIX_PROMPT.md`.
 
-If a later verification pass says another fix iteration is needed, return to this phase and regenerate `GPT_REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
+If a later verification pass says another fix iteration is needed, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
 
 It must be self-contained.
 
@@ -372,16 +372,16 @@ Do not generate:
 - a helper prompt,
 - a wrapper note around review findings,
 - a partial instruction set that expects another checked-in fix prompt file,
-- a checklist without the full direct-use GPT contract.
+- a checklist without the full direct-use review-fix contract.
 
-The generated GPT prompt must use a clear title and contain these top-level sections:
+The generated review-fix prompt must use a clear title and contain these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `## Prompt`
 
-The generated GPT prompt must include these skill links explicitly:
+The generated review-fix prompt must include these skill links explicitly:
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
@@ -389,7 +389,7 @@ The generated GPT prompt must include these skill links explicitly:
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-The generated GPT prompt must include a `## Skill Handling Rule` that instructs GPT to:
+The generated review-fix prompt must include a `## Skill Handling Rule` that instructs the review-fix model to:
 
 - use only the explicitly linked skills listed in the prompt,
 - treat the prompt as the contract,
@@ -404,9 +404,9 @@ The generated GPT prompt must include a `## Skill Handling Rule` that instructs 
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and any available locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-The generated GPT prompt must embed the full Engineering Contract above verbatim or stricter.
+The generated review-fix prompt must embed the full Engineering Contract above verbatim or stricter.
 
-Inside `## Prompt`, the generated GPT prompt must use clear sections for:
+Inside `## Prompt`, the generated review-fix prompt must use clear sections for:
 
 - goal,
 - success criteria,
@@ -417,7 +417,7 @@ Inside `## Prompt`, the generated GPT prompt must use clear sections for:
 - focused verification,
 - required final response.
 
-Inside those sections, it must instruct GPT as follows.
+Inside those sections, it must instruct the review-fix model as follows.
 
 Goal:
 
@@ -441,7 +441,7 @@ Context to read before acting:
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `GPT_EXECUTION_PROMPT.md`, if present,
+- `EXECUTION_PROMPT.md`, if present,
 - current branch diff against `main`.
 
 The planning and execution artifacts are optional inputs. When present, treat them as authoritative according to this prompt. Their absence is not a blocker and must not trigger a request for them.
@@ -486,7 +486,7 @@ Focused verification:
 - run focused verification relevant to the fixes,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether a pull request already exists for the current branch before creating one,
@@ -497,7 +497,7 @@ Focused verification:
 
 Required final response:
 
-The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response structure:
+The generated `REVIEW_FIX_PROMPT.md` must require this exact response structure:
 
 ```markdown
 # Review Fix Summary
@@ -521,8 +521,8 @@ The generated `GPT_REVIEW_FIX_PROMPT.md` must require this exact response struct
 ## Remaining Questions / Blockers
 ```
 
-In `## Documentation Checkpoints`, require GPT to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
+In `## Documentation Checkpoints`, require the review-fix model to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
-It must explicitly instruct GPT not to claim completion without fresh verification evidence.
+It must explicitly instruct the review-fix model not to claim completion without fresh verification evidence.
 
 Do not modify code during this Opus review phase.

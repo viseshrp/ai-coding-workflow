@@ -98,17 +98,14 @@ These are the main design constraints that define this repo:
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - Any capable repo-aware model for the initial exploration/grilling and final test-writing phases.
-  - GPT or Gemini for meta critique/verification in some phases.
-  - Claude Opus for planning/review/revision phases.
-  - GPT or Claude Sonnet for the human walkthrough gate.
-  - GPT for execution, fix, and follow-up phases.
-- The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `GPT_EXECUTION_PROMPT.md`.
+  - Any capable repo-aware model for exploration, critique, verification, execution, review fixes, the human walkthrough, follow-up implementation, and test writing.
+  - Claude Opus for planning, plan revision, and AI review.
+- The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
-- The main Opus planning pass, Opus plan-revision pass, GPT execution pass, and GPT review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
+- The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
-- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `GPT_EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `GPT_REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
+- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
 - Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phase `09` may only verify and escalate a gap because its test-only scope forbids documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each shared and applicable language-specific local `SKILL.md` completely, and return to the target repository.
@@ -125,29 +122,29 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
    - The Opus prompt produced here is the final paste-ready prompt for the main planning pass.
    - The main Opus planning phase is driven by that generated artifact rather than by a separate checked-in prompt file.
-2. `02_plan_critique_gpt_gemini.md`
+2. `02_plan_critique_any_model.md`
    - Critiques the locked planning artifacts.
    - Produces `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`.
    - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
-3. `03_plan_revision_verification_gpt_gemini.md`
+3. `03_plan_revision_verification_any_model.md`
    - Verifies that the revision addressed the critique.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
    - If issues remain, the workflow returns to `02`; this phase does not author an alternate `OPUS_PLAN_REVISION_REQUEST.md`.
-   - Locked execution is then driven by the generated `GPT_EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
+   - Locked execution is then driven by the generated `EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
 4. `04_opus_review_branch.md`
    - Reviews implemented changes.
-   - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `GPT_REVIEW_FIX_PROMPT.md`.
-   - The generated `GPT_REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the GPT review-fix pass.
+   - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `REVIEW_FIX_PROMPT.md`.
+   - The generated `REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the review-fix pass.
 5. `05_opus_verify_review_fixes.md`
    - Verifies the review-fix pass.
    - Produces `REVIEW_FIX_VERIFICATION.md`.
-   - If issues remain, the workflow returns to `04`; this phase does not author an alternate `GPT_REVIEW_FIX_PROMPT.md`.
+   - If issues remain, the workflow returns to `04`; this phase does not author an alternate `REVIEW_FIX_PROMPT.md`.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
 7. `07_human_code_walkthrough.md`
    - Human review gate.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
-8. `08_gpt_implement_human_followup.md`
+8. `08_implement_human_followup_any_model.md`
    - Implements only human-approved `FOLLOWUP.md` items.
 9. `09_write_focused_tests_any_model.md`
    - Writes the smallest meaningful focused test set for the final branch state.
@@ -202,9 +199,9 @@ Expectation:
 
 - every checked-in phase prompt from `01` through `09`,
 - the generated Opus planning prompt specified by `01`,
-- the generated GPT execution prompt specified by `01`,
+- the generated execution prompt specified by `01`,
 - the generated Opus revision prompt specified by `02`,
-- the generated GPT review-fix prompt specified by `04`.
+- the generated review-fix prompt specified by `04`.
 
 Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document the phase creates or revises, `no-ai-slop` is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Apply its editing principles while drafting, run its evaluator before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if either file cannot be read and applied. Let it win over conflicting writing-style guidance, but preserve the prompt's control over scope, meaning, required structure, artifact names, constraints, and evidence. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
 
@@ -212,12 +209,12 @@ Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document 
 
 Present in:
 
-- `prompts/02_plan_critique_gpt_gemini.md`
-- `prompts/03_plan_revision_verification_gpt_gemini.md`
+- `prompts/02_plan_critique_any_model.md`
+- `prompts/03_plan_revision_verification_any_model.md`
 - `prompts/04_opus_review_branch.md`
 - `prompts/05_opus_verify_review_fixes.md`
 - `prompts/06_opus_refresh_review_and_walkthrough.md`
-- `prompts/08_gpt_implement_human_followup.md`
+- `prompts/08_implement_human_followup_any_model.md`
 - `prompts/09_write_focused_tests_any_model.md`
 
 Expectation:
@@ -244,7 +241,7 @@ Documentation is a cross-phase completion gate. Keep a named documentation-check
 Current default:
 
 - `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
+- `EXECUTION_PROMPT.md`
 
 This policy is reflected in `README.md`, `01`, `02`, `03`, and downstream prompts that reference the combined artifact.
 
@@ -256,7 +253,7 @@ The review/fix/human-review portion relies on a stable artifact chain:
 
 - `REVIEW.md`
 - `WALKTHROUGH.md`
-- `GPT_REVIEW_FIX_PROMPT.md`
+- `REVIEW_FIX_PROMPT.md`
 - `REVIEW_FIX_VERIFICATION.md`
 - `FOLLOWUP.md`
 
@@ -397,7 +394,7 @@ Also check:
 Also check:
 
 - `07_human_code_walkthrough.md`,
-- `08_gpt_implement_human_followup.md`,
+- `08_implement_human_followup_any_model.md`,
 - `09_write_focused_tests_any_model.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.
@@ -424,7 +421,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `## Skill Handling Rule`
 - `## Engineering Contract`
 - `FEATURE_SPEC_AND_PLAN.md`
-- `GPT_EXECUTION_PROMPT.md`
+- `EXECUTION_PROMPT.md`
 - `REVIEW.md`
 - `WALKTHROUGH.md`
 - `FOLLOWUP.md`
