@@ -35,9 +35,9 @@ Help me independently review the actual PR, one file and one changed chunk at a 
 
 ### Establish the review
 
-Use GitHub CLI (`gh`) to obtain the current PR's changed-file list and per-file changes. These are the primary source for the checklist and review chunks. If either is unavailable, stop and ask; do not silently substitute a manual diff. Use the diff against `main` only for verification/reference.
+At the start of each review turn, use GitHub CLI (`gh`) to fetch the current PR's changed-file list and per-file changes. These are the primary source for the checklist and review chunks. If either is unavailable, stop and ask; do not silently substitute a manual diff. Use the diff against `main` only for verification/reference.
 
-Build and maintain the primary checklist in the conversation with one item per changed file and `Pending`, `In review`, or `Resolved` status. Record the PR/head being reviewed. Reuse fetched PR data while that head is unchanged; if it changes, refresh the data and identify affected review progress before continuing. `WALKTHROUGH.md` must not replace or reorder the checklist; `FOLLOWUP.md` is not the review checklist.
+Build and maintain the primary checklist in the conversation with one item per changed file and `Pending`, `In review`, or `Resolved` status. Record the PR/head being reviewed. If the freshly fetched PR data differs from the previous turn, identify affected review progress before continuing. `WALKTHROUGH.md` must not replace or reorder the checklist; `FOLLOWUP.md` is not the review checklist.
 
 ### Review loop
 

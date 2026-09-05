@@ -33,6 +33,8 @@ Inspect repository instructions, the named inputs, and relevant code before judg
 
 ### Interview
 
+Apply `no-ai-slop` to every interview question and explanation, and run its `eval.md` self-check before sending each response.
+
 1. Read the relevant repository and supplied context. Use `interview-me` to clarify intent, `grill-me`/`grilling` to stress-test decisions, `idea-refine` to make the proposal concrete, and `context-engineering` to keep context relevant. Follow the linked `grilling` procedure directly; no installed slash command is required. This phase's one-question-at-a-time rule overrides its batched rounds.
 2. Ask one material question at a time. Explain why it matters, the reasonable options, their tradeoffs/risks/downstream effects, and your recommendation with reasoning. Include a current best guess only when useful. Give enough detail for the decision without repeating settled context.
 3. Confirm each answer and its consequences; resolve vague answers before moving to the next unresolved question. Cover scope, UX/behavior, technical constraints, rollout, edge cases, backwards compatibility, documentation, risks, non-goals, likely implementation surface, and definition of done.
@@ -88,7 +90,7 @@ The generated Opus planning prompt must instruct Opus to write a complete, direc
 - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-Require the full Skill Handling Rule, artifact rules, and Engineering Contract from this prompt to be copied into `EXECUTION_PROMPT.md`; do not replace them with references to other prompts. The execution prompt must contain these sections and instructions:
+Require the full Skill Handling Rule and artifact rules in `EXECUTION_PROMPT.md`, and embed the Engineering Contract verbatim; do not weaken it or replace these rules with references to other prompts. The execution prompt must contain these sections and instructions:
 
 - **Goal and success criteria:** execute the locked plan end-to-end using the smallest correct changes; complete every documentation checkpoint, focused verification, commit/push/PR handling, or report a concrete blocker.
 - **Context:** read `FEATURE_SPEC_AND_PLAN.md`, the saved `EXECUTION_PROMPT.md` when present, repository instructions, and relevant code. Treat the implementation-plan section as the execution contract and the spec/reference section as context.
@@ -142,7 +144,7 @@ Apply these standards within this phase's write permissions. Review and planning
 
 ### Plan adherence
 
-Follow a user-provided plan exactly, without divergence, invented requirements, or architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question. Continue authorized work without step-by-step approval when no blocker remains.
+Follow a user-provided plan exactly: no divergence, no creativity, no invented requirements, and no architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question; get my confirmation before proceeding past a blocker. Continue authorized work without step-by-step approval when no blocker remains.
 
 ### Scope control
 
@@ -154,7 +156,7 @@ Avoid waiting hacks and ad hoc retry loops. Weigh time/space complexity and read
 
 ### Dependencies, frameworks, and documentation grounding
 
-Do not add third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
+No third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
 
 ### Public APIs and exceptions
 
@@ -162,7 +164,7 @@ Preserve backwards compatibility unless the app version is unreleased. Keep publ
 
 ### Code quality and maintainability
 
-Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Reuse constants or define them in the appropriate location instead of hardcoding numbers, versions, or other shared values.
+Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Do not hardcode numbers, versions, or other constants. Reuse existing constants or define and reuse them in the appropriate location.
 
 ### Types
 

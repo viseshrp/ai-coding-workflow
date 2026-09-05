@@ -22,7 +22,7 @@ Apply these standards within this phase's write permissions. Review and planning
 
 ### Plan adherence
 
-Follow a user-provided plan exactly, without divergence, invented requirements, or architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question. Continue authorized work without step-by-step approval when no blocker remains.
+Follow a user-provided plan exactly: no divergence, no creativity, no invented requirements, and no architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question; get my confirmation before proceeding past a blocker. Continue authorized work without step-by-step approval when no blocker remains.
 
 ### Scope control
 
@@ -34,7 +34,7 @@ Avoid waiting hacks and ad hoc retry loops. Weigh time/space complexity and read
 
 ### Dependencies, frameworks, and documentation grounding
 
-Do not add third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
+No third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
 
 ### Public APIs and exceptions
 
@@ -42,7 +42,7 @@ Preserve backwards compatibility unless the app version is unreleased. Keep publ
 
 ### Code quality and maintainability
 
-Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Reuse constants or define them in the appropriate location instead of hardcoding numbers, versions, or other shared values.
+Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Do not hardcode numbers, versions, or other constants. Reuse existing constants or define and reuse them in the appropriate location.
 
 ### Types
 
@@ -146,7 +146,7 @@ Include a title and `## Skills`, `## Skill Handling Rule`, `## Default Planning 
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-Copy the full Skill Handling Rule, artifact rules, and Engineering Contract from this prompt into the revision prompt. It must work in a fresh session without another prompt or hidden chat history.
+Copy the full Skill Handling Rule and artifact rules into the revision prompt, and embed the Engineering Contract verbatim without weakening it. It must work in a fresh session without another prompt or hidden chat history.
 
 ### Default Planning Artifact Reduction to embed
 

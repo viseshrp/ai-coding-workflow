@@ -22,7 +22,7 @@ Apply these standards within this phase's write permissions. Review and planning
 
 ### Plan adherence
 
-Follow a user-provided plan exactly, without divergence, invented requirements, or architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question. Continue authorized work without step-by-step approval when no blocker remains.
+Follow a user-provided plan exactly: no divergence, no creativity, no invented requirements, and no architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question; get my confirmation before proceeding past a blocker. Continue authorized work without step-by-step approval when no blocker remains.
 
 ### Scope control
 
@@ -34,7 +34,7 @@ Avoid waiting hacks and ad hoc retry loops. Weigh time/space complexity and read
 
 ### Dependencies, frameworks, and documentation grounding
 
-Do not add third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
+No third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
 
 ### Public APIs and exceptions
 
@@ -42,7 +42,7 @@ Preserve backwards compatibility unless the app version is unreleased. Keep publ
 
 ### Code quality and maintainability
 
-Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Reuse constants or define them in the appropriate location instead of hardcoding numbers, versions, or other shared values.
+Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Do not hardcode numbers, versions, or other constants. Reuse existing constants or define and reuse them in the appropriate location.
 
 ### Types
 
@@ -113,7 +113,7 @@ Review existing or changed tests without authoring them:
 - Prefer repository fixtures, native test-framework APIs, configuration, and installed extensions over hand-rolled infrastructure.
 - Never accept patching or mocking the function/method/callable under test. Limit mocks to impractical external collaborators; flag internal call choreography and implementation-detail assertions.
 - Check deterministic isolation. Flag mutated global state, private helpers/constants, incidental error wording, non-contract layout assumptions, real time/network dependencies, and expected values that mirror production logic.
-- Assess at least 85% coverage for new or changed lines using existing tooling and focused evidence. Report missing evidence explicitly; test authoring remains in phase `09`.
+- Require at least 85% coverage for new or changed lines using existing tooling and focused evidence. Report shortfalls or missing evidence as review findings; test authoring remains in phase `09`.
 
 ### Python / pytest
 
@@ -181,7 +181,7 @@ Include a title and `## Skills`, `## Skill Handling Rule`, `## Engineering Contr
 - [receiving-code-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/receiving-code-review/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-Copy the full Skill Handling Rule, artifact rules, and Engineering Contract into the generated fix prompt. Include the no-test-authoring boundary without requiring this review prompt's test-review section. Preserve the optional-input rule: prior planning/execution artifacts are authoritative when present and unnecessary when absent.
+Copy the full Skill Handling Rule and artifact rules into the generated fix prompt, and embed the Engineering Contract verbatim without weakening it. Include the no-test-authoring boundary without requiring this review prompt's test-review section. Preserve the optional-input rule: when available, the locked implementation plan remains the execution contract and its spec/reference section remains context. Missing planning/execution artifacts are not a blocker; use `REVIEW.md`, `WALKTHROUGH.md`, and the branch diff.
 
 Under `## Prompt`, include goal, success criteria, context, execution posture, constraints, per-review-item process, focused verification, and required final response. Instruct the fix model to:
 
