@@ -142,7 +142,8 @@ The numbered prompt files define the workflow order and should stay in sequence.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
 7. `07_human_code_walkthrough.md`
-   - Human review gate.
+   - Starts human review with a code mindmap and all reachable success/error flows.
+   - Reviews small semantic blocks with excerpts for references defined outside the block.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
 8. `08_implement_human_followup_any_model.md`
    - Implements only human-approved `FOLLOWUP.md` items.
@@ -266,6 +267,8 @@ The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and h
 
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
 
+Phase `07` starts with a code mindmap and diagrams of all reachable flows and success/error states, then reviews small semantic blocks with the declarations and definitions needed to understand their references. Preserve `AGREE`, `RESOLVE`, and the documentation checkpoint without imposing a fixed per-response template. Keep the maps, semantic grouping, and reference excerpts aligned in the `WALKTHROUGH.md` producer prompts `04` and `06`.
+
 ### Skill inventory
 
 If you change the canonical skill set:
@@ -323,7 +326,7 @@ Rules:
 
 ## Style Guidance For Prompt Edits
 
-- Keep wording direct and imperative.
+- Keep wording direct and imperative. State the action; omit commentary describing the prompt's style or presentation.
 - Prefer concrete file names over vague placeholders.
 - Preserve strong constraints where they are clearly intentional.
 - Preserve explicit stop-and-ask behavior on ambiguity/conflict.

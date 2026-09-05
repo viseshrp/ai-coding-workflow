@@ -66,7 +66,7 @@ The main Opus planning pass, Opus plan-revision pass, locked implementation pass
 5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
 7. Run [prompt 04](prompts/04_opus_review_branch.md). If it creates `REVIEW_FIX_PROMPT.md`, paste that generated prompt into any capable repository-aware coding model, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all valid blocking and non-blocking findings are resolved.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then perform the independent human review with [prompt 07](prompts/07_human_code_walkthrough.md).
+8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a code mindmap and success/error flows; discuss small semantic blocks with excerpts for referenced declarations and definitions. Approve follow-up items with `AGREE` and finish reviewed files with `RESOLVE`.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
 11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.

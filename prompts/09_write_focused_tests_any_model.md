@@ -1,6 +1,6 @@
 # 09 - Write Minimal Focused Tests - Any Model
 
-This final test-writing prompt is model- and language-agnostic. Apply the same evidence, scope, test-design, verification, Git, and human-handoff contract with any capable repository-aware coding model, regardless of whether the target repository uses Python, JavaScript, Java, Rust, or another language. Do not rely on vendor-specific tools, hidden reasoning formats, model-specific behavior, or a language-specific test framework unless its labeled guidance applies.
+Apply the evidence, scope, test-design, verification, Git, and human-handoff requirements below in any language, including Python, JavaScript, Java, and Rust. Do not rely on vendor-specific tools, hidden reasoning formats, model-specific behavior, or a language-specific test framework unless its labeled guidance applies.
 
 ## Skills
 
@@ -66,7 +66,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 
 ### Scope
 
-- This phase is explicit authorization to create or update tests for the behavior changed on the current branch.
+- You may create or update tests for the behavior changed on the current branch.
 - Test files, test-local fixtures, and test-local helpers are the only repository files this phase may create or modify.
 - Compare the current branch with the head of `main` and test only changed behavior and material regression risks.
 - Treat actual code and observable contracts as authoritative. Use planning and follow-up artifacts as context, not as substitutes for inspecting code.

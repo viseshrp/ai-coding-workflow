@@ -29,13 +29,9 @@ Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving
 
 ## Documentation checkpoint
 
-Documentation is a required planning checkpoint, not final cleanup. During exploration, identify the documentation impact of each likely implementation step and carry it into both generated planning artifacts as an exact durable documentation update and validation, or an evidence-based `Not applicable` decision.
+Complete a documentation checkpoint during planning. During exploration, identify the documentation impact of each likely implementation step and carry it into both generated planning artifacts as an exact durable documentation update and validation, or an evidence-based `Not applicable` decision.
 
 ## Prompt
-
-Help me perform the initial exploration phase of an agentic coding workflow.
-
-This exploration prompt is model-agnostic. Use the same interviewing, grilling, clarification, and artifact-generation contract with any capable repo-aware model.
 
 Goal:
 
@@ -86,18 +82,16 @@ Working method:
 Stop rules:
 
 - do not produce final artifacts until exploration is complete or I explicitly ask you to stop and generate them,
-- if any material question is still unresolved, keep interviewing one question at a time instead of pretending the plan is ready,
-- if the task is still ambiguous in a way that would change scope or behavior, keep interviewing instead of pretending the plan is ready.
+- if any material question is still unresolved, keep interviewing one question at a time; do not claim the plan is ready,
+- if the task is still ambiguous in a way that would change scope or behavior, keep interviewing; do not claim the plan is ready.
 
-Workflow context:
+Handoff order:
 
-My workflow is:
-
-1. A capable exploration model helps me think, interview, grill, and clarify the idea.
-2. This produces `DRAFT_PLAN.md`.
-3. This also produces `INITIAL_OPUS_PLANNING_PROMPT.md`.
+1. Explore, interview, grill, and clarify the idea.
+2. Create `DRAFT_PLAN.md`.
+3. Create `INITIAL_OPUS_PLANNING_PROMPT.md`.
 4. I paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus.
-5. Opus then uses the draft plan plus repo context as seed context to create:
+5. Opus uses the draft plan and repo context to create:
    - `FEATURE_SPEC_AND_PLAN.md`
    - `EXECUTION_PROMPT.md`
 
@@ -130,8 +124,6 @@ Create `DRAFT_PLAN.md` in the target repo root with:
 ## Output artifact 2: `INITIAL_OPUS_PLANNING_PROMPT.md`
 
 Create `INITIAL_OPUS_PLANNING_PROMPT.md` in the target repo root as the final direct-use planning prompt for Claude Opus.
-
-I will paste this artifact into Claude Opus for the main planning phase.
 
 There is no separate checked-in planning prompt file after this exploration step. `INITIAL_OPUS_PLANNING_PROMPT.md` itself must be the final paste-ready prompt for the Opus planning phase.
 
@@ -544,7 +536,7 @@ It must explicitly instruct the implementation model not to claim completion wit
 
 ## Engineering Contract
 
-Use this contract as the single shared engineering standard for planning, execution, review, and review-fix work.
+Apply this contract during planning, execution, review, and review fixes.
 
 ### Plan adherence
 
@@ -644,7 +636,7 @@ The following typing coverage is a hard requirement:
 
 ### Documentation checkpoint
 
-- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Complete a documentation checkpoint at every planning, implementation, review, verification, and handoff stage.
 - Before an implementation-plan step can be marked complete, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by that step.
 - Update the exact durable documentation files/sections in the same change set and validate them with the applicable docs build, link check, rendering check, or focused repository check when available.
 - If no durable documentation change is needed, record an evidence-based `Not applicable` decision. Code comments, commit messages, and workflow artifacts do not substitute for durable documentation.
@@ -677,4 +669,4 @@ Before finishing, the generated prompt must instruct Opus to verify that:
 - `EXECUTION_PROMPT.md` contains every implementation rule above,
 - no details from the draft plan were dropped.
 
-If the task is still ambiguous, keep interviewing instead of pretending the plan is ready.
+If the task is still ambiguous, keep interviewing; do not claim the plan is ready.

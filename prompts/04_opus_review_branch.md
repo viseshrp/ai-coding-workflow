@@ -29,7 +29,7 @@ Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving
 
 ## Engineering Contract
 
-Use this contract as the single shared engineering standard for planning, execution, review, and review-fix work.
+Apply this contract during planning, execution, review, and review fixes.
 
 ### Plan adherence
 
@@ -130,7 +130,7 @@ The following typing coverage is a hard requirement:
 
 ### Documentation checkpoint
 
-- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Complete a documentation checkpoint at every planning, implementation, review, verification, and handoff stage.
 - Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
 - Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
 - Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
@@ -263,7 +263,7 @@ If the changes touch public APIs or add new public APIs, check whether they are 
 
 Surface all assumptions in the code.
 
-Surface the use of assert statements in code. This is bad outside tests.
+Report assert usage and flag any assertions outside test files.
 
 If the changes reinvent/duplicate something already in the source code, flag it.
 
@@ -351,11 +351,19 @@ In `## Documentation Review`, record the documentation-checkpoint result for eve
 
 Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
 
+Begin with a mindmap of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
+
+Follow it with flow diagrams tracing every reachable control-flow branch and data/state transition through that code. Label branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Show loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
+
+Use Mermaid mindmap and flowchart diagrams, or equivalent text diagrams when Mermaid cannot render. Keep the overview readable by expanding larger branches into separate diagrams without omitting paths.
+
+Group the code into small semantic blocks, each covering one coherent operation or decision. Include relevant surrounding lines and file/line locations. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
+
 Include enough detail for a thorough review without opening the source code.
 
-Include an English explanation next to every line of code. This line-by-line format is mandatory.
+Every line of code must have an English explanation beside it.
 
-Format it for easy reading with minimal cognitive load during review.
+Use short, readable excerpts and keep each explanation beside the code it describes.
 
 ## Required output 3: `REVIEW_FIX_PROMPT.md`
 

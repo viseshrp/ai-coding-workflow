@@ -1,7 +1,5 @@
 # 03 - Plan Revision Verification - Any Model
 
-This plan-verification phase is model-agnostic. Use the same evidence-based verification contract with any capable repository-aware model.
-
 ## Skills
 
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
@@ -31,7 +29,7 @@ Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving
 
 ## Engineering Contract
 
-Use this contract as the single shared engineering standard for planning, execution, review, and review-fix work.
+Apply this contract during planning, execution, review, and review fixes.
 
 ### Plan adherence
 
@@ -131,7 +129,7 @@ The following typing coverage is a hard requirement:
 
 ### Documentation checkpoint
 
-- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Complete a documentation checkpoint at every planning, implementation, review, verification, and handoff stage.
 - Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
 - Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
 - Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.

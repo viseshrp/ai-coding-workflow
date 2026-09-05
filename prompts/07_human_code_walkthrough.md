@@ -1,6 +1,4 @@
-# 07 - Human Code Walkthrough + FOLLOWUP.md Creation
-
-This human walkthrough phase is model-agnostic. Use the same human-led review contract with any capable repository-aware model.
+# 07 - Human Code Walkthrough + FOLLOWUP.md Creation - Any Model
 
 ## Skills
 
@@ -29,7 +27,7 @@ Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving
 
 ## Documentation checkpoint
 
-Documentation is a required human-review checkpoint, not final cleanup. For every material changed behavior, use the primary PR checklist to record the exact durable documentation update and its validation, or an evidence-based `Not applicable` decision. This phase must not implement documentation changes; a required documentation change becomes a `FOLLOWUP.md` item only after I explicitly type `AGREE`.
+Complete a documentation checkpoint during human review. For every material changed behavior, use the primary PR checklist to record the exact durable documentation update and its validation, or an evidence-based `Not applicable` decision. This phase must not implement documentation changes; a required documentation change becomes a `FOLLOWUP.md` item only after I explicitly type `AGREE`.
 
 ## Language-specific review guidance
 
@@ -44,185 +42,50 @@ When the current PR's changed code uses Python, add an explicit typing-complianc
 
 ## Prompt
 
-Role:
+Help me review the current PR from the actual code and PR changes. Start by showing how the code fits together and where each flow ends, then discuss one small semantic block at a time. Keep explanations concise without losing detail, and follow my questions about the code before moving on.
 
-- You are a capable repository-aware model helping me run the final human walkthrough of a PR.
-- This is a human review session. Help me do my own review of the code and diff.
-- Be structured, explicit, and evidence-driven.
-- Be concise without losing detail throughout the review.
-- If the code does not support a review point, say so plainly instead of guessing.
+### Read the PR and code
 
-Goal:
+- For each review turn, pull the current PR changed-file list and per-file changes from GitHub CLI (`gh`). Use them as the source of truth for the review checklist and changed blocks. If `gh` cannot provide either, stop and ask; do not substitute the manual diff against `main`.
+- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Keep track of reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
+- Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
+- Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
+- Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 
-- this is the human walkthrough phase, separate from the AI review/fix loop,
-- this review must be an independent human review of the actual code and the actual PR changes,
-- discard the AI review in `REVIEW.md` completely for this phase so it does not influence our judgment,
-- do not agree with, disagree with, summarize, or otherwise use the findings in `REVIEW.md`,
-- create and maintain a primary review checklist based on the changed files in the current PR,
-- review that changed-file checklist one file at a time,
-- pull the current PR changed-file list from GitHub CLI (`gh`) and use that as the source of truth for the checklist,
-- pull the actual per-file PR changes from GitHub CLI (`gh`) and use those as the primary source for the review chunks,
-- use the manual diff against `main` only for verification and reference,
-- if GitHub CLI (`gh`) cannot provide the current PR file list or the PR changes, stop and ask instead of silently falling back to the manual diff,
-- as the review progresses, resolve files only when moving to the next file,
-- when resolving reviewed files, use GitHub CLI if available and authenticated,
-- if GitHub CLI is unavailable or I am not logged in, skip the resolution step without erroring and continue the review,
-- there is a `WALKTHROUGH.md` document that we will use only as a detailed supplement to help me do the human review,
-- use `WALKTHROUGH.md`, the actual code, and the PR changes from GitHub CLI (`gh`) to help me review each file one small chunk at a time,
-- perform a documentation checkpoint for every material changed behavior: identify the affected durable user-, operator-, API-, configuration-, or developer-facing documentation, then record the exact update and validation or an evidence-based `Not applicable` decision in the primary checklist,
-- for each changed chunk, include a few relevant lines around the change so the code is easier to understand,
-- if method calls appear in the shown excerpt, also show the relevant method definitions in separate small excerpts with context,
-- surface any additional relevant information from `WALKTHROUGH.md` alongside the current file chunk under review,
-- create or update `FOLLOWUP.md` as the checklist for necessary changes, but do not record any item until I explicitly approve it with `AGREE`,
-- discuss and agree on exact next steps with a detailed step-by-step plan before recording any follow-up item.
+### Show the code map first
 
-Artifact location rule:
+Open the first review response with a mindmap of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code. Show the flow diagrams next, before any code blocks.
 
-- all workflow-generated Markdown artifacts for this workflow must live in the target repo root using the exact required filenames,
-- all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
-- if `FOLLOWUP.md` is created or updated, it must be created or updated only in the target repo root and nowhere else.
+Follow it with flow diagrams tracing every reachable control-flow branch and data/state transition through that code. Label branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Show loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
 
-Context to read before starting:
+Use Mermaid mindmap and flowchart diagrams, or equivalent text diagrams when Mermaid cannot render. Keep the overview readable by expanding larger branches into separate diagrams without omitting paths.
 
-- the current PR changed-file list from GitHub CLI (`gh`),
-- the current PR per-file changes from GitHub CLI (`gh`),
-- `WALKTHROUGH.md`,
-- the current branch diff against `main` for verification/reference only,
-- the actual code referenced by the section under discussion.
+Use the inspected code and PR changes to build the maps, checking any relevant information from `WALKTHROUGH.md` against them. Show the maps in chat and pause for my questions or choice of where to start. Update a map if later inspection changes a relationship, path, or outcome.
 
-Success criteria:
+### Review a semantic block
 
-- the main review list is a maintained checklist derived from the changed files in the current PR,
-- that changed-file checklist is pulled from GitHub CLI (`gh`),
-- each checklist item is a changed file from the current PR,
-- each reviewed chunk is pulled from the PR changes returned by GitHub CLI (`gh`),
-- the manual diff against `main` is used only to verify or cross-check the PR data,
-- each review point is checked against the real code and real PR changes,
-- the review is independent of the AI review written in `REVIEW.md`,
-- only one file is handled at a time,
-- within a file, only one chunk is handled at a time,
-- each chunk includes a few relevant surrounding lines around the change,
-- if method calls appear in the excerpt, the relevant method definitions are also shown in separate small excerpts with context,
-- relevant extra context from `WALKTHROUGH.md` is surfaced alongside the current file chunk,
-- each material changed behavior has an explicit documentation-checkpoint result before its file can be resolved,
-- typing `RESOLVE` in all caps advances the review to the next file only after the current file is fully reviewed,
-- every proposed follow-up item includes a detailed step-by-step plan and is specific enough to implement directly,
-- nothing is added to `FOLLOWUP.md` unless I type `AGREE` in all caps.
+Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order.
 
-Constraints:
+Show the block with its file/line location and a few relevant surrounding lines. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
-- do not add anything to `FOLLOWUP.md` yet,
-- do not implement changes during this human walkthrough phase,
-- discard `REVIEW.md` completely as a review input for this phase,
-- the changed-file checklist is the main review list for this phase,
-- do not build the changed-file checklist from the manual diff against `main`,
-- do not build the review chunks from the manual diff against `main`,
-- use GitHub CLI (`gh`) as the primary source for both the PR file list and the PR changes,
-- use the manual diff against `main` only for verification/reference,
-- do not let `WALKTHROUGH.md` replace or reorder the changed-file checklist,
-- do not use `FOLLOWUP.md` as the main review checklist,
-- do not resolve a file until its material changed behavior has a documentation-checkpoint result in the primary checklist; record required documentation work in `FOLLOWUP.md` only after I type `AGREE`, and record an evidence-based `Not applicable` decision in the primary checklist when no durable documentation change is needed,
-- use `WALKTHROUGH.md` only to gather context that helps the human review,
-- use `WALKTHROUGH.md` as supplemental context only; actual code and the PR changes from GitHub CLI (`gh`) win,
-- keep the review concise without losing detail,
-- review each file one chunk at a time instead of trying to cover the whole file at once,
-- always include a few relevant surrounding lines around each changed chunk,
-- if method calls appear in the excerpt, show the relevant method definitions in separate small excerpts with context,
-- do not advance to the next checklist item on `AGREE` alone,
-- do not ask for `RESOLVE` until the current file is fully reviewed,
-- keep `FOLLOWUP.md` in the target repo root using its exact required filename,
-- ensure `FOLLOWUP.md` includes `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` when it changes,
-- prepare to create or update `FOLLOWUP.md`, but leave it unchanged until I explicitly approve a specific item with `AGREE`,
-- do not batch multiple review sections into one response,
-- if evidence is insufficient or the review point is ambiguous, stop and ask instead of filling gaps with assumptions.
+Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the map. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
-Review loop:
+For each material changed behavior, identify affected durable user-, operator-, API-, configuration-, or developer-facing documentation. Record the exact documentation update and validation evidence, or an evidence-based `Not applicable` decision, in the primary checklist. Discuss a missing or inaccurate documentation result alongside the relevant code; do not implement the documentation change here.
 
-- first build the primary checklist from the changed files in the current PR,
-- pull that checklist from GitHub CLI (`gh`),
-- maintain the checklist throughout the review with clear statuses such as pending, in review, and resolved,
-- let us review the PR one file at a time,
-- for the current file, gather any relevant context from `WALKTHROUGH.md`,
-- after gathering context from `WALKTHROUGH.md`, inspect the corresponding actual code, the PR changes from GitHub CLI (`gh`), and the manual diff against `main` only as verification/reference,
-- identify the durable documentation affected by each material changed behavior and record its update-and-validation requirement or evidence-based `Not applicable` rationale in the primary checklist,
-- break the current file into logical changed chunks and review one chunk at a time in file order,
-- for each changed chunk, show a few relevant surrounding lines around the change,
-- if method calls appear in the shown excerpt, show the relevant method definitions in separate small excerpts with context,
-- surface any additional relevant `WALKTHROUGH.md` information alongside the current file chunk,
-- discuss and agree on exact next steps with a detailed step-by-step plan,
-- once a specific item is agreed, add only that item to `FOLLOWUP.md`,
-- when the current file is fully reviewed, ask whether I want to `RESOLVE` that file and move on,
-- when I type `RESOLVE` in all caps, mark the current file resolved and then move to the next file,
-- when moving to the next file, attempt to resolve the checklist item with GitHub CLI if available and authenticated,
-- if GitHub CLI is unavailable or not authenticated, skip that resolution step without erroring and continue,
-- after `RESOLVE`, immediately display the review for the next file starting with its first chunk.
+### Approve follow-up work and finish a file
 
-Response format for each review step:
+- Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file.
+- Ask for `RESOLVE` only after every changed block in the current file is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
+- Only when I type `RESOLVE` in all caps, mark the fully reviewed file resolved and move to the next file. Attempt the corresponding GitHub resolution with `gh` if available and authenticated. If that resolution action is unavailable or unauthenticated, skip it without erroring and continue; the required PR-data reads still apply.
+- After `RESOLVE`, show the next file's first semantic block and connect it to the code map. If every file is resolved, wait for my final go-ahead before implementation.
 
-1. `Current PR Checklist`
-2. `Current File Under Review`
-3. `Current File Chunk`
-4. `Code Excerpt`
-5. `Related Method Definitions`
-6. `What The Code Does`
-7. `Walkthrough Notes For This Chunk`
-8. `Human Review Concern`
-9. `Independent Human Review Judgment`
-10. `Documentation Checkpoint`
-11. `Exact Next Step Plan`
-12. `File Review Status`
+Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
-For each review turn:
-
-1. Build the primary checklist from the changed files in the current PR.
-2. Pull that changed-file checklist from GitHub CLI (`gh`) and treat it as the source of truth.
-3. Pull the per-file PR changes from GitHub CLI (`gh`) and treat them as the primary source for the review chunks.
-4. Maintain and update the checklist as the review progresses.
-5. Treat each checklist item as one file from the current PR.
-6. Read the relevant `WALKTHROUGH.md` section or sections for the current file.
-7. Ignore and discard `REVIEW.md` for this phase so it does not influence the review.
-8. Inspect the corresponding actual code and the PR changes from GitHub CLI (`gh`).
-9. Review the current file one changed chunk at a time.
-10. For each changed chunk, show a few relevant surrounding lines around the change.
-11. If method calls appear in the shown excerpt, show the relevant method definitions in separate small excerpts with context.
-12. Split each shown code block into logical chunks.
-13. Explain what the code does.
-14. Surface any additional relevant information from `WALKTHROUGH.md` for that file chunk.
-15. Explain the human review concern, if any.
-16. Use the manual diff against `main` only to verify or cross-check the PR data from GitHub CLI (`gh`); do not use it as the primary review source.
-17. Give an independent human-review judgment based only on `WALKTHROUGH.md`, the actual code, and the PR changes from GitHub CLI (`gh`), using the manual diff against `main` only for verification/reference.
-18. Record the documentation checkpoint for each material changed behavior: exact durable documentation and validation, or an evidence-based `Not applicable` rationale.
-19. Discuss and propose exact next steps as a detailed step-by-step plan.
-20. If I type `AGREE`, record that exact follow-up item in `FOLLOWUP.md`.
-21. Only after the current file is fully reviewed and its documentation checkpoint is recorded, ask whether I want to `RESOLVE` that file.
-22. If I type `RESOLVE`, mark the current file resolved and proceed to the next file.
-23. When processing `RESOLVE`, attempt to resolve the checklist item with GitHub CLI if available and authenticated.
-24. If GitHub CLI is unavailable or I am not logged in, skip that resolution step without erroring and continue.
-25. After `RESOLVE`, immediately display the review for the next file starting with its first chunk.
-
-“Agreed” means I must explicitly type `AGREE` in all-caps.
-
-“Resolved” means I must explicitly type `RESOLVE` in all-caps.
-
-`AGREE` approves a follow-up item for `FOLLOWUP.md`.
-
-`RESOLVE` advances the checklist to the next file after the current file is fully reviewed.
-
-Never add anything to the follow-up list until we have agreed on every detail of the exact changes to implement.
-
-If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
-
-Once we are done reviewing, wait for my final go-ahead before implementation.
-
-The locked output of this phase is a human-approved `FOLLOWUP.md` for the next implementation phase. Do not implement the changes during this human walkthrough.
+Keep every workflow-generated Markdown artifact in the target repo root under its exact required filename. Include `Created by`, `Created at`, and `Updated at` metadata; preserve the creation fields and refresh `Updated at` on each edit. Create or update `FOLLOWUP.md` only in that root and only for explicitly agreed changes.
 
 ## FOLLOWUP.md rules
 
-Create/update `FOLLOWUP.md` only with explicitly agreed items, keep it in the target repo root, and include `Created by`, `Created at`, and `Updated at` metadata.
-
-Also create a follow-up list markdown file to track a checklist of the changes that are necessary.
-
-Do not use `FOLLOWUP.md` as the main review checklist for the current PR. The changed-file checklist is the main review list, and `FOLLOWUP.md` is only for explicitly agreed changes that need implementation.
+Track approved implementation work in `FOLLOWUP.md`. Keep the primary PR review checklist separate.
 
 Each item must include:
 
@@ -243,3 +106,5 @@ Do not include optional suggestions unless I explicitly agree.
 Do not include an item from `REVIEW.md`. Discard the AI review completely in this phase.
 
 Do not add placeholder, draft, or "to discuss" items to `FOLLOWUP.md`.
+
+Hand the human-approved `FOLLOWUP.md` to the next implementation phase. Do not implement its changes during this walkthrough.
