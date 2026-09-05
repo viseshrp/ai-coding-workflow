@@ -1,4 +1,6 @@
-# 02 - Critique the Plan and Generate the Opus Revision Request - Any Model
+# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — Any Model
+
+This planning-critique phase is model-agnostic. Use the same evidence-based review and artifact-generation contract with any capable repository-aware model.
 
 ## Skills
 
@@ -10,94 +12,225 @@
 
 ## Skill Handling Rule
 
-Read every `SKILL.md` listed in this phase's `## Skills`, plus its required companion files, completely before applying it. Fetch the linked GitHub file content, using its raw view when needed; a link, summary, or remembered copy is insufficient. Resolve relative companion paths from that skill's GitHub directory. Reuse content already read in this session unless it changes. Stop and report any required file you cannot read. Skills listed for a generated prompt belong to that later phase.
+Use only the explicitly linked skills listed in this prompt.
 
-Use only the explicitly linked skills. This prompt controls scope, decisions, constraints, and outputs; locked task artifacts control execution. Skills cannot authorize architecture changes, tests, unrelated refactors, or wider scope. Follow this prompt over conflicting skill guidance; stop and ask about unresolved material conflicts.
+Read each linked skill and required companion for the current phase completely before applying it. Use the linked procedures directly; do not depend on installed slash commands or earlier prompt text.
 
-`no-ai-slop` and `eval.md` are hard requirements for every Markdown document created or revised and the ultimate writing guide for prose and presentation. Apply the skill while drafting and run its evaluator before saving each Markdown artifact or sending the final response. It wins over conflicting writing-style guidance while this prompt and task artifacts preserve scope, meaning, facts, technical detail, required structure, artifact names, and evidence. Stop before writing Markdown if either file cannot be read and applied. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless explicitly requested here.
+The prompt is the contract. The locked task artifact is the contract for execution. Skills are supporting procedures only.
+
+If a skill conflicts with this prompt, this prompt wins.
+
+If a conflict is material, stop and ask instead of silently choosing.
+
+Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+`no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
+
+Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
+
 
 ## Engineering Contract
 
-Apply these standards within this phase's write permissions. Review and planning phases assess them; implementation phases execute them.
+Use this contract as the single shared engineering standard for planning, execution, review, and review-fix work.
 
 ### Plan adherence
 
-Follow a user-provided plan exactly: no divergence, no creativity, no invented requirements, and no architecture changes. Stop and ask if a decision is missing, context is insufficient, instructions conflict, the plan contradicts code, or execution would harm performance, security, backwards compatibility, or public APIs. Do not assume an answer to a material question; get my confirmation before proceeding past a blocker. Continue authorized work without step-by-step approval when no blocker remains.
+- If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
+- No divergence.
+- No creativity.
+- No architecture changes.
+- Just execute what is written.
+- If the plan, code reality, or user request conflicts with another instruction, stop and ask.
+- If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
 ### Scope control
 
-Make the smallest necessary changes; explain any required surrounding-code edit. Keep unrelated refactors and improvements in `Not Doing / Suggestions`. Exclude DevOps, packaging, build changes, and test authoring unless the plan or phase authorizes them; focused verification commands remain allowed. Keep UI changes in UI code unless the plan requires otherwise. Match repository style. Do not write the changelog unless explicitly requested.
+- Do not change, refactor, or reorganize unrelated code unless absolutely necessary.
+- Put suggestions to improve surrounding code in a separate “Not Doing / Suggestions” section; do not implement them.
+- Ignore DevOps, packaging, building, and test-related work unless otherwise specified in the plan or prompt.
+- Keep UI changes local to UI code only. Do not touch other code for UI changes unless the plan explicitly requires it.
+- Match existing style guidelines.
+- Do not write the changelog.
 
 ### Performance and complexity
 
-Avoid waiting hacks and ad hoc retry loops. Weigh time/space complexity and readability; do not use brute-force or quadratic operations unless the plan justifies them and data sizes make them safe. Prefer readable solutions over complicated optimizations. Before implementing a performance regression, stop and explain the impact in terms a junior developer can understand.
+- No time-based waiting hacks.
+- No hacky retry loops.
+- Check algorithmic time and space complexity.
+- Use the best solution after weighing options.
+- Do not choose brute-force methods or quadratic operations unless the plan explicitly justifies them and the data size makes them safe.
+- Write readable code.
+- Prefer readable code over overcomplicated performance or time-complexity optimizations.
+- If a change I request reduces performance, stop and tell me before implementing it.
+- Explain performance concerns with enough detail that a junior developer can understand them.
 
 ### Dependencies, frameworks, and documentation grounding
 
-No third-party libraries without explicit approval. Justify library/framework use and verify it against official documentation for the repository's installed or locked version. Use current supported APIs compatible with that version; flag outdated APIs without silently upgrading dependencies. If documentation is insufficient and source is open, clone the matching source into a temporary directory and inspect the relevant implementation. State anything still unverified; do not guess API behavior.
+- No third-party libraries without explicit approval.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- If documentation is poor, find the source code of the library if it is open source, clone it in a temporary folder, and read it thoroughly to supplement the existing documentation.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs.
+- Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
 
-Preserve backwards compatibility unless the app version is unreleased. Keep public APIs intuitive, consistently named, and aligned with existing interfaces. Translate library/framework exceptions into existing or appropriate custom public errors. Avoid exception chains that expose implementation details; log debugging traces through the existing logger when available.
+- Changes in user-facing APIs must be backwards compatible, unless the app version is unreleased.
+- If a third-party library is used in a public-facing API, the user should never see library/framework-specific exceptions raised.
+- Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
+- Do not chain exceptions when doing so would expose implementation/library details to users.
+- If logging is used and available, dump the trace using the logger for debugging purposes.
+- If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
 
-Reuse existing code, preserve DRY, separation of concerns, and single responsibility. Stop and flag duplication or reinvention. Use proper imports; never load source as a blob and execute it. Allow assertions only in tests. Surface assumptions. Do not hardcode numbers, versions, or other constants. Reuse existing constants or define and reuse them in the appropriate location.
+- Reuse existing code wherever possible.
+- Keep code DRY.
+- Follow separation of concerns.
+- Follow the single responsibility principle.
+- Use proper imports.
+- Do not load files as blobs and execute the code within another block of code.
+- Do not use assert statements in production code. Assert statements are allowed only in test files.
+- Surface all assumptions.
+- If changes reinvent or duplicate something already in the source code, stop and flag it.
+- Do not hardcode numbers, versions, or other constants. Reuse existing constants, or create new constants in the right places and reuse them appropriately.
 
 ### Types
 
-Use accurate, readable types. Avoid filler or overly generic types, type-ignore comments, and casts added merely to satisfy a checker. Prefer the simplest accurate annotation or a well-named type alias over crowded, nested, or repetitive types.
+- Use correct types when adding types to code.
+- Do not use filler types.
+- Do not use overly generic types just to satisfy a checker.
+- Do not use type-ignore comments to pass CI temporarily.
+- Do not add sloppy code like `typing.Cast` or cast types in code just to satisfy type checkers.
 
 ### Python
 
-Apply only to added or changed Python code:
+Apply this subsection only when the target repository uses Python.
 
-- Explicitly type every function/method parameter, including `*args` and `**kwargs`, and return value; `self` and `cls` are implicit.
-- Explicitly type class variables, class/instance attributes, and module-level mutable or optional state. Trivial immutable module constants may remain inferred unless the configured checker requires otherwise.
-- Declare instance-attribute types at class scope where feasible. Do not add local-variable or `self.attribute: Type` annotations inside methods/functions unless a real configured type-checker error requires them.
-- Keep annotations simple and accurate; avoid advanced constructs and type-only refactors unless the configured checker requires them.
+The following typing coverage is a hard requirement:
+
+- Every parameter, including `*args` and `**kwargs`, and return value of an added or changed function or method must have an explicit, accurate type hint. Treat `self` and `cls` as implicit; do not annotate them solely for this requirement.
+- Every added or changed class variable, class attribute, instance attribute, and module-level mutable or optional state must have an explicit, accurate type hint. A trivial immutable module constant may remain inferred unless the configured type checker needs an annotation.
+- Declare instance-attribute types at class scope where feasible; do not add `self.attribute: Type` annotations inside a method merely to satisfy this requirement.
+- Do not type annotate local variables inside function or method bodies. Rely on inference; add a local annotation only to resolve a real configured type-checker error.
+- Keep required annotations simple and accurate. Do not add advanced type constructs or type-only refactors unless the configured type checker requires them.
 
 ### Comments and documentation
 
-Explain non-obvious code with brief comments sufficient for a junior developer; describe resulting behavior instead of the task or change process. Correct stale comments within scope. Document every added or changed string transformation with representative input and expected-output examples. Locate durable documentation through docs-build configuration, GitHub Actions, or Makefiles, and update existing sections or add needed ones.
+- Always add brief, detailed comments where they make code easier to understand.
+- Comments must help readers understand the code with little effort.
+- Comments must address the code itself, not be meta commentary about the task.
+- Cleaning up stale comments is encouraged.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation.
+- Look for the correct docs folder by backtracking from GitHub Actions workflows, Makefiles, or other docs-build configuration.
+- Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
-At each planning, implementation, review, verification, and handoff checkpoint, map every material behavior or implementation step to affected user-, operator-, API-, configuration-, or developer-facing documentation. Require exact durable files/sections, updates in the same change set, and docs-build, link, rendering, or focused validation evidence; otherwise record an evidence-based `Not applicable` decision. Implementation/fix phases must complete this before marking work done. Review-only phases report gaps. Code comments, commit messages, and workflow artifacts do not replace durable documentation.
+- Documentation is a required completion checkpoint at every planning, implementation, review, verification, and handoff stage, not end-of-task cleanup.
+- Before a checkpoint can pass, identify the user-, operator-, API-, configuration-, or developer-facing documentation affected by the planned or changed behavior.
+- Require the exact durable documentation files/sections, their in-change-set update, and applicable docs build, link check, rendering check, or focused validation; if no durable documentation change is needed, require an evidence-based `Not applicable` decision.
+- Code comments, commit messages, and workflow artifacts do not substitute for durable documentation. Do not write the changelog unless explicitly requested.
 
 ### Cross-platform behavior
 
-Support both Linux and Windows. macOS is outside the required platform scope.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
 
 ### Git and verification
 
-When committing is authorized, use small logical commits with detailed messages explaining the change, rationale, and verification; split large changes sensibly. Run applicable focused lint and smoke checks for each commit unless command execution is unavailable or forbidden. Require fresh verification evidence before claiming completion. For failed commands, report the exact command and error/log without paraphrasing. State credential, dependency, or environment blockers precisely.
+- Commit often in small increments when committing is allowed.
+- Split large commits into sensible parts.
+- Add detailed commit messages.
+- Explain the work in detailed commit descriptions. Use as much detail as needed; there is no length limit.
+- Do not claim work is complete without fresh verification evidence.
+- Run linter and smoke test if any on every commit, unless the prompt explicitly forbids command execution.
+- If a command fails, paste the exact error/log back. Never paraphrase logs.
 
 ### Tests
 
-Do not create, modify, or delete tests in this phase. Run focused existing tests/checks when needed; do not manually run the entire suite unless explicitly asked. Defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase; do not duplicate its detailed test contract here.
-
-## Artifact rules
-
-Write only the required workflow artifacts, in the target repository root under their exact filenames. Include `Created by`, `Created at`, and `Updated at`; preserve creation fields and refresh `Updated at` on edits. Do not move artifacts into subdirectories or stage/commit them unless I explicitly request it. Report artifact-path drift as a workflow failure.
+- Do not create, modify, or delete tests in this planning-critique phase.
+- Run only focused existing tests or checks when repository evidence is needed; do not manually run the entire suite.
+- Require planning artifacts to defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in this critique.
 
 ## Prompt
 
-Critique `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md` for readiness to lock. Read original draft/interview notes when available and inspect relevant repository evidence. Write only `PLAN_CRITIQUE.md` and, when revision is needed, `OPUS_PLAN_REVISION_REQUEST.md`; do not edit code, tests, or the planning artifacts themselves.
+Goal:
 
-Inspect repository instructions, the named inputs, and relevant code before judging or editing. Answer repository questions from evidence; distinguish facts, inferences, and unresolved decisions. Batch independent reads/searches when useful and keep dependent actions sequential. Use available repository/search/edit tools without assuming a particular vendor. Keep updates brief; report decisions, evidence, and blockers rather than a running reasoning transcript. Once required checks pass, repeat or broaden them only for changed code, failures, or unresolved risks.
+- determine whether the planning artifacts are ready to lock for implementation.
+
+Success criteria:
+
+- every material concern is grounded in specific plan text, execution-prompt text, or concrete repo evidence,
+- blocking issues, non-blocking issues, missing user decisions, and simple suggestions are separated cleanly,
+- the plan and generated execution prompt give every implementation step a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
+- the output follows the exact artifact structure below.
+
+Constraints:
+
+- do not implement code,
+- do not modify files unless I explicitly ask,
+- critique the plan, not alternative future architectures,
+- if evidence is missing, say so explicitly instead of guessing.
+
+Context to review:
+
+- `FEATURE_SPEC_AND_PLAN.md`,
+- `EXECUTION_PROMPT.md`,
+- the original draft plan/interviewing notes if available,
+- relevant repository context if needed.
+
+Working method:
+
+- inspect the planning artifacts and any necessary repository files before finalizing; inspect independent files in parallel when your available tools make that efficient,
+- stay grounded in the supplied artifacts and any repository context you inspect,
+- quote or clearly point to the exact passage that triggered each blocking issue,
+- separate confirmed issues, inferences, and open questions,
+- prefer concrete execution risks over generic style commentary.
+
+Task:
+
+- critique the plan, not execute it,
+- decide whether the artifacts are good enough to lock for implementation,
+- produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
 
 ## Review dimensions
 
-Assess requirements and unresolved design decisions; original scope; concrete files/classes/functions/methods/variables and execution order; edge/error behavior; verification commands; and every Engineering Contract requirement, including backwards compatibility, API design/error translation, performance/complexity, reuse, types, dependency grounding, and Linux/Windows support.
+Review for:
 
-Check each plan step and the execution prompt for exact durable documentation updates/validation or an evidence-based `Not applicable` decision. Flag execution instructions that allow divergence, omit required skills or publication rules, or authorize tests before phase `09`.
-
-Ground findings in exact artifact passages or code evidence. Separate blocking and non-blocking issues, missing user decisions, inferences, and optional suggestions. Prefer concrete execution risks over generic style preferences or alternative future architectures.
+- missing design decisions,
+- unclear requirements,
+- divergence from original scope,
+- insufficient file/class/method/function/variable detail,
+- missing execution order,
+- missing edge cases,
+- backwards compatibility risks,
+- public API naming/design risks,
+- performance or algorithmic complexity concerns,
+- unnecessary brute-force or quadratic operations,
+- poor reuse / DRY violations,
+- failure to reuse existing code,
+- separation-of-concerns violations,
+- missing documentation grounding for library/framework usage,
+- outdated API usage,
+- unnecessary third-party dependencies,
+- missing custom exception/error translation at public API boundaries,
+- cross-platform Linux/Windows risks,
+- test-writing instructions that conflict with “do not write tests unless explicitly asked,”
+- missing verification commands/checks,
+- missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
+- anything in the execution prompt that gives the implementation model too much freedom.
 
 ## Required output 1: `PLAN_CRITIQUE.md`
 
-Use this structure; keep each finding in one primary section and cross-reference it elsewhere. Give each finding a stable ID, evidence, impact, and required action. Use `None` or justified `Not applicable` for empty sections.
+Create or output `PLAN_CRITIQUE.md` in the target repo root.
+
+Use this structure:
 
 ```markdown
 # Plan Critique
@@ -133,9 +266,32 @@ Use this structure; keep each finding in one primary section and cross-reference
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
-Create this complete, paste-ready Claude Opus revision prompt only when issues require revision. If none do, state that no revision pass is needed. Phase `02` is the sole producer; later verification returns here for another request.
+Create `OPUS_PLAN_REVISION_REQUEST.md` in the target repo root as the final direct-use prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
 
-Include a title and `## Skills`, `## Skill Handling Rule`, `## Default Planning Artifact Reduction`, `## Engineering Contract`, and `## Prompt`. Embed these skills explicitly:
+There is no separate checked-in Opus revision prompt file after this critique step. `OPUS_PLAN_REVISION_REQUEST.md` itself must be the final paste-ready prompt for the revision pass.
+
+This phase is the only place that should author `OPUS_PLAN_REVISION_REQUEST.md`.
+
+If a later verification pass says another revision is needed, return to this phase and regenerate `OPUS_PLAN_REVISION_REQUEST.md` here. Do not create an alternate revision prompt in the verification phase.
+
+It must be self-contained.
+
+Do not generate:
+
+- a helper prompt,
+- a meta-only instruction block,
+- a skeleton that expects another prompt file to fill in the real contract,
+- a revision summary without the full direct-use prompt.
+
+The generated Opus revision prompt must use a clear title and contain these top-level sections:
+
+- `## Skills`
+- `## Skill Handling Rule`
+- `## Default Planning Artifact Reduction`
+- `## Engineering Contract`
+- `## Prompt`
+
+The generated Opus revision prompt must include these skill links explicitly:
 
 - [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
 - [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
@@ -146,40 +302,127 @@ Include a title and `## Skills`, `## Skill Handling Rule`, `## Default Planning 
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
 
-Copy the full Skill Handling Rule and artifact rules into the revision prompt, and embed the Engineering Contract verbatim without weakening it. It must work in a fresh session without another prompt or hidden chat history.
+The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
 
-### Default Planning Artifact Reduction to embed
+- use only the explicitly linked skills listed in the prompt,
+- read every linked skill and required companion resource completely before applying it; embed the full links and these handling rules in the generated prompt rather than relying on installed slash commands or earlier prompt text,
+- treat the prompt as the contract,
+- treat locked task artifacts as the contract for execution,
+- use skills as supporting procedures only,
+- let the prompt win if a skill conflicts with it,
+- stop and ask instead of silently choosing if a conflict is material,
+- never use a skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+- treat `no-ai-slop` as a hard requirement for every Markdown document the phase creates or revises and as the ultimate writing guide for prose and presentation,
+- apply it while drafting, run its `eval.md` self-check before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if its `SKILL.md` or `eval.md` cannot be read and applied,
+- let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
+- ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-Default to `FEATURE_SPEC_AND_PLAN.md` plus `EXECUTION_PROMPT.md`. The combined file contains a detailed spec/reference section and a concrete implementation-plan section. The plan is the execution contract; link its steps to spec/reference anchors in the same file instead of repeating explanations. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are fallback-only when I request them or the combined file is too large to review comfortably. Apply the artifact location and metadata rules to every output.
+The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
 
-### Revision instructions to embed
+- `FEATURE_SPEC_AND_PLAN.md`
+- `EXECUTION_PROMPT.md`
 
-Under `## Prompt`, include role, task, context, success criteria, constraints, working method, required outputs, and final checks. Instruct Claude Opus to:
+It must state that:
 
-1. Read `PLAN_CRITIQUE.md`, the current planning artifacts, prior revision requests when available, draft/interview lineage, repository instructions, and relevant code. Apply valid critique within the original scope; do not implement code or tests.
-2. Evaluate every critique item. Resolve valid repository-answerable items, explain rejected items, and ask before changing anything that needs my design decision or expands scope. Do not silently drop an item or speculate about unread code.
-3. Update `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`, preserving all valid task detail, concrete files/symbols/order, explicit success criteria, stop rules, verification, and artifact location/metadata. Keep every step's documentation update/validation or evidence-based `Not applicable` decision.
-4. Preserve the execution contract: exact plan adherence; no divergence, invented requirements, architecture changes, or unrelated refactors; no test authoring before phase `09`; full Engineering Contract and skill-loading/writing requirements. Include the execution skills and publication rules below in the revision prompt so it can repair omissions without another prompt.
-5. Create `PLAN_REVISION_SUMMARY.md` using the required structure below. Check that all critique items have a disposition, no valid draft/plan detail disappeared, and the revised artifacts remain within scope and ready for verification.
+1. `FEATURE_SPEC_AND_PLAN.md` contains both a detailed spec/reference section and a concrete implementation plan section.
+2. The implementation plan section links back to relevant spec/reference anchors inside the same file instead of duplicating long explanations.
+3. The plan remains the execution contract.
+4. The spec/reference section remains the background reference.
+5. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are only a fallback if I explicitly ask or if the file becomes too large to review comfortably.
+6. All workflow-generated Markdown artifacts must be created or updated only in the target repo root using their exact required filenames, never in subdirectories or alternate paths.
+7. All workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first creation and refreshing `Updated at` whenever an artifact is edited.
 
-### Skills for the revised `EXECUTION_PROMPT.md`
+The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
 
-Embed these explicit links in the revision request and require them in the revised execution prompt. Preserve any additional existing execution skills; never replace the execution skill set with the critique or planning set.
+Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
 
-- [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
+- role,
+- task,
+- context to read before answering,
+- success criteria,
+- constraints,
+- working method,
+- required outputs,
+- final checks.
 
-### Execution publication and documentation rules to preserve
+Inside those sections, it must instruct Opus as follows.
 
-After focused verification, inspect the full diff, stage intended changes with `git add`, create focused commit(s), and push the current branch. Verify push status against the remote. Check whether that branch already has a pull request; create one only if none exists. Use GitHub CLI (`gh`) as the fallback for checking PR existence. Never create a duplicate PR.
+Role:
 
-Do not stage or commit workflow-generated Markdown artifacts unless I explicitly ask, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`. Preserve unrelated user changes.
+- You are Claude Opus revising the planning artifacts before implementation.
+- Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
+- Read before answering. Do not speculate about code or files you have not inspected.
 
-Require every implementation step to update and validate applicable durable documentation in the same change set before completion, or record an evidence-based `Not applicable` decision. Preserve the full existing implementation, regression-review, string-transformation examples, meta-content cleanup, verification, and final-response instructions; do not loosen or silently replace them.
+Task:
 
-### `PLAN_REVISION_SUMMARY.md` structure to embed
+- Update the planning artifacts so they are ready for locked implementation.
+- Apply valid critique items without expanding scope.
+
+Context to read before answering:
+
+- `PLAN_CRITIQUE.md`, if present,
+- `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
+- current `FEATURE_SPEC_AND_PLAN.md`,
+- current `EXECUTION_PROMPT.md`,
+- the original draft plan/interviewing notes if available,
+- relevant repository context.
+
+Success criteria:
+
+- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- the revised plan stays within original scope,
+- the revised execution prompt remains strict enough to prevent divergence during execution,
+- the revised plan and execution prompt preserve a documentation checkpoint for every implementation step, including exact durable documentation/validation or an evidence-based `Not applicable` decision,
+- the revised planning artifacts still belong only in the target repo root and do not introduce any alternate artifact path,
+- the revised planning artifacts preserve or add `Created by`, `Created at`, and `Updated at` metadata correctly,
+- the revised execution prompt preserves explicit instructions to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
+- the revised execution prompt preserves explicit instructions not to stage or commit workflow-generated Markdown artifacts unless I explicitly ask for that,
+- no detail from the current plan artifacts, critique, or draft-plan lineage is silently dropped.
+
+Constraints:
+
+- do not implement code,
+- do not write tests,
+- do not loosen the execution prompt,
+- do not use the critique as permission to change architecture unless I explicitly approve,
+- keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
+
+Working method:
+
+For each critique item:
+
+1. Decide whether it is valid.
+2. If valid and answerable from the repo/context, update the plan/prompt.
+3. If valid but requires my design decision, stop and ask me before updating that part.
+4. If invalid, document why.
+5. If it would expand scope, stop and ask.
+
+Also:
+
+- read `PLAN_CRITIQUE.md`,
+- read the current `FEATURE_SPEC_AND_PLAN.md`,
+- read the current `EXECUTION_PROMPT.md`,
+- apply all valid critique items,
+- ask if a critique item requires a design decision from me,
+- do not silently drop any critique item,
+- ground plan detail in the code and context you inspected,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether a pull request already exists for the current branch, and create a pull request only if none exists,
+- preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
+- preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,
+- preserve or strengthen the artifact-metadata rule that all workflow-generated Markdown artifacts include `Created by`, `Created at`, and `Updated at`, preserving creation fields and refreshing `Updated at` on edits,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
+- if the revised `EXECUTION_PROMPT.md` needs a fallback instruction for checking whether a pull request already exists for the current branch, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
+- preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
+
+Required outputs:
+
+Update or create:
+
+- `FEATURE_SPEC_AND_PLAN.md` in the target repo root
+- `EXECUTION_PROMPT.md` in the target repo root
+- `PLAN_REVISION_SUMMARY.md` in the target repo root
+
+The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use this structure:
 
 ```markdown
 # Plan Revision Summary
@@ -203,4 +446,21 @@ Require every implementation step to update and validate applicable durable docu
 ## Ready For Implementation?
 ```
 
-Final checks must verify scope, concrete implementation detail, every skill link, the full Engineering Contract, documentation checkpoints, Git/PR and artifact-exclusion rules, and the no-test-authoring boundary. Do not ask Opus to implement code.
+Final checks:
+
+- verify that the updated plan is still within original scope,
+- verify that the implementation plan section remains concrete down to files/classes/functions/methods/variables/order of changes,
+- verify that the execution prompt still includes strict no-divergence/no-creativity/no-architecture-change rules,
+- verify that every implementation step still has a documentation checkpoint with durable documentation validation or an evidence-based `Not applicable` decision,
+- verify that no test-writing is introduced unless explicitly asked,
+- verify that all skill links relevant to the generated execution prompt remain present,
+- embed the following execution skill links in the revision request and require them in the revised `EXECUTION_PROMPT.md`, preserving any additional existing execution skills and its full skill-handling rules:
+  - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md),
+  - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md),
+  - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md),
+  - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md),
+- verify that the execution prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,
+- verify that the execution prompt still forbids committing workflow-generated Markdown artifacts by default,
+- verify that the Engineering Contract remains intact or stricter.
+
+Do not ask Opus to implement code.

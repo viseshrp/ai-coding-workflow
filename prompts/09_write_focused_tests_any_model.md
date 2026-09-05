@@ -1,22 +1,21 @@
 # 09 - Write Minimal Focused Tests - Any Model
 
-Use any capable repository-aware coding model and the target repository's language/framework. Do not rely on vendor-specific tools, hidden reasoning formats, or model-specific behavior. Apply language-specific guidance only where labeled.
+This final test-writing prompt is model- and language-agnostic. Apply the same evidence, scope, test-design, verification, Git, and human-handoff contract with any capable repository-aware coding model, regardless of whether the target repository uses Python, JavaScript, Java, Rust, or another language. Do not rely on vendor-specific tools, hidden reasoning formats, model-specific behavior, or a language-specific test framework unless its labeled guidance applies.
 
 ## Skills
 
-The GitHub links identify every skill; load their matching paths from the sibling `../ai-skills-archive` repository using the procedure below.
+Load these skills from the sibling `../ai-skills-archive` repository:
 
 ### Shared
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
-- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md)
-- Required [no-ai-slop evaluator](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md): `archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md`
+- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md): `archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md`
+- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md): `archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md`
+- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md): `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md`, including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md).
 
 ### Python / pytest
 
-- [python-testing](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md)
+- [python-testing](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md): `archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md`
 
 ### Other languages
 
@@ -29,18 +28,39 @@ Before inspecting the target change in detail or using a skill:
 1. Record the target repository root so you can return to it, and use only repository metadata or changed file paths to identify applicable language categories.
 2. Run `cd ../ai-skills-archive` from the target repository root.
 3. Run `git pull --ff-only origin main`.
-4. Read every Shared and applicable language-specific `SKILL.md` completely, plus the required `no-ai-slop/eval.md` and companion resources. For each GitHub link, its path after `/blob/main/` is the path inside the sibling checkout; resolve relative resources from the skill directory.
+4. Read every `SKILL.md` in the Shared section and every applicable language subsection completely. Also read `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md` before using `no-ai-slop`.
 5. Return to the target repository root before inspecting or changing its files.
 
 If the sibling repository is missing, the pull fails, a required skill cannot be read completely, or the required `eval.md` cannot be read, stop and report the blocker. Do not substitute remembered or remote skill content.
 
-Use only the listed local skills and required companions. Reuse them after reading; do not infer their content from names. This prompt controls scope, technical meaning, constraints, and outputs; locked artifacts define expected behavior. Stop and ask about unresolved material conflicts. Skills cannot expand scope, alter production architecture, add unrelated refactors, or justify extra tests/dependencies/infrastructure.
+Use only the local skills listed in this prompt:
 
-Use `code-review-and-quality` to assess the final test diff; `source-driven-development` for uncertain or version-sensitive test/coverage APIs; and `verification-before-completion` for fresh evidence. Use `python-testing` only for Python with pytest. Read authoritative version-matched docs for uncertain APIs, but add source-citation comments only if repository conventions require them.
+- use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
+- use `source-driven-development` only when a test runner, framework, coverage tool, or extension API is version-sensitive or uncertain, and verify it against authoritative documentation,
+- use `verification-before-completion` to require fresh command output before any passing or completion claim,
+- treat `no-ai-slop` as a hard requirement and the ultimate writing guide for every chat response and for prose in test names, comments, docstrings, and the final human handoff,
+- apply it while drafting and run its `eval.md` self-check before sending the final handoff,
+- let `no-ai-slop` win over conflicting writing-style guidance while this prompt and locked task artifacts continue to control scope, code meaning, technical detail, constraints, evidence, and the required handoff,
+- ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-Apply `no-ai-slop` while drafting as the hard requirement and ultimate prose/presentation guide for chat, test names/comments/docstrings, and the final handoff. It wins over conflicting writing-style guidance. Run `eval.md` before sending the handoff. Preserve technical meaning, required structure, scope, and evidence; ignore its draft-request, detection-mode, and mandatory `What changed` workflows. No Markdown artifact may be created or revised in this phase.
+### Python / pytest
 
-This prompt overrides a skill's generic coverage target with at least 85% coverage for new or changed lines, forbids its production-code TDD cycle, and prefers repository fixtures/native APIs/installed extensions over hand-rolled infrastructure. The verification skill's "full command" means the complete focused command proving the claim, not the entire suite.
+- Use `python-testing` only when the changed code and relevant tests use Python with pytest. Use it for pytest structures, fixtures, parametrization, mocking, and coverage mechanics.
+
+The prompt is the contract. Locked task artifacts are the contract for expected behavior. Skills are supporting procedures only.
+
+If a skill conflicts with this prompt, this prompt wins. In particular:
+
+- use this prompt's minimum of 85% coverage for new or changed lines instead of another skill's generic coverage target,
+- do not apply a skill's production-code TDD cycle because this phase may change tests only and the implementation already exists,
+- prefer the repository's existing test-framework fixtures, native APIs, and installed extensions over hand-rolled test infrastructure when they provide the needed capability,
+- interpret the verification skill's "full command" as the complete focused command needed to prove the stated claim, not authorization to run the entire repository suite,
+- use authoritative documentation to verify uncertain APIs, but do not add source-citation comments to tests unless that is already a repository convention,
+- do not add more tests, edge cases, dependencies, plugins, or infrastructure merely because a skill recommends them.
+
+If a conflict is material, stop and ask instead of silently choosing.
+
+Do not use a skill to expand scope, change production architecture, add unrelated refactors, or add more tests than this prompt justifies.
 
 ## Engineering Contract
 
@@ -80,7 +100,7 @@ This prompt overrides a skill's generic coverage target with at least 85% covera
 - Keep test code in test files or test directories, separate from production code.
 - Test observable architecture and behavior, not implementation details.
 - Each test must cover one behavior and have one clear reason to fail.
-- Keep test functions, fixtures, and helpers small, linear, and easy to read and reason about.
+- Keep test functions, fixtures, and helpers small, linear, and easy to read and understand.
 - Prefer a simple Arrange-Act-Assert flow and descriptive behavior-based names.
 - Extract repeated setup into a fixture or small helper only when doing so makes the tests easier to understand.
 - Tests must be meaningful, non-duplicative, deterministic, non-flaky, and independent of execution order.
@@ -153,7 +173,7 @@ This prompt overrides a skill's generic coverage target with at least 85% covera
 - When test changes are needed, create one focused test commit unless separate logical test groups clearly justify more.
 - If fresh evidence proves that zero test changes are needed, do not create an empty commit.
 - Use a detailed commit message and description.
-- Push the current branch after committing and verify the remote status.
+- Push the current branch after committing.
 - Check whether a pull request already exists for the current branch.
 - Create a pull request if and only if one does not already exist. Use GitHub CLI (`gh`) as the fallback for checking.
 - Never create a duplicate pull request.
@@ -161,13 +181,61 @@ This prompt overrides a skill's generic coverage target with at least 85% covera
 
 ## Prompt
 
-Write the smallest meaningful test set for the final branch's changed behavior and material regression risks. Require fresh passing focused tests and at least 85% changed-line coverage, then hand the test diff directly to a human. Follow all Engineering Contract gates above.
+Role:
 
-1. After skill loading, read repository instructions, the branch diff against `main`, changed code/callers, relevant tests/fixtures/helpers, test and coverage configuration, installed extensions, affected durable documentation and its validation, and available `FEATURE_SPEC_AND_PLAN.md` / `FOLLOWUP.md`. Verify the prior documentation checkpoint before editing. Batch independent reads when useful.
-2. Trace changed observable behavior through public entry points and important failure/boundary paths. In chat, make a compact behavior-to-test matrix: behavior/risk, existing coverage, proposed test if needed, and why. Reduce it to the minimum distinct set, including zero tests when fresh evidence justifies that.
-3. Implement using existing conventions and native test-framework APIs. Run the smallest relevant tests, focused coverage, and applicable test-file lint/static checks. Adjust tests only for demonstrated behavior or coverage gaps; repeat/broaden verification only for changes, failures, or unresolved risks.
-4. Review the final diff for duplication, brittleness, subject-under-test mocking, global-state mutation, large helpers, and implementation coupling. Remove only temporary coverage output created by this phase, preserving pre-existing files. Stage only intended tests, commit, push, and create a PR only if missing; no empty commit when no edits are needed.
-5. Give the concise chat handoff below. Create no prompt, plan, review, walkthrough, summary file, or other workflow artifact. Human review of the tests ends the workflow.
+- You are a capable repository-aware coding model performing the final focused test-writing phase for an existing implementation.
+- Reason from repository evidence before editing.
+- Optimize for confidence per test, not test count or raw coverage.
+
+Goal:
+
+- add the smallest meaningful test set for the behavior changed on the current branch,
+- demonstrate at least 85% coverage for new or changed lines,
+- leave the branch with focused passing verification and no unrelated changes,
+- hand only the resulting test-file changes to the human for final review.
+
+Context to read before acting:
+
+- repository instructions such as `AGENTS.md`,
+- the current branch diff against the head of `main`,
+- changed production code and its callers,
+- existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
+- `FEATURE_SPEC_AND_PLAN.md`, if present,
+- `FOLLOWUP.md`, if present,
+- durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
+- relevant public documentation or source for test-runner, framework, coverage-tool, or extension APIs when their use is uncertain.
+
+Success criteria:
+
+- every new or changed test protects a distinct changed behavior or material regression risk,
+- no existing coverage is duplicated,
+- tests stay behavior-focused, small, readable, deterministic, and isolated,
+- existing test-framework native APIs or installed extensions replace hand-rolled test infrastructure where available,
+- fresh evidence shows the focused tests pass,
+- fresh evidence shows at least 85% coverage for new or changed lines,
+- every material changed behavior has a verified prior documentation-checkpoint result,
+- no production or configuration files are changed,
+- no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
+- any intended test changes are committed and pushed, and a pull request is created only if missing,
+- the verified test diff is ready for direct human review with no later AI phase.
+
+Working method:
+
+1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, and installed extensions. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
+2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
+3. Build a compact behavior-to-test matrix containing:
+   - changed behavior or regression risk,
+   - existing test coverage,
+   - proposed test, if still needed,
+   - why that test is necessary.
+4. Reduce the proposal to the minimum set. Prefer zero or one high-value test over several overlapping tests when the same confidence is preserved.
+5. Implement the tests using existing conventions and the applicable native test-framework APIs.
+6. Run the smallest relevant tests and focused coverage measurement.
+7. Add or adjust a test only for a demonstrated behavior or coverage gap; do not chase line execution blindly.
+8. Review the finished tests for duplication, brittleness, excessive mocking, hidden global-state changes, oversized functions, and implementation coupling.
+9. Run focused test-file lint/static checks when available.
+10. If tests changed, review the diff, stage only intended test files, commit, push, and create a pull request only if the branch has none. If no test change is justified, do not create an empty commit.
+11. Remove only the temporary coverage output generated by this phase; do not delete pre-existing repository files. Then stop after a concise chat handoff to the human reviewer. Do not create another prompt, review artifact, walkthrough, plan, summary file, or workflow phase.
 
 Stop rules:
 
@@ -192,6 +260,6 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
 - any blocker or existing-test concern that was deliberately left unchanged.
 
-After all required verification and Git handling succeed, end with: `Tests are ready for human review.` If blocked, state the blocker and do not claim readiness.
+End with: `Tests are ready for human review.`
 
 Do not generate another prompt or suggest an automated follow-up phase. Do not claim changed-line coverage when only broader file/package coverage was measured.
