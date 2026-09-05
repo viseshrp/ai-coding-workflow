@@ -1,8 +1,8 @@
 # AI Coding Workflow
 
-A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, and focused tests.
+A prompt pack for clarification, planning, implementation, code review, human approval, and focused tests.
 
-This repository is the workflow source, not the application being changed. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, and `REVIEW.md` belong in the target repository root.
+Run prompts in the target code repository. This repository stores the workflow source. Paste each checked-in or generated prompt into a fresh repository-aware model session; named artifacts in the target repository root carry context between phases.
 
 ## Workflow
 
@@ -32,16 +32,7 @@ flowchart TD
     S --> T["Human reviews the test diff; workflow ends"]
 ```
 
-Generated prompt artifacts are the only prompt input for their handoff:
-
-- `INITIAL_OPUS_PLANNING_PROMPT.md` drives the main Opus planning pass.
-- `OPUS_PLAN_REVISION_REQUEST.md` drives an Opus plan-revision pass.
-- `EXECUTION_PROMPT.md` drives locked implementation.
-- `REVIEW_FIX_PROMPT.md` drives a review-fix pass.
-
-If a generated prompt is incomplete, return to its producer phase instead of inventing a parallel checked-in prompt.
-
-## Prompt Index
+## Prompt index
 
 | Step | Prompt | Model / role | Result |
 |---|---|---|---|
@@ -55,39 +46,25 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 | 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Approved follow-up changes |
 | 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by human review |
 
-The main Opus planning pass, Opus plan-revision pass, locked implementation pass, and review-fix pass use generated prompts, so they do not have separate checked-in phase files.
+Generated prompts are the sole prompt input for their handoff: `INITIAL_OPUS_PLANNING_PROMPT.md` for Opus planning, `OPUS_PLAN_REVISION_REQUEST.md` for Opus revision, `EXECUTION_PROMPT.md` for implementation, and `REVIEW_FIX_PROMPT.md` for fixes. They contain their own skills and contracts. If one is incomplete, return to its producer instead of adding another prompt.
 
-## How to Run It
+## Running the workflow
 
-1. Open the target code repository in a repo-aware agent UI. Keep this prompt pack available only as the instruction source.
-2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
-3. Paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
-4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If revision is required, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus.
-5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
-6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
-7. Run [prompt 04](prompts/04_opus_review_branch.md). If it creates `REVIEW_FIX_PROMPT.md`, paste that generated prompt into any capable repository-aware coding model, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all valid blocking and non-blocking findings are resolved.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then perform the independent human review with [prompt 07](prompts/07_human_code_walkthrough.md).
-9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
-10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
-11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.
+1. Start at `01` with a rough idea, or `02` with complete planning artifacts. After `01`, paste its generated prompt into Opus to create `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
+2. Run `02`, use its generated Opus revision request if needed, then run `03`. Repeat until the plan is locked. If no revision was needed, `03` verifies the unchanged artifacts without requiring a revision summary.
+3. Paste `EXECUTION_PROMPT.md` into a capable coding model. Run `04`, execute its generated fix prompt when there are valid findings, and run `05`. Repeat until all valid blocking and non-blocking findings are resolved.
+4. Run `06` to refresh review artifacts, then `07` for independent human review. `AGREE` approves a specific follow-up item; `RESOLVE` advances a fully reviewed file. Run `08` only for approved `FOLLOWUP.md` work.
+5. Run `09` on the final implementation. It changes test files only; human review of the test diff ends the workflow.
 
-You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
+You can start at `04` with an existing implementation branch. Planning artifacts are optional in standalone review and fixes; use the diff against `main` and repository evidence when they are absent. You can also resume at locked execution, human review, approved follow-up, or focused tests when that phase's inputs and gates are satisfied.
 
-Use a fresh chat for each major phase or model handoff. The artifact files, not hidden chat history, are the handoff boundary.
+## Contracts and artifacts
 
-## Operator Rules
-
-- Run the workflow in the target code repository, never in this prompt-pack repository.
-- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename.
-- Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
-- Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
-- Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
-- Do not stage or commit workflow-generated Markdown artifacts unless explicitly requested.
-- Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
-- Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phase 09 verifies this status but cannot edit documentation.
-- Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
-
-## Artifact Chain
+- Use one prompt per phase, with explicit skills and self-contained instructions. Duplication across prompts is intentional; there is no skill router or reliance on hidden chat history.
+- The default planning output is `FEATURE_SPEC_AND_PLAN.md` plus `EXECUTION_PROMPT.md`. Its implementation-plan section is the execution contract and links to spec/reference anchors. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are fallback-only.
+- Store workflow artifacts only in the target root under exact filenames. Include `Created by`, `Created at`, and `Updated at`; preserve creation fields and refresh the update field on edits. Do not stage or commit workflow artifacts unless explicitly requested.
+- Implementation/fix phases complete focused verification, stage intended changes with `git add`, commit, push, verify remote status, and create a PR only when the branch has none. GitHub CLI (`gh`) is the fallback for checking PR existence. Phase `08` keeps each commit tied to one approved follow-up item.
+- Resolve repository facts through inspection. Ask about missing material decisions and conflicts; keep authorized execution moving when no blocker remains. Preserve scope, backwards compatibility, and Linux/Windows support.
 
 | Artifact | Producer | Main consumer |
 |---|---|---|
@@ -105,101 +82,36 @@ Use a fresh chat for each major phase or model handoff. The artifact files, not 
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
 | `FOLLOWUP.md` | 07 | 08 |
 
-Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Human review of the test diff ends the workflow.
+## Documentation checkpoints
 
-## Core Design
+Planning identifies each step's exact durable user-, operator-, API-, configuration-, or developer-facing documentation and validation, or records an evidence-based `Not applicable` decision. A planning checkpoint passes when those actions are specified; implementation and fix phases must execute them in the same change set.
 
-- One prompt input per phase. A generated downstream prompt replaces a separate checked-in prompt for that handoff.
-- Prompts are self-contained. Repeated skill and Engineering Contract blocks are intentional.
-- No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
-- The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
-- Claude Opus is reserved for planning, revision, and AI review. Every other model-run phase accepts any capable repository-aware model.
-- Planning and AI review each have a verification loop. Human review remains an independent approval gate.
-- The final automated phase adds the smallest meaningful focused test set. A human reviews those tests, and the workflow ends without another prompt or artifact.
+Critique, review, verification, refresh, and human walkthrough inspect the evidence and report gaps. Code comments, commit messages, and workflow artifacts do not replace durable documentation. Phase `09` verifies prior documentation checkpoints and stops/escalates unresolved gaps without editing docs.
 
-## Documentation Checkpoints
+## Testing policy
 
-Documentation follows the same gate discipline as code and verification:
+Earlier phases inspect or run focused existing tests; phase `09` owns test authoring. Test items in `FOLLOWUP.md` remain deferred until `09`.
 
-- Planning phases identify the durable user-, operator-, API-, configuration-, and developer-facing documentation affected by every implementation step, or explain why none applies.
-- Implementation, review-fix, and human-follow-up phases update and validate the affected documentation in the same change set before they mark the step complete.
-- Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
-- Phase 09 remains test-file-only. It must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
+Write the fewest distinct behavior/regression tests, with small readable functions, deterministic isolation, and existing fixtures, native framework APIs, and installed extensions. Never mock the subject under test; limit mocks to impractical external collaborators. Require at least 85% coverage for new or changed lines using existing tooling, without changing coverage configuration or adding coverage-only tests. Do not claim changed-line coverage from a broader measurement.
 
-## Testing Policy
-
-Earlier phases may inspect or run focused tests, but they do not author tests. Prompt 09 owns the complete test-writing contract:
-
-- write the fewest nonduplicative tests that cover changed behavior and material regression risks,
-- keep tests behavior-focused, deterministic, isolated, and small enough to read linearly,
-- follow the repository's existing test-framework configuration and reuse its fixtures, native APIs, and installed extensions instead of hand-rolled test infrastructure,
-- never patch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
-- reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
-- change test files only, then hand the test diff directly to a human without another prompt or workflow artifact.
-
-### Language-specific testing guidance
-
-- **Python / pytest:** follow the existing pytest configuration and reuse fixtures, native APIs, and installed plugins instead of hand-rolled Python or standard-library mechanisms. Use `monkeypatch` for external collaborators when it fits; never monkeypatch the subject under test.
-- **Other languages:** follow the repository's established test runner, framework conventions, and installed extensions. Do not introduce or migrate a test framework during phase 09.
-
-The full policy, local-skill loading procedure, stop rules, and verification contract live in [phase 09](prompts/09_write_focused_tests_any_model.md).
+For Python/pytest, prefer pytest fixtures and APIs over hand-rolled infrastructure. Other languages and non-pytest projects retain their established frameworks. Phase `09` changes only test files and test-local support, retains no generated coverage output, and creates no prompt, plan, review, walkthrough, summary file, or other workflow artifact. No AI phase follows it.
 
 ## Skills
 
-Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
+Every prompt explicitly links its complete skill set on GitHub, including skills to embed in generated prompts. Read each applicable skill and required companion completely before using it; reuse that content during the session. Phase `01` links both `grill-me` and its required `grilling` procedure so it does not depend on an installed slash command. Existing skill assignments are preserved.
 
-Skills support the workflow; they do not widen scope or override prompt constraints.
+Phase `09` retains its local-loading gate: enter `../ai-skills-archive`, run `git pull --ff-only origin main`, read the shared and applicable language-specific skills and required evaluator, then return to the target repository. The path after `/blob/main/` in each GitHub link maps to its local archive path. Missing files or a failed pull block the phase; remote content is not a fallback for this gate.
 
-Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
+Every checked-in and generated prompt requires [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). Apply them while drafting and before saving Markdown or sending the final response. They are the ultimate prose/presentation guide after factual, technical, structural, and output requirements are met. Stop before writing Markdown if either cannot be read and applied. They cannot change scope, meaning, artifact names, constraints, or evidence. Ignore their draft-request, detection-mode, and mandatory `What changed` workflows unless a phase asks for them.
 
-## Repository Layout
+## Current model guidance
 
-```text
-.
-+-- AGENTS.md
-+-- README.md
-+-- prompts/
-|   +-- 01_initial_exploration_any_model.md
-|   +-- 02_plan_critique_any_model.md
-|   +-- 03_plan_revision_verification_any_model.md
-|   +-- 04_opus_review_branch.md
-|   +-- 05_opus_verify_review_fixes.md
-|   +-- 06_opus_refresh_review_and_walkthrough.md
-|   +-- 07_human_code_walkthrough.md
-|   +-- 08_implement_human_followup_any_model.md
-|   +-- 09_write_focused_tests_any_model.md
-+-- sources/
-|   +-- current_skill_set.txt
-|   +-- original_scrappy_prompts.txt
-|   +-- chat_exports/
-|   +-- *.pdf
-+-- archived/
-    +-- agentic_coding_prompt_pack_refactored.md
-```
+The September 5, 2026 audit follows current [OpenAI prompting guidance](https://developers.openai.com/api/docs/guides/latest-model) and [Claude prompting guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices): explicit outcomes and boundaries, limited repeated instructions, batched independent reads, and verification proportional to the task. These are prompt-design choices, not a measured speed or quality improvement.
 
-- `prompts/` is the canonical product surface.
-- `sources/` preserves immutable original/reference inputs and rationale. Never edit files there.
-- `archived/` is historical reference, not the default editing surface.
-- `AGENTS.md` defines maintenance and synchronization rules.
+Keep model roles version-neutral: Claude Opus for planning, revision, and AI review; any capable repository-aware model for the other phases. Choose a supported release in the agent interface rather than embedding release IDs, reasoning budgets, or vendor-specific tools in the prompts. The human walkthrough retains its explicit `gh` requirement. Required output structures and line-by-line walkthroughs take priority over brevity.
 
-## Common Entry Points
+## Repository maintenance
 
-- Start at 01 when the task still needs clarification.
-- Start at 02 when complete planning artifacts already exist.
-- Start with generated implementation when the plan is already locked.
-- Start at 04 when implementation exists and needs the AI review loop.
-- Start at 07 when the AI loop is complete and human review should begin.
-- Start at 08 when `FOLLOWUP.md` already contains only approved work.
-- Start at 09 when the final branch behavior is ready for focused tests.
+Read [AGENTS.md](AGENTS.md) before editing. Canonical files are `prompts/*.md`, `README.md`, and `AGENTS.md`. Keep phase order, artifact names, model roles, skill links, and repeated contracts synchronized.
 
-## Maintenance
-
-Read [AGENTS.md](AGENTS.md) before editing the pack. Keep filenames, artifact names, phase order, model roles, skill placement, and intentionally duplicated contracts synchronized.
-
-Useful references:
-
-- [Historical skill inventory](sources/current_skill_set.txt)
-- [Original prompt source](sources/original_scrappy_prompts.txt)
-- [Historical consolidated prompt pack](archived/agentic_coding_prompt_pack_refactored.md)
-
-Never edit anything under `sources/`; those files are immutable originals or reference inputs. Treat archive material as historical unless a task explicitly targets the archive.
+Everything under `sources/` is immutable reference input, including the [historical skill inventory](sources/current_skill_set.txt) and [original prompts](sources/original_scrappy_prompts.txt). The [archived consolidated pack](archived/agentic_coding_prompt_pack_refactored.md) is historical and changes only when explicitly requested. Do not create runtime workflow artifacts in this repository by default.

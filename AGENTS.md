@@ -90,7 +90,7 @@ If a task appears to require changing a source file, stop and ask instead of mod
 
 These are the main design constraints that define this repo:
 
-- No skill router. Skills are listed directly inside the relevant prompts.
+- No skill router. Each prompt lists its skills with explicit GitHub links, including required skill dependencies. Generated prompts must embed their complete skill links and handling rules; do not rely on installed slash commands or earlier prompt text.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -209,6 +209,7 @@ Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document 
 
 Present in:
 
+- `prompts/01_initial_exploration_any_model.md` (downstream contract to embed)
 - `prompts/02_plan_critique_any_model.md`
 - `prompts/03_plan_revision_verification_any_model.md`
 - `prompts/04_opus_review_branch.md`
@@ -222,7 +223,7 @@ Expectation:
 - This is the main cross-phase policy block.
 - Changes here are high-impact and must be propagated deliberately.
 - If you change policy semantics, review every copy before finishing.
-- `01` does not contain the contract directly, but it instructs generated planning prompts to preserve constraints; keep that relationship in mind.
+- `01` includes the downstream Engineering Contract for the generated planning prompt to embed in `EXECUTION_PROMPT.md`; keep that complete contract synchronized too.
 - `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
 
 The `### Tests` subsection is deliberately phase-specific:
@@ -284,7 +285,7 @@ Rules:
 - Keep phase prompt filenames zero-padded and phase-ordered.
 - Keep the consolidated pack guide at the repository-root `README.md`.
 - Keep prompts self-contained.
-- Preserve explicit skill links or local skill paths.
+- Preserve explicit GitHub skill links. Phase `09` also preserves its local archive loading procedure; GitHub paths identify the corresponding local files.
 - Preserve explicit artifact filenames.
 - Preserve the intended target model for each phase.
 - Avoid style-only rewrites that create diff noise without workflow benefit.
