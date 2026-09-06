@@ -475,7 +475,7 @@ Execution rules:
 - keep every change as limited in scope as possible and minimize its blast radius; do not change surrounding code unless absolutely necessary to implement the locked plan, and explain why any such change is necessary,
 - do not make unrelated refactors,
 - before completion, inspect the full implementation diff for all possible regressions within the branch's change scope, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix every regression within the locked plan; if any requires exceeding it, stop and ask instead of claiming completion,
-- inspect the implementation diff for added or changed meta content in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within scope,
+- inspect the implementation diff for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within scope,
 - document every added or changed string transformation with concrete examples showing representative input and expected output,
 - never patch or mock the function, method, or callable under test; only collaborators outside the subject may be patched, and this rule does not authorize creating or modifying tests in this phase,
 - do not write tests unless explicitly asked,
@@ -621,6 +621,7 @@ The following typing coverage is a hard requirement:
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
 - Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
 - Ensure every non-obvious change has an explanatory comment.

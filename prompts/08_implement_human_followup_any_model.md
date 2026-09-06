@@ -121,6 +121,7 @@ The following typing coverage is a hard requirement:
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
 - Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
 - Ensure every non-obvious change has an explanatory comment.
@@ -232,7 +233,7 @@ Execution rules:
 
 - before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
 - inspect all changes made by this follow-up pass for possible regressions, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix regressions within the approved `FOLLOWUP.md` items; stop and ask if a fix would exceed them,
-- inspect added or changed comments, docstrings, durable documentation, and user-facing text for meta content describing the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
+- inspect the changes made by this pass for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - read likely relevant files in parallel before editing when practical,
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
 - carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,

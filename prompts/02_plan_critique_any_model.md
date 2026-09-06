@@ -121,6 +121,7 @@ The following typing coverage is a hard requirement:
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
 - Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
 - Ensure every non-obvious change has an explanatory comment.
