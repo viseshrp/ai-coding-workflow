@@ -74,6 +74,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 ### Public APIs and exceptions
 
+- Backwards compatibility is top priority.
 - Changes in user-facing APIs must be backwards compatible, unless the app version is unreleased.
 - If a third-party library is used in a public-facing API, the user should never see library/framework-specific exceptions raised.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
@@ -83,6 +84,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 ### Code quality and maintainability
 
+- Use the target language and its standard library idiomatically.
 - Reuse existing code wherever possible.
 - Keep code DRY.
 - Follow separation of concerns.
@@ -117,6 +119,7 @@ The following typing coverage is a hard requirement:
 
 ### Comments and documentation
 
+- Document every added or changed string transformation with concrete examples showing representative input and expected output.
 - Always add brief, detailed comments where they help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
@@ -487,6 +490,9 @@ Per-review-item process:
 
 Focused verification:
 
+- before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
+- inspect all changes made by this fix pass for possible regressions, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix regressions within the approved review-fix scope; stop and ask if a fix would exceed it,
+- inspect added or changed comments, docstrings, durable documentation, and user-facing text for meta content describing the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - run focused verification relevant to the fixes,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
@@ -528,5 +534,7 @@ The generated `REVIEW_FIX_PROMPT.md` must require this exact response structure:
 In `## Documentation Checkpoints`, require the review-fix model to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
 It must explicitly instruct the review-fix model not to claim completion without fresh verification evidence.
+
+Before handing off `REVIEW_FIX_PROMPT.md`, check that it embeds every Engineering Contract requirement and review-fix instruction above with its priority, scope, conditions, exceptions, and stop gates intact. Repair omissions or weakened instructions before handoff.
 
 Do not modify code during this Opus review phase.

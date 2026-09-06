@@ -224,6 +224,7 @@ Expectation:
 - This is the main cross-phase policy block.
 - Changes here are high-impact and must be propagated deliberately.
 - If you change policy semantics, review every copy before finishing.
+- Keep implementation requirements aligned with review criteria: compatibility priority, justified dependencies, idiomatic code, readable types, string-transformation examples, and scope-limited regression and meta-content checks. Embed applicable requirements in generated execution/fix prompts and phase `08`; preserve the existing exceptions and test-authoring boundaries. Verify the actual generated contracts before handoff rather than relying on the producer instructions alone.
 - `01` includes the downstream Engineering Contract for the generated planning prompt to embed in `EXECUTION_PROMPT.md`; keep that complete contract synchronized too.
 - `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
 

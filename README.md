@@ -111,6 +111,7 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 
 - One prompt input per phase. A generated downstream prompt replaces a separate checked-in prompt for that handoff.
 - Prompts are self-contained. Repeated skill and Engineering Contract blocks are intentional.
+- Main implementation, review fixes, and human follow-up receive the same applicable engineering requirements used in review. Generated execution and fix prompts are checked for complete contracts before handoff; planning critique and verification block incomplete execution prompts.
 - No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
 - The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
 - Claude Opus is reserved for planning, revision, and AI review. Every other model-run phase accepts any capable repository-aware model.

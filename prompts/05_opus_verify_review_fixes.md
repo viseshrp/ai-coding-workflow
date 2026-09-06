@@ -75,6 +75,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 ### Public APIs and exceptions
 
+- Backwards compatibility is top priority.
 - Changes in user-facing APIs must be backwards compatible, unless the app version is unreleased.
 - If a third-party library is used in a public-facing API, the user should never see library/framework-specific exceptions raised.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
@@ -84,6 +85,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 ### Code quality and maintainability
 
+- Use the target language and its standard library idiomatically.
 - Reuse existing code wherever possible.
 - Keep code DRY.
 - Follow separation of concerns.
@@ -98,6 +100,7 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Types
 
 - When adding types, use correct ones.
+- Keep type declarations and annotations proportionate and readable. Do not use deeply nested, repetitive, or unnecessarily complex annotations that crowd code or obscure intent; prefer the simplest accurate type or a well-named type alias when that is clearer.
 - Do not use filler types.
 - Do not use overly generic types just to satisfy a checker.
 - Do not use type-ignore comments to pass CI temporarily.
@@ -117,6 +120,7 @@ The following typing coverage is a hard requirement:
 
 ### Comments and documentation
 
+- Document every added or changed string transformation with concrete examples showing representative input and expected output.
 - Always add brief, detailed comments where they help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
