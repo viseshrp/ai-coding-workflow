@@ -6,6 +6,7 @@
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
+- [show-me](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md)
 
 ## Skill Handling Rule
 
@@ -52,6 +53,8 @@ Help me review the current PR from the actual code and PR changes. Start by show
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 
+Use `show-me` for focused diffs, pseudocode, and diagrams alongside the required code context. Keep diagrams, presentation diffs, and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create HTML or additional visual artifacts, or require skill installation.
+
 ### Show the code map first
 
 Open the first review response with a mindmap of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code. Show the flow diagrams next, before any code blocks.
@@ -66,7 +69,9 @@ Use the inspected code and PR changes to build the maps, checking any relevant i
 
 Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order.
 
-Show the block with its file/line location and a few relevant surrounding lines. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
+Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
+
+For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames. Add sequence or state diagrams when they clarify interactions; do not require every format in every response.
 
 Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the map. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
@@ -76,8 +81,10 @@ For each material changed behavior, identify affected durable user-, operator-, 
 
 - Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file.
 - Ask for `RESOLVE` only after every changed block in the current file is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
-- Only when I type `RESOLVE` in all caps, mark the fully reviewed file resolved and move to the next file. Attempt the corresponding GitHub resolution with `gh` if available and authenticated. If that resolution action is unavailable or unauthenticated, skip it without erroring and continue; the required PR-data reads still apply.
-- After `RESOLVE`, show the next file's first semantic block and connect it to the code map. If every file is resolved, wait for my final go-ahead before implementation.
+- Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, review the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
+- For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the review or `RESOLVE` gate.
+- If the GitHub update or verification fails, report the failure and keep completion pending. Do not silently skip it, claim success, or advance to another file. File completion must not resolve review conversations or submit PR approval.
+- After verified file completion, show the next file's first semantic block and connect it to the code map. If every file is resolved, wait for my final go-ahead before implementation.
 
 Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 

@@ -267,7 +267,9 @@ The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and h
 
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
 
-Phase `07` starts with a code mindmap and diagrams of all reachable flows and success/error states, then reviews small semantic blocks with the declarations and definitions needed to understand their references. Preserve `AGREE`, `RESOLVE`, and the documentation checkpoint without imposing a fixed per-response template. Keep the maps, semantic grouping, and reference excerpts aligned in the `WALKTHROUGH.md` producer prompts `04` and `06`.
+Phase `07` uses the explicitly linked `show-me` skill for chat-only walkthrough visuals. Start with a code mindmap and diagrams of all reachable flows and success/error states, then review small semantic blocks with focused source diffs, pseudocode for material logic changes, and the declarations and definitions needed to understand their references. Preserve `AGREE`, `RESOLVE`, and the documentation checkpoint without imposing a fixed per-response template. Keep diagrams, presentation diffs, and pseudocode in chat only; create no HTML or additional visual artifacts. The `WALKTHROUGH.md` producers `04` and `06` retain equivalent relationship/flow coverage in prose, semantic grouping, source excerpts, and adjacent line-by-line explanations.
+
+On `RESOLVE`, phase `07` refreshes the file's PR changes. Changes since review require further review and renewed `RESOLVE`. Otherwise, use `gh api graphql` with `markFileAsViewed` and verify the file's `viewerViewedState` is `VIEWED` before resolving the checklist item and advancing. Already-viewed status does not bypass review or approval. Update or verification failures keep completion pending; do not silently skip them. File completion must not resolve review conversations or submit PR approval. Preserve the final go-ahead gate before implementation.
 
 ### Skill inventory
 

@@ -66,7 +66,7 @@ The main Opus planning pass, Opus plan-revision pass, locked implementation pass
 5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
 7. Run [prompt 04](prompts/04_opus_review_branch.md). If it creates `REVIEW_FIX_PROMPT.md`, paste that generated prompt into any capable repository-aware coding model, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all valid blocking and non-blocking findings are resolved.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a code mindmap and success/error flows; discuss small semantic blocks with excerpts for referenced declarations and definitions. Approve follow-up items with `AGREE` and finish reviewed files with `RESOLVE`.
+8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a code mindmap and success/error flows in chat; discuss small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep these visuals in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
 11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.
@@ -148,7 +148,7 @@ The full policy, local-skill loading procedure, stop rules, and verification con
 
 Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
 
-Skills support the workflow; they do not widen scope or override prompt constraints.
+Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [show-me](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) for chat-only walkthrough visuals; no installation is required.
 
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Phase 09 retains local loading from `../ai-skills-archive`; its GitHub links identify the matching local files.
 
