@@ -10,9 +10,9 @@
 
 ## Skill Handling Rule
 
-Use only the explicitly linked skills listed in this prompt.
+Use only this prompt's explicitly linked skills.
 
-Read each linked skill and required companion for the current phase completely before applying it. Use the linked procedures directly; do not depend on installed slash commands or earlier prompt text.
+Read each linked skill and required companion for this phase completely before use. Follow the linked procedures directly; do not rely on installed slash commands or earlier prompt text.
 
 The prompt is the contract. The locked task artifact is the contract for execution. Skills are supporting procedures only.
 
@@ -22,7 +22,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-`no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
+`no-ai-slop` is mandatory for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
@@ -48,7 +48,7 @@ Help me review the current PR from the actual code and PR changes. Start by show
 ### Read the PR and code
 
 - For each review turn, pull the current PR changed-file list and per-file changes from GitHub CLI (`gh`). Use them as the source of truth for the review checklist and changed blocks. If `gh` cannot provide either, stop and ask; do not substitute the manual diff against `main`.
-- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Keep track of reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
+- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
 - Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.

@@ -37,7 +37,7 @@ Use only the local skills listed in this prompt:
 
 - use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
 - use `source-driven-development` only when a test runner, framework, coverage tool, or extension API is version-sensitive or uncertain, and verify it against authoritative documentation,
-- use `verification-before-completion` to require fresh command output before any passing or completion claim,
+- use `verification-before-completion` to require fresh command output before claiming a pass or completion,
 - treat `no-ai-slop` as a hard requirement and the ultimate writing guide for every chat response and for prose in test names, comments, docstrings, and the final human handoff,
 - apply it while drafting and run its `eval.md` self-check before sending the final handoff,
 - let `no-ai-slop` win over conflicting writing-style guidance while this prompt and locked task artifacts continue to control scope, code meaning, technical detail, constraints, evidence, and the required handoff,
@@ -174,7 +174,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - If fresh evidence proves that zero test changes are needed, do not create an empty commit.
 - Use a detailed commit message and description.
 - Push the current branch after committing.
-- Check whether a pull request already exists for the current branch.
+- Check whether the current branch already has a pull request.
 - Create a pull request if and only if one does not already exist. Use GitHub CLI (`gh`) as the fallback for checking.
 - Never create a duplicate pull request.
 - After the tests are verified and Git handling is complete, stop and hand the test diff to the human reviewer. Do not generate a downstream artifact or prompt.

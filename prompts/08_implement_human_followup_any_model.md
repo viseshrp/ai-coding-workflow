@@ -10,9 +10,9 @@
 
 ## Skill Handling Rule
 
-Use only the explicitly linked skills listed in this prompt.
+Use only this prompt's explicitly linked skills.
 
-Read each linked skill and required companion for the current phase completely before applying it. Use the linked procedures directly; do not depend on installed slash commands or earlier prompt text.
+Read each linked skill and required companion for this phase completely before use. Follow the linked procedures directly; do not rely on installed slash commands or earlier prompt text.
 
 The prompt is the contract. The locked task artifact is the contract for execution. Skills are supporting procedures only.
 
@@ -22,7 +22,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
-`no-ai-slop` is a hard requirement for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
+`no-ai-slop` is mandatory for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
@@ -46,7 +46,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Do not change, refactor, or reorganize unrelated code unless absolutely necessary.
 - Put suggestions to improve surrounding code in a separate “Not Doing / Suggestions” section; do not implement them.
 - Ignore DevOps, packaging, building, and test-related work unless otherwise specified in the plan or prompt.
-- Keep UI changes local to UI code only. Do not touch other code for UI changes unless the plan explicitly requires it.
+- Keep UI changes within UI code unless the plan explicitly requires changes elsewhere.
 - Match existing style guidelines.
 - Do not write the changelog.
 
@@ -60,14 +60,14 @@ Apply this contract during planning, execution, review, and review fixes.
 - Write readable code.
 - Prefer readable code over overcomplicated performance or time-complexity optimizations.
 - If a change I request reduces performance, stop and tell me before implementing it.
-- Explain performance concerns with enough detail that a junior developer can understand them.
+- Explain performance concerns in enough detail for a junior developer to understand.
 
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
 - If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
 - Always ground development work involving libraries 100% in documentation with zero assumptions.
-- If documentation is poor, find the source code of the library if it is open source, clone it in a temporary folder, and read it thoroughly to supplement the existing documentation.
+- If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
 - Ensure usage follows the latest APIs.
 - Flag outdated APIs.
 - Check that library/framework usage is necessary and justified.
@@ -78,7 +78,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - If a third-party library is used in a public-facing API, the user should never see library/framework-specific exceptions raised.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
-- If logging is used and available, dump the trace using the logger for debugging purposes.
+- If logging is used and available, log the trace with the logger for debugging.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -89,18 +89,18 @@ Apply this contract during planning, execution, review, and review fixes.
 - Follow the single responsibility principle.
 - Use proper imports.
 - Do not load files as blobs and execute the code within another block of code.
-- Do not use assert statements in production code. Assert statements are allowed only in test files.
+- Use assert statements only in test files, never in production code.
 - Surface all assumptions.
 - If changes reinvent or duplicate something already in the source code, stop and flag it.
 - Do not hardcode numbers, versions, or other constants. Reuse existing constants, or create new constants in the right places and reuse them appropriately.
 
 ### Types
 
-- Use correct types when adding types to code.
+- When adding types, use correct ones.
 - Do not use filler types.
 - Do not use overly generic types just to satisfy a checker.
 - Do not use type-ignore comments to pass CI temporarily.
-- Do not add sloppy code like `typing.Cast` or cast types in code just to satisfy type checkers.
+- Do not use `typing.Cast` or other casts merely to satisfy type checkers.
 
 ### Python
 
@@ -116,14 +116,13 @@ The following typing coverage is a hard requirement:
 
 ### Comments and documentation
 
-- Always add brief, detailed comments where they make code easier to understand.
-- Comments must help readers understand the code with little effort.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
 - Ensure every non-obvious change has an explanatory comment.
 - Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
 - Always update related documentation.
-- Look for the correct docs folder by backtracking from GitHub Actions workflows, Makefiles, or other docs-build configuration.
+- Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
 - Do not write the changelog.
 
@@ -144,7 +143,7 @@ The following typing coverage is a hard requirement:
 - Commit often in small increments when committing is allowed.
 - Split large commits into sensible parts.
 - Add detailed commit messages.
-- Explain the work in detailed commit descriptions. Use as much detail as needed; there is no length limit.
+- Explain the work in commit descriptions with as much detail as needed; no length limit.
 - Do not claim work is complete without fresh verification evidence.
 - Run linter and smoke test if any on every commit, unless the prompt explicitly forbids command execution.
 - If a command fails, paste the exact error/log back. Never paraphrase logs.
@@ -191,8 +190,6 @@ Execution posture:
 
 - work autonomously: gather context, implement, run the smallest relevant checks, refine, then report,
 - understand the context of the current PR before editing,
-- use `REVIEW.md` and `WALKTHROUGH.md` for context only,
-- treat `FOLLOWUP.md` as the execution contract for this phase,
 - read all likely relevant files in parallel before editing when that shortens the loop,
 - prefer dedicated repo/search/edit tools over raw shell when available,
 - keep progressing until you have a verified result or one of the stop conditions below.
@@ -250,9 +247,9 @@ Execution rules:
 - do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
-- check whether a pull request already exists for the current branch before creating one,
+- check whether the current branch already has a pull request before creating one,
 - create a pull request if and only if the current branch does not already have one,
-- if you do not know how to check whether a pull request already exists for the current branch, use GitHub CLI (`gh`) to determine that,
+- if unsure how to check whether the current branch already has a pull request, use GitHub CLI (`gh`) to determine that,
 - do not create a duplicate pull request for the same branch,
 - do not create a new AI review prompt,
 - do not run another AI review in this phase,
