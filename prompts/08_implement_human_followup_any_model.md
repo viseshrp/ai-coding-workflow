@@ -244,7 +244,7 @@ Execution rules:
 - split large commits into sensible smaller focused parts,
 - use detailed commit messages and descriptions,
 - do not make unrelated refactors,
-- do not write tests unless `FOLLOWUP.md` explicitly asks for tests,
+- do not create, modify, or delete tests in this phase; defer test-authoring items in `FOLLOWUP.md` to `09_write_focused_tests_any_model.md` and report the deferral in the handoff,
 - run focused verification relevant to the approved follow-up items,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.

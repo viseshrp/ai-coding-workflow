@@ -260,6 +260,6 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
 - any blocker or existing-test concern that was deliberately left unchanged.
 
-End with: `Tests are ready for human review.`
+End with `Tests are ready for human review.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 
 Do not generate another prompt or suggest an automated follow-up phase. Do not claim changed-line coverage when only broader file/package coverage was measured.
