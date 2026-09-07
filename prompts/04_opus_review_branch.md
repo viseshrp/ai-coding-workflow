@@ -12,7 +12,7 @@
 
 Use only this prompt's explicitly linked skills.
 
-Read each linked skill and required companion for this phase completely before use. Follow the linked procedures directly; do not rely on installed slash commands or earlier prompt text.
+Fetch and read each linked skill and required companion completely from its GitHub URL before use. Follow the linked procedures directly; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
 
 The prompt is the contract. When locked task artifacts are present, they are authoritative review context. Their absence does not block this phase. Skills are supporting procedures only.
 
@@ -399,7 +399,7 @@ The generated review-fix prompt must include these skill links explicitly:
 The generated review-fix prompt must include a `## Skill Handling Rule` that instructs the review-fix model to:
 
 - use only the prompt's explicitly linked skills,
-- read every linked skill and required companion completely before use; embed full links and these handling rules in the generated prompt; do not rely on installed slash commands or earlier prompt text,
+- fetch and read every linked skill and required companion completely from its GitHub URL before use; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution when they are present,
 - proceed from `REVIEW.md`, `WALKTHROUGH.md`, and the current branch diff when prior planning or execution artifacts are absent,

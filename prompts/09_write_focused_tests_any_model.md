@@ -4,36 +4,35 @@ Apply the evidence, scope, test-design, verification, Git, and human-handoff req
 
 ## Skills
 
-Load these skills from the sibling `../ai-skills-archive` repository:
+Fetch these skills from their GitHub links:
 
 ### Shared
 
-- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md): `archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md`
-- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md): `archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md`
-- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md): `archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md`
-- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md): `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md`, including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md).
+- [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
+- [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
+- [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md)
+- [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md).
 
 ### Python / pytest
 
-- [python-testing](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md): `archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md`
+- [python-testing](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/affaan-m__ECC/snapshot/skills/python-testing/SKILL.md)
 
 ### Other languages
 
-- No language-specific archive skill is prescribed. Use the shared skills and the repository's established test tooling; do not substitute Python or pytest guidance.
+- No language-specific skill is prescribed. Use the shared skills and the repository's established test tooling; do not substitute Python or pytest guidance.
 
 ## Skill Handling Rule
 
 Before inspecting the target change in detail or using a skill:
 
-1. Record the target repository root so you can return to it, and use only repository metadata or changed file paths to identify applicable language categories.
-2. Run `cd ../ai-skills-archive` from the target repository root.
-3. Run `git pull --ff-only origin main`.
-4. Read every `SKILL.md` in the Shared section and every applicable language subsection completely. Also read `archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md` before using `no-ai-slop`.
-5. Return to the target repository root before inspecting or changing its files.
+1. Use only repository metadata or changed file paths to identify applicable language categories.
+2. Fetch and read every linked `SKILL.md` in the Shared section and every applicable language subsection completely from GitHub. Also fetch and read the linked `no-ai-slop` `eval.md` before using that skill.
 
-If the sibling repository is missing, the pull fails, a required skill cannot be read completely, or the required `eval.md` cannot be read, stop and report the blocker. Do not substitute remembered or remote skill content.
+Follow the linked procedures directly; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
 
-Use only the local skills listed in this prompt:
+If a required skill or its required `eval.md` cannot be fetched and read completely, stop and report the blocker. Do not substitute remembered or installed skill content.
+
+Use only this prompt's explicitly linked skills:
 
 - use `code-review-and-quality` to review the final test diff for correctness, readability, architecture, and unnecessary complexity,
 - use `source-driven-development` only when a test runner, framework, coverage tool, or extension API is version-sensitive or uncertain, and verify it against authoritative documentation,

@@ -90,7 +90,7 @@ If a task appears to require changing a source file, stop and ask instead of mod
 
 These are the main design constraints that define this repo:
 
-- No skill router. Each prompt lists its skills with explicit GitHub links, including required skill dependencies. Generated prompts must embed their complete skill links and handling rules; do not rely on installed slash commands or earlier prompt text.
+- No skill router. Each prompt lists its skills with explicit GitHub links, including required skill dependencies. Generated prompts must embed their complete skill links and handling rules. Fetch linked skills and required companions from GitHub; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -108,7 +108,7 @@ These are the main design constraints that define this repo:
 - Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
 - Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phase `09` may only verify and escalate a gap because its test-only scope forbids documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
-- Before using its skills, phase `09` must enter `../ai-skills-archive`, pull `origin/main` with `--ff-only`, read each shared and applicable language-specific local `SKILL.md` completely, and return to the target repository.
+- Before using its skills, phase `09` must fetch and completely read each shared and applicable language-specific `SKILL.md` and the required `no-ai-slop` evaluator from their GitHub links.
 - Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
 - Human review of the phase-`09` test diff is the terminal workflow step. Do not add another AI phase after it.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
@@ -150,7 +150,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
 9. `09_write_focused_tests_any_model.md`
    - Writes the smallest meaningful focused test set for the final branch state.
    - Is explicitly model- and language-agnostic and must not rely on vendor-specific behavior, tooling, or a language-specific framework outside its labeled guidance.
-   - Pulls and reads its relevant skills from the sibling `../ai-skills-archive` repository before using them.
+   - Fetches and completely reads its relevant skills and required evaluator from their GitHub links before using them.
    - Requires at least 85% coverage for new or changed lines.
    - Changes test files only and generates no downstream prompt or workflow artifact.
    - Hands the resulting test diff directly to a human reviewer, which ends the workflow.
@@ -291,7 +291,7 @@ Rules:
 - Keep phase prompt filenames zero-padded and phase-ordered.
 - Keep the consolidated pack guide at the repository-root `README.md`.
 - Keep prompts self-contained.
-- Preserve explicit GitHub skill links. Phase `09` also preserves its local archive loading procedure; GitHub paths identify the corresponding local files.
+- Preserve explicit GitHub skill links and require every phase to fetch its skills and required companions from them without a local skill repository prerequisite.
 - Preserve explicit artifact filenames.
 - Preserve the intended target model for each phase.
 - Avoid style-only rewrites that create diff noise without workflow benefit.
@@ -436,7 +436,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `Do not write tests`
 - `85% coverage`
 - `Use only the explicitly linked skills`
-- `Use only the local skills`
+- `Fetch and read`
 - `no-ai-slop`
 - `Documentation checkpoint`
 

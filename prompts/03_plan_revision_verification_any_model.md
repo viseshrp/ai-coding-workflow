@@ -12,7 +12,7 @@
 
 Use only this prompt's explicitly linked skills.
 
-Read each linked skill and required companion for this phase completely before use. Follow the linked procedures directly; do not rely on installed slash commands or earlier prompt text.
+Fetch and read each linked skill and required companion completely from its GitHub URL before use. Follow the linked procedures directly; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
 
 The prompt is the contract. The locked task artifact is the contract for execution. Skills are supporting procedures only.
 
