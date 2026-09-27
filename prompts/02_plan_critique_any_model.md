@@ -157,7 +157,7 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this planning-critique phase.
 - Run only focused existing tests or checks when repository evidence is needed; do not manually run the entire suite.
-- Require planning artifacts to defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Require planning artifacts to defer test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 - Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in this critique.
 
 ## Prompt
@@ -409,7 +409,7 @@ Also:
 - preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,
 - preserve or strengthen the artifact-metadata rule that all workflow-generated Markdown artifacts include `Created by`, `Created at`, and `Updated at`, preserving creation fields and refreshing `Updated at` on edits,
-- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, and the other workflow output Markdown files unless I explicitly ask for that,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and the other workflow output Markdown files unless I explicitly ask for that,
 - if the revised `EXECUTION_PROMPT.md` needs a fallback instruction for checking whether the current branch already has a pull request, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
 - preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 

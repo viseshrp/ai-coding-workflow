@@ -71,12 +71,12 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - Treat actual code and observable contracts as authoritative. Use planning and follow-up artifacts as context, not as substitutes for inspecting code.
 - Do not change production code, public APIs, documentation, dependency files, build files, test configuration, or coverage configuration.
 - Do not create or update a test plan, review, walkthrough, summary file, generated prompt, or any other workflow artifact. Coverage tools may create temporary output while running, but do not retain, stage, or commit that output.
-- Do not produce a prompt for another model, restart an AI review loop, or define another workflow phase.
+- Do not generate a downstream prompt or define another workflow phase. Phase `10` uses its checked-in prompt for an independent test audit.
 - Do not add or upgrade a dependency, plugin, or test framework.
 - Preserve backwards compatibility.
 - Stop and ask when expected behavior, scope, or repository reality conflicts with the task artifacts or user instructions.
 - Do not make assumptions to force a test to pass.
-- The resulting test diff will be reviewed directly by a human. That human review ends the workflow.
+- The resulting test diff will be audited in phase `10` by any capable repository-aware agent, then reviewed by a human after the audit passes.
 
 ### Documentation checkpoint
 
@@ -168,7 +168,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 
 - Review the final diff before staging.
 - Stage only intended test files and test-local support code with `git add`.
-- Do not stage or commit workflow-generated Markdown artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask.
+- Do not stage or commit workflow-generated Markdown artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask.
 - When test changes are needed, create one focused test commit unless separate logical test groups clearly justify more.
 - If fresh evidence proves that zero test changes are needed, do not create an empty commit.
 - Use a detailed commit message and description.
@@ -176,13 +176,13 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - Check whether the current branch already has a pull request.
 - Create a pull request if and only if one does not already exist. Use GitHub CLI (`gh`) as the fallback for checking.
 - Never create a duplicate pull request.
-- After the tests are verified and Git handling is complete, stop and hand the test diff to the human reviewer. Do not generate a downstream artifact or prompt.
+- After the tests are verified and Git handling is complete, stop and hand the test diff to phase `10`. Do not generate a downstream artifact or prompt.
 
 ## Prompt
 
 Role:
 
-- You are a capable repository-aware coding model performing the final focused test-writing phase for an existing implementation.
+- You are a capable repository-aware coding model performing the focused test-writing phase before an independent test audit.
 - Reason from repository evidence before editing.
 - Optimize for confidence per test, not test count or raw coverage.
 
@@ -191,7 +191,7 @@ Goal:
 - add the smallest meaningful test set for the behavior changed on the current branch,
 - demonstrate at least 85% coverage for new or changed lines,
 - leave the branch with focused passing verification and no unrelated changes,
-- hand only the resulting test-file changes to the human for final review.
+- hand only the resulting test-file changes to phase `10` for independent audit.
 
 Context to read before acting:
 
@@ -201,6 +201,7 @@ Context to read before acting:
 - existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `FOLLOWUP.md`, if present,
+- `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported test-only findings as correction input without editing or staging the artifact,
 - durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
 - relevant public documentation or source for test-runner, framework, coverage-tool, or extension APIs when their use is uncertain.
 
@@ -216,11 +217,11 @@ Success criteria:
 - no production or configuration files are changed,
 - no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
 - any intended test changes are committed and pushed, and a pull request is created only if missing,
-- the verified test diff is ready for direct human review with no later AI phase.
+- the verified test diff is ready for independent phase-`10` audit.
 
 Working method:
 
-1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, and installed extensions. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
+1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, installed extensions, and `TEST_AUDIT.md` when present. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
 2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
 3. Build a compact behavior-to-test matrix containing:
    - changed behavior or regression risk,
@@ -234,7 +235,7 @@ Working method:
 8. Review the finished tests for duplication, brittleness, excessive mocking, hidden global-state changes, oversized functions, and implementation coupling.
 9. Run focused test-file lint/static checks when available.
 10. If tests changed, review the diff, stage only intended test files, commit, push, and create a pull request only if the branch has none. If no test change is justified, do not create an empty commit.
-11. Remove only the temporary coverage output generated by this phase; do not delete pre-existing repository files. Then stop after a concise chat handoff to the human reviewer. Do not create another prompt, review artifact, walkthrough, plan, summary file, or workflow phase.
+11. Remove only the temporary coverage output generated by this phase; do not delete pre-existing repository files. Then stop after a concise chat handoff to the phase-`10` reviewer. Do not create another prompt, review artifact, walkthrough, plan, summary file, or workflow phase.
 
 Stop rules:
 
@@ -246,7 +247,7 @@ Stop rules:
 - Stop and ask if the 85% changed-line requirement cannot be measured or met without weakening the test or coverage configuration.
 - Otherwise, continue through implementation, focused verification, commit, push, and pull-request handling without waiting for step-by-step approval.
 
-## Final human-review handoff
+## Final test-audit handoff
 
 The repository output of this phase is the test diff only.
 
@@ -257,8 +258,8 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
-- any blocker or existing-test concern that was deliberately left unchanged.
+- any blocker, prior audit finding, or existing-test concern that was deliberately left unchanged.
 
-End with `Tests are ready for human review.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
+End with `Tests are ready for agent audit.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 
-Do not generate another prompt or suggest an automated follow-up phase. Do not claim changed-line coverage when only broader file/package coverage was measured.
+Do not generate another prompt. Phase `10` uses the checked-in `10_test_audit_any_model.md` prompt. Do not claim changed-line coverage when only broader file/package coverage was measured.

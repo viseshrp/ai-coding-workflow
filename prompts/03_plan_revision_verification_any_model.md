@@ -157,7 +157,7 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this plan-verification phase.
 - Run only focused existing tests or checks when repository evidence is needed; do not manually run the entire suite.
-- Verify that the planning artifacts defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Verify that the planning artifacts defer test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 - Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in this verification.
 
 ## Prompt

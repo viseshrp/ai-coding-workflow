@@ -42,7 +42,7 @@ If you change wording that changes behavior, you are changing product logic.
   - This repository-level maintenance guide.
 - `.gitattributes`
   - Text normalization; preserve LF-friendly text files.
-- `prompts/01_...md` through `prompts/09_...md`
+- `prompts/01_...md` through `prompts/10_...md`
   - Canonical phase prompts.
 - `sources/current_skill_set.txt`
   - Preserved historical skill inventory. Its name does not make it a current synchronization target.
@@ -98,20 +98,22 @@ These are the main design constraints that define this repo:
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - Any capable repo-aware model for exploration, critique, verification, execution, review fixes, the human walkthrough, follow-up implementation, and test writing.
-  - Claude Opus for planning, plan revision, and AI review.
+  - Any capable repo-aware model or agent for exploration, critique, verification, execution, review fixes, the human walkthrough, follow-up implementation, test writing, and the independent test audit.
+  - Claude Opus for planning, plan revision, and implemented-branch review.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
 - The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
-- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` unless the user explicitly asks for that.
-- Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phase `09` may only verify and escalate a gap because its test-only scope forbids documentation edits.
+- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md` unless the user explicitly asks for that.
+- Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phases `09` and `10` may only verify and escalate a gap because their scopes forbid documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must fetch and completely read each shared and applicable language-specific `SKILL.md` and the required `no-ai-slop` evaluator from their GitHub links.
 - Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
-- Human review of the phase-`09` test diff is the terminal workflow step. Do not add another AI phase after it.
-- Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
+- Phase `10` is a read-only independent test audit by any capable repository-aware agent. It must fetch and completely read the generic `test-audit` skill, its applicable Python or JavaScript/TypeScript sections, the other explicitly linked skills, and the required `no-ai-slop` evaluator.
+- Phase `10` may create or update only `TEST_AUDIT.md`. It must not edit code, tests, documentation, configuration, dependencies, Git state, or pull-request state.
+- Phase `10` routes test-only findings back to `09` and other findings to an authorized implementation or human-follow-up phase. Human review of the audited test diff is the terminal workflow step after phase `10` passes.
+- Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 
 ## Canonical Workflow Phases
 
@@ -153,7 +155,12 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Fetches and completely reads its relevant skills and required evaluator from their GitHub links before using them.
    - Requires at least 85% coverage for new or changed lines.
    - Changes test files only and generates no downstream prompt or workflow artifact.
-   - Hands the resulting test diff directly to a human reviewer, which ends the workflow.
+   - Hands the resulting test diff to phase `10` for independent audit.
+10. `10_test_audit_any_model.md`
+   - Reviews the final test diff and the production seams it requires.
+   - Is explicitly model- and language-agnostic, with Python and JavaScript/TypeScript guidance supplied by the linked generic `test-audit` skill.
+   - Remains read-only except for creating or updating `TEST_AUDIT.md`.
+   - Routes supported findings to the correct earlier phase and hands a passing audit to the human reviewer, which ends the workflow.
 
 Do not renumber these files casually.
 
@@ -186,7 +193,7 @@ Several sections are intentionally repeated across prompts. If you edit one, sea
 
 ### `## Skill Handling Rule`
 
-Present in all prompt files `01` through `09`.
+Present in all prompt files `01` through `10`.
 
 Expectation:
 
@@ -198,7 +205,7 @@ Expectation:
 
 `no-ai-slop` is required in:
 
-- every checked-in phase prompt from `01` through `09`,
+- every checked-in phase prompt from `01` through `10`,
 - the generated Opus planning prompt specified by `01`,
 - the generated execution prompt specified by `01`,
 - the generated Opus revision prompt specified by `02`,
@@ -218,6 +225,7 @@ Present in:
 - `prompts/06_opus_refresh_review_and_walkthrough.md`
 - `prompts/08_implement_human_followup_any_model.md`
 - `prompts/09_write_focused_tests_any_model.md`
+- `prompts/10_test_audit_any_model.md`
 
 Expectation:
 
@@ -227,17 +235,19 @@ Expectation:
 - Keep implementation requirements aligned with review criteria: compatibility priority, justified dependencies, idiomatic code, readable types, string-transformation examples, and scope-limited regression and meta-content checks. Embed applicable requirements in generated execution/fix prompts and phase `08`; preserve the existing exceptions and test-authoring boundaries. Verify the actual generated contracts before handoff rather than relying on the producer instructions alone.
 - `01` includes the downstream Engineering Contract for the generated planning prompt to embed in `EXECUTION_PROMPT.md`; keep that complete contract synchronized too.
 - `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
+- `10` uses a read-only audit contract; preserve its prohibition on code, test, documentation, configuration, dependency, Git, and pull-request mutations.
 
 The `### Tests` subsection is deliberately phase-specific:
 
 - phases `01`, `02`, `03`, `05`, and `08` state only the no-authoring boundary and defer detailed test policy to `09`,
 - phases `04` and `06` carry concise review-only test criteria,
 - phase `09` owns the complete test-authoring contract,
+- phase `10` owns the independent test-value audit and finding-routing contract,
 - do not copy phase `09`'s detailed test-framework or language-specific rules back into every Engineering Contract.
 
 ### Documentation checkpoint
 
-Documentation is a cross-phase completion gate. Keep a named documentation-checkpoint rule in every checked-in prompt and every generated downstream prompt. Planning, critique, review, verification, and the human walkthrough must identify the documentation impact and require an explicit update-or-not-applicable result; implementation, fix, and follow-up phases must complete and validate applicable durable documentation in the same change set. Phase `09` must verify that prior documentation checkpoints passed and stop/escalate if they did not, without editing documentation.
+Documentation is a cross-phase completion gate. Keep a named documentation-checkpoint rule in every checked-in prompt and every generated downstream prompt. Planning, critique, review, verification, and the human walkthrough must identify the documentation impact and require an explicit update-or-not-applicable result; implementation, fix, and follow-up phases must complete and validate applicable durable documentation in the same change set. Phases `09` and `10` must verify that prior documentation checkpoints passed and stop/escalate if they did not, without editing documentation.
 
 ### Combined planning artifact policy
 
@@ -259,6 +269,7 @@ The review/fix/human-review portion relies on a stable artifact chain:
 - `REVIEW_FIX_PROMPT.md`
 - `REVIEW_FIX_VERIFICATION.md`
 - `FOLLOWUP.md`
+- `TEST_AUDIT.md`
 
 If you rename or materially redefine one of these, update every downstream consumer prompt.
 
@@ -354,7 +365,7 @@ Rules:
 - Do not collapse human approval gates.
 - Do not weaken scope-control instructions accidentally.
 - Do not generate runtime workflow artifacts in the repo unless the user explicitly asks for them.
-- Do not add a generated prompt, review loop, or workflow artifact after phase `09`; only human review of its tests follows.
+- Do not add a generated prompt after phase `09`. Phase `10` uses its checked-in prompt and may create only `TEST_AUDIT.md`; only human review follows a passing audit.
 - Do not treat `archived/` as the primary editable surface.
 - Do not rename prompts just for aesthetics.
 
@@ -403,6 +414,7 @@ Also check:
 - `07_human_code_walkthrough.md`,
 - `08_implement_human_followup_any_model.md`,
 - `09_write_focused_tests_any_model.md`,
+- `10_test_audit_any_model.md`,
 - references to `FOLLOWUP.md`,
 - explicit approval wording around `AGREE`.
 
@@ -410,7 +422,7 @@ Also check:
 
 Before finishing a change, verify:
 
-- the repo has the expected `01` through `09` prompt set,
+- the repo has the expected `01` through `10` prompt set,
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
 - skill references are consistent where intended,
@@ -432,12 +444,14 @@ When making non-trivial changes, search for these strings before finalizing:
 - `REVIEW.md`
 - `WALKTHROUGH.md`
 - `FOLLOWUP.md`
+- `TEST_AUDIT.md`
 - `DO NOT MAKE ASSUMPTIONS`
 - `Do not write tests`
 - `85% coverage`
 - `Use only the explicitly linked skills`
 - `Fetch and read`
 - `no-ai-slop`
+- `test-audit`
 - `Documentation checkpoint`
 
 ## Default Agent Posture In This Repo

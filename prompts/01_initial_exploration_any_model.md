@@ -486,7 +486,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,
@@ -657,7 +657,7 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this phase.
 - Run only focused existing tests or checks when needed for verification; do not manually run the entire suite.
-- The generated planning and execution prompts must defer test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- The generated planning and execution prompts must defer test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 - Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in generated prompts for earlier phases.
 
 Before finishing, the generated prompt must instruct Opus to verify that:

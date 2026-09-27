@@ -159,7 +159,7 @@ The following typing coverage is a hard requirement:
 - Do not create, modify, or delete tests in this review-fix verification phase.
 - Run only focused existing tests or checks needed to verify the fixes; do not manually run the entire suite.
 - Verify test-related fixes against the accepted `REVIEW.md` finding and focused evidence; do not introduce a new test policy here.
-- Defer new test authoring and the detailed test contract to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Defer new test authoring and the detailed test contract to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 
 ## Prompt
 

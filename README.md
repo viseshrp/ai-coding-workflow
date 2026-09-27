@@ -1,8 +1,8 @@
 # AI Coding Workflow
 
-A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, and focused tests.
+A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, focused tests, and an independent test audit.
 
-Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, and `REVIEW.md` belong in the target repository root.
+Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `TEST_AUDIT.md` belong in the target repository root.
 
 ## Workflow
 
@@ -29,7 +29,10 @@ flowchart TD
     Q -- "yes" --> R["08 Implementation model implements FOLLOWUP.md"]
     Q -- "no" --> S["09 Write minimal focused tests"]
     R --> S
-    S --> T["Human reviews the test diff; workflow ends"]
+    S --> T["10 Independent test audit"]
+    T -- "test-only changes" --> S
+    T -- "production or documentation changes" --> P
+    T -- "audit passes" --> U["Human reviews the audited test diff; workflow ends"]
 ```
 
 Generated prompt artifacts are the only prompt input for their handoff:
@@ -53,7 +56,8 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 | 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md` |
 | 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed |
 | 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Approved follow-up changes |
-| 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by human review |
+| 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by phase-10 audit |
+| 10 | [Independent test audit](prompts/10_test_audit_any_model.md) | Any capable repo-aware agent | `TEST_AUDIT.md`, followed by human review after approval |
 
 The main Opus planning pass, Opus plan-revision pass, locked implementation pass, and review-fix pass use generated prompts, so they do not have separate checked-in phase files.
 
@@ -69,7 +73,8 @@ The main Opus planning pass, Opus plan-revision pass, locked implementation pass
 8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a code mindmap and success/error flows in chat; discuss small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep these visuals in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
-11. Human-review the resulting test diff. Do not start another AI phase or create another workflow artifact.
+11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes through the human approval and follow-up path before repeating `09` and `10`.
+12. Human-review the audited test diff after phase `10` passes.
 
 You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
 
@@ -84,7 +89,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
 - Do not stage or commit workflow-generated Markdown artifacts unless explicitly requested.
 - Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
-- Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phase 09 verifies this status but cannot edit documentation.
+- Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phases `09` and `10` verify this status but cannot edit documentation.
 - Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
 
 ## Artifact Chain
@@ -104,8 +109,9 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `REVIEW_FIX_PROMPT.md` | 04 | Review-fix pass |
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
 | `FOLLOWUP.md` | 07 | 08 |
+| `TEST_AUDIT.md` | 10 | Human reviewer; 09 when test-only findings require another pass |
 
-Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Human review of the test diff ends the workflow.
+Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Prompt 10 then performs a read-only audit, writes only `TEST_AUDIT.md`, and routes supported findings to the correct earlier phase. Human review of the audited test diff ends the workflow after phase 10 passes.
 
 ## Core Design
 
@@ -114,9 +120,9 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - Main implementation, review fixes, and human follow-up receive the same applicable engineering requirements used in review. Generated execution and fix prompts are checked for complete contracts before handoff; planning critique and verification block incomplete execution prompts.
 - No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
 - The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
-- Claude Opus is reserved for planning, revision, and AI review. Every other model-run phase accepts any capable repository-aware model.
+- Claude Opus is reserved for planning, revision, and implementation review. Every other model-run phase accepts any capable repository-aware model or agent.
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
-- The final automated phase adds the smallest meaningful focused test set. A human reviews those tests, and the workflow ends without another prompt or artifact.
+- Phase 09 adds the smallest meaningful focused test set. The final automated phase independently audits those tests before human review.
 
 ## Documentation Checkpoints
 
@@ -125,7 +131,7 @@ Documentation follows the same gate discipline as code and verification:
 - Planning phases identify the durable user-, operator-, API-, configuration-, and developer-facing documentation affected by every implementation step, or explain why none applies.
 - Implementation, review-fix, and human-follow-up phases update and validate the affected documentation in the same change set before they mark the step complete.
 - Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
-- Phase 09 remains test-file-only. It must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
+- Phases 09 and 10 must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
 
 ## Testing Policy
 
@@ -136,14 +142,14 @@ Earlier phases may inspect or run focused tests, but they do not author tests. P
 - follow the repository's existing test-framework configuration and reuse its fixtures, native APIs, and installed extensions instead of hand-rolled test infrastructure,
 - never patch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
 - reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
-- change test files only, then hand the test diff directly to a human without another prompt or workflow artifact.
+- change test files only, then hand the test diff to phase 10 without generating another prompt or workflow artifact.
 
 ### Language-specific testing guidance
 
 - **Python / pytest:** follow the existing pytest configuration and reuse fixtures, native APIs, and installed plugins instead of hand-rolled Python or standard-library mechanisms. Use `monkeypatch` for external collaborators when it fits; never monkeypatch the subject under test.
 - **Other languages:** follow the repository's established test runner, framework conventions, and installed extensions. Do not introduce or migrate a test framework during phase 09.
 
-The full policy, skill loading from GitHub, stop rules, and verification contract are in [phase 09](prompts/09_write_focused_tests_any_model.md).
+The full test-authoring policy is in [phase 09](prompts/09_write_focused_tests_any_model.md). The independent value, duplication, brittleness, and test-seam audit is in [phase 10](prompts/10_test_audit_any_model.md).
 
 ## Skills
 
@@ -154,6 +160,8 @@ Skills support the workflow; they do not widen scope or override prompt constrai
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Every phase fetches skills and required companions from their GitHub links without depending on a local skill repository or installation.
 
 Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
+
+Phase 10 also uses the repository-maintained [test-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/skills/test-audit/SKILL.md) skill. It applies a language-neutral value bar with separate Python and JavaScript/TypeScript guidance and remains read-only under the phase prompt.
 
 ## Repository Layout
 
@@ -171,6 +179,7 @@ Every checked-in phase and every generated downstream prompt must use [no-ai-slo
 |   +-- 07_human_code_walkthrough.md
 |   +-- 08_implement_human_followup_any_model.md
 |   +-- 09_write_focused_tests_any_model.md
+|   +-- 10_test_audit_any_model.md
 +-- sources/
 |   +-- current_skill_set.txt
 |   +-- original_scrappy_prompts.txt
@@ -194,6 +203,7 @@ Every checked-in phase and every generated downstream prompt must use [no-ai-slo
 - Start at 07 when the AI loop is complete and human review should begin.
 - Start at 08 when `FOLLOWUP.md` already contains only approved work.
 - Start at 09 when the final branch behavior is ready for focused tests.
+- Start at 10 when the final test diff is ready for an independent audit.
 
 ## Maintenance
 

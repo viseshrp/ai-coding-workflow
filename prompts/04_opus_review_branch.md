@@ -158,7 +158,7 @@ The following typing coverage is a hard requirement:
 - Do not create, modify, or delete tests in this review phase.
 - Run only focused existing tests or checks needed to substantiate findings; do not manually run the entire suite.
 - Review existing or changed tests under the phase-specific test-review rules below.
-- Defer all test authoring to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Defer all test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 
 ## Prompt
 
@@ -497,7 +497,7 @@ Focused verification:
 - run focused verification relevant to the fixes,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,

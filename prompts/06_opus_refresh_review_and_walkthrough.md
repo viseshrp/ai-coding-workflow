@@ -159,7 +159,7 @@ The following typing coverage is a hard requirement:
 - Run only focused existing tests or checks needed to support the refreshed review; do not manually run the entire suite.
 - Review tests for the smallest nonduplicative behavior-focused set, one clear behavior per test, small readable functions and helpers, existing test-framework fixtures and native APIs instead of hand-rolled test infrastructure, limited boundary mocking, deterministic isolation, and at least 85% coverage for new or changed lines.
 - Flag implementation coupling, patching or mocking the subject under test itself, unscoped global-state mutation, fragile message or layout assertions, mirrored production logic, and coverage-only tests.
-- Defer new test authoring and the detailed test-framework-specific contract to the final model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Defer new test authoring and the detailed test-framework-specific contract to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
 
 #### Python / pytest
 
