@@ -137,8 +137,9 @@ Documentation follows the same gate discipline as code and verification:
 
 Earlier phases may inspect or run focused tests, but they do not author tests. Prompt 09 owns the complete test-writing contract:
 
-- write the fewest nonduplicative tests that cover changed behavior and material regression risks,
-- keep tests behavior-focused, deterministic, isolated, and small enough to read linearly,
+- write the fewest nonduplicative tests for uncovered changed behavior and material regression risks; a bug fix alone does not justify a new regression test,
+- prefer extending existing tests and consolidating trivial tests of the same behavior when assertions and failure diagnostics stay clear,
+- keep tests behavior-focused, deterministic, isolated, and small enough to read linearly; reject tautological or self-testing tests and change detectors that freeze implementation details without an observable contract,
 - follow the repository's existing test-framework configuration and reuse its fixtures, native APIs, and installed extensions instead of hand-rolled test infrastructure,
 - never patch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
 - reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
