@@ -61,6 +61,19 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 
 The main Opus planning pass, Opus plan-revision pass, locked implementation pass, and review-fix pass use generated prompts, so they do not have separate checked-in phase files.
 
+## Optional Independent Phases
+
+These phases run only when explicitly requested. Their numbers identify standalone prompts; they are not steps after `10`, prerequisites for the main workflow, or substitutes for its approval gates. The main workflow still ends with human review of the audited test diff.
+
+| Phase | Prompt | Model / role | Result |
+|---|---|---|---|
+| 11 | [Repository complexity audit](prompts/11_optional_complexity_audit_any_model.md) | Any capable repo-aware agent | Read-only findings in chat; no file or Git changes |
+| 12 | [UI prototyping](prompts/12_optional_ui_prototyping_any_model.md) | Any capable repo-aware model with a human | Isolated previews under `.ui-prototypes/<slug>/` and `UI_PROTOTYPE.md`; explicit human selection before planning |
+
+Use `11` to inspect repository complexity, including backend code. It uses `ponytail-audit` and its `ponytail-review` companion, ranks supported findings by maintenance benefit and risk, and checks callers and contracts before recommending deletion. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
+
+Use `12` when choosing between UI directions before locking a plan. It uses `prototype`, its required `PICKER.md`, and `emil-design-eng` for isolated web UI variants. It creates no production changes, tests, dependencies, commits, or pull requests. A native UI request needs a compatible approach agreed before construction. A selected variant and `UI_PROTOTYPE.md` become context for `01`; selection does not authorize production integration. Keep previews available through selection and plan their cleanup explicitly.
+
 ## How to Run It
 
 1. Open the target code repository in a repo-aware agent UI. Keep this prompt pack available only as the instruction source.
@@ -110,6 +123,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
 | `FOLLOWUP.md` | 07 | 08 |
 | `TEST_AUDIT.md` | 10 | Human reviewer; 09 when test-only findings require another pass |
+| `UI_PROTOTYPE.md` | Optional 12 | Human selection; 01 when planning is requested |
 
 Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Prompt 10 then performs a read-only audit, writes only `TEST_AUDIT.md`, and routes supported findings to the correct earlier phase. Human review of the audited test diff ends the workflow after phase 10 passes.
 
@@ -163,6 +177,8 @@ Each prompt carries the full GitHub links for its applicable skills and companio
 
 UI skills do not authorize prototypes, development toggles, extra reports, dependencies, or a new workflow phase. Phase 09 alone may author test-local fixtures. Keep UI evidence in existing artifacts or chat, and identify observed behavior, code-only conclusions, and required browser or device checks still pending. Preserve documentation checkpoints, `AGREE`, `RESOLVE`, and the final human approval gates.
 
+The isolated preview and `UI_PROTOTYPE.md` in optional phase `12` are the only prototype exception. This exception applies only when that phase is explicitly requested; the other phases retain their existing UI restrictions. Prototype sample data stays local to the preview and does not authorize shared test fixtures. Optional phase `11` applies only the complexity evidence bar to UI code and adds no visual audit or UI skill downloads.
+
 ## Documentation Checkpoints
 
 Documentation follows the same gate discipline as code and verification:
@@ -171,6 +187,8 @@ Documentation follows the same gate discipline as code and verification:
 - Implementation, review-fix, and human-follow-up phases update and validate the affected documentation in the same change set before they mark the step complete.
 - Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
 - Phases 09 and 10 must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
+
+Optional phase `11` identifies the documentation impact of proposed changes in chat without editing files. Optional phase `12` records the selected design's documentation impact, planned validation, or evidence-based `Not applicable` decision in `UI_PROTOTYPE.md`; durable documentation changes wait for authorized implementation.
 
 ## Testing Policy
 
@@ -220,6 +238,8 @@ Phase 10 also uses the repository-maintained [test-audit](https://github.com/vis
 |   +-- 08_implement_human_followup_any_model.md
 |   +-- 09_write_focused_tests_any_model.md
 |   +-- 10_test_audit_any_model.md
+|   +-- 11_optional_complexity_audit_any_model.md
+|   +-- 12_optional_ui_prototyping_any_model.md
 +-- sources/
 |   +-- current_skill_set.txt
 |   +-- original_scrappy_prompts.txt
@@ -244,6 +264,8 @@ Phase 10 also uses the repository-maintained [test-audit](https://github.com/vis
 - Start at 08 when `FOLLOWUP.md` already contains only approved work.
 - Start at 09 when the final branch behavior is ready for focused tests.
 - Start at 10 when the final test diff is ready for an independent audit.
+- Run optional 11 only when a repository complexity audit is requested.
+- Run optional 12 only when UI prototypes are requested before planning.
 
 ## Maintenance
 

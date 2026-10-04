@@ -43,7 +43,9 @@ If you change wording that changes behavior, you are changing product logic.
 - `.gitattributes`
   - Text normalization; preserve LF-friendly text files.
 - `prompts/01_...md` through `prompts/10_...md`
-  - Canonical phase prompts.
+  - Canonical main-workflow phase prompts.
+- `prompts/11_optional_complexity_audit_any_model.md` and `prompts/12_optional_ui_prototyping_any_model.md`
+  - Independent opt-in phases; their numbers do not extend the main workflow after phase `10`.
 - `sources/current_skill_set.txt`
   - Preserved historical skill inventory. Its name does not make it a current synchronization target.
 - `sources/original_scrappy_prompts.txt`
@@ -162,6 +164,22 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Remains read-only except for creating or updating `TEST_AUDIT.md`.
    - Routes supported findings to the correct earlier phase and hands a passing audit to the human reviewer, which ends the workflow.
 
+### Optional independent phases
+
+11. `11_optional_complexity_audit_any_model.md`
+    - Runs only on an explicit repository complexity-audit request, including backend work.
+    - Uses `ponytail-audit` and its `ponytail-review` companion to produce evidence-backed findings in chat.
+    - Remains read-only, including files, documentation, Git, and pull-request state. Creates no report artifact or downstream prompt.
+    - Ranks findings by maintenance benefit, confidence, and risk; selected findings return to `01` or the existing human-approval path before implementation.
+12. `12_optional_ui_prototyping_any_model.md`
+    - Runs only on an explicit UI-prototyping request before planning; does not follow phase `10`.
+    - Uses `prototype`, its required `PICKER.md`, and `emil-design-eng` for isolated web UI variants. Resolve a compatible approach before building native UI prototypes.
+    - May write only owned preview files under `.ui-prototypes/<slug>/` and `UI_PROTOTYPE.md` in the target repository root. Does not change production code, tests, durable documentation, dependencies, configuration, Git, or pull-request state.
+    - Requires browser evidence and explicit human selection. Keeps selection pending when no choice was made, and verification pending when required checks could not run.
+    - Hands the selected direction and `UI_PROTOTYPE.md` to `01` when planning is requested. Selection does not authorize production integration or automatic cleanup.
+
+These phases are optional entry points, not a continuation of the main workflow. Human review after a passing phase `10` remains terminal. Keep the two independent phases out of the main workflow's sequential diagram and required run instructions. Phase `12` is exploration, so the execution-phase commit, push, and PR requirements do not apply to it. Keep prototype files and `UI_PROTOTYPE.md` out of later commits unless explicitly requested.
+
 Do not renumber these files casually.
 
 If a new phase is added, preserve the numbered sequence and update all places that enumerate the prompt list.
@@ -193,7 +211,7 @@ Several sections are intentionally repeated across prompts. If you edit one, sea
 
 ### `## Skill Handling Rule`
 
-Present in all prompt files `01` through `10`.
+Present in all prompt files `01` through `12`.
 
 Expectation:
 
@@ -205,7 +223,7 @@ Expectation:
 
 `no-ai-slop` is required in:
 
-- every checked-in phase prompt from `01` through `10`,
+- every checked-in phase prompt from `01` through `12`,
 - the generated Opus planning prompt specified by `01`,
 - the generated execution prompt specified by `01`,
 - the generated Opus revision prompt specified by `02`,
@@ -226,6 +244,8 @@ Present in:
 - `prompts/08_implement_human_followup_any_model.md`
 - `prompts/09_write_focused_tests_any_model.md`
 - `prompts/10_test_audit_any_model.md`
+- `prompts/11_optional_complexity_audit_any_model.md`
+- `prompts/12_optional_ui_prototyping_any_model.md`
 
 Expectation:
 
@@ -236,6 +256,7 @@ Expectation:
 - `01` includes the downstream Engineering Contract for the generated planning prompt to embed in `EXECUTION_PROMPT.md`; keep that complete contract synchronized too.
 - `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
 - `10` uses a read-only audit contract; preserve its prohibition on code, test, documentation, configuration, dependency, Git, and pull-request mutations.
+- `11` uses a fully read-only complexity-audit contract with chat-only output. `12` uses an isolated exploration contract with only its named preview files and `UI_PROTOTYPE.md` writable; preserve the production, test, dependency, configuration, and Git boundaries.
 
 The `### Tests` subsection is deliberately phase-specific:
 
@@ -268,6 +289,8 @@ Keep UI guidance in a separate `## UI work only` section in every checked-in pha
 - Preserve existing design decisions, tokens, platform support, dependency approval, and output formats. Apply web guidance only to web UI. Do not promote recipe values or aesthetic preferences to automatic blockers; verify version-sensitive APIs and performance claims.
 - Override upstream prototype, development-toggle, fixture-retention, separate-report, and alternate-plan workflows. Phase `09` alone may author test-local fixtures; UI guidance must not expand another phase's write permissions or bypass `AGREE`, `RESOLVE`, or the final go-ahead.
 - Verify that generated planning, revision, execution, and review-fix prompts carry complete conditional UI sections, including activation, links, companions, limits, and verification requirements. Record observed behavior separately from code-only conclusions and required browser or device checks still pending.
+
+Optional phase `12` is the only exception to the prototype prohibition. Keep its explicit activation, isolated directory, synthetic sample data, named `UI_PROTOTYPE.md` artifact, browser verification, selection gate, and planning handoff self-contained. Do not copy this write permission into `01` through `10` or `11`. Prototype sample data is not authorization to author shared test fixtures. Override the upstream prototype skill's automatic promotion and cleanup steps: user selection records a design choice, and production integration remains subject to planning and execution gates. Phase `11` has no UI skill downloads and applies only its complexity evidence bar to in-scope UI code.
 
 ### Combined planning artifact policy
 
@@ -443,6 +466,7 @@ Also check:
 Before finishing a change, verify:
 
 - the repo has the expected `01` through `10` prompt set,
+- independent prompts `11` and `12` are present, explicitly optional, and do not extend the terminal phase-10 workflow,
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
 - skill references are consistent where intended,
