@@ -213,13 +213,17 @@ The full test-authoring policy is in [phase 09](prompts/09_write_focused_tests_a
 
 Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
 
-Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [show-me](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) for chat-only walkthrough visuals; no installation is required.
+Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md) for chat-only walkthrough visuals; no installation is required.
 
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Every phase fetches skills and required companions from their GitHub links without depending on a local skill repository or installation.
 
 Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
 
 Phase 10 also uses the repository-maintained [test-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/skills/test-audit/SKILL.md) skill. It applies a language-neutral value bar with separate Python and JavaScript/TypeScript guidance and remains read-only under the phase prompt.
+
+Skill procedures, evaluators, and companion resources must come from `viseshrp/ai-skills-archive`, including relative references embedded in a skill. Do not substitute upstream or official-source skill copies when an archived file is missing. Report the missing path instead. This does not replace the target-library API/version documentation required by the Engineering Contract.
+
+The explicit companion links include `eval.md`, the idea-refinement frameworks, rubric, and examples, the Definition of Done, security and performance checklists and patterns, stack-discovery testing guidance, `CATALOG.md`, `RECIPES.md`, `STANDARDS.md`, and `PICKER.md`. Follow only procedures applicable to the current phase; preserve UI activation, test-authoring limits, and named artifacts. Optional bootstrap scripts, separate skill workflows, and provenance-only links do not activate extra work. Generated prompts must carry the same archive-only source rule and complete applicable links.
 
 ## Repository Layout
 

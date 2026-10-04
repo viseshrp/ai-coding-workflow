@@ -10,6 +10,10 @@ UI skills and their required companions are listed in `## UI work only`.
 
 ## Skill Handling Rule
 
+Fetch skill procedures and their required companions only from `https://github.com/viseshrp/ai-skills-archive`. Resolve relative resource references to the explicitly linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy. If a required archive resource is absent or unreadable, stop and report its exact missing path. Keep optional related-skill mentions and provenance links inactive unless this prompt explicitly authorizes the procedure. Target-library API and version documentation remains governed by the Engineering Contract; it is not a substitute source for skill material.
+
+Use linked companions within this phase's scope. Skip UI-only sections for backend work, preserve the test-authoring boundary and named outputs, and do not run optional bootstrap scripts. When `spec-driven-development` is explicitly linked, use only its specification and planning procedures; do not invoke its implementation-stage skills. When this phase generates a downstream prompt, embed this archive-only rule, every applicable explicit skill and companion link, and the same scope limits.
+
 Use only this prompt's explicitly linked skills. Fetch and read each applicable skill and required companion completely from its GitHub URL before use. Do not depend on local skill repositories, installed slash commands, or earlier prompt text. If a required file cannot be fetched and read completely, stop and report the blocker.
 
 Apply the activation rules in `## UI work only` to conditional UI skill links. Skip those links when UI work is out of scope. Keep all other required skill loading unchanged.

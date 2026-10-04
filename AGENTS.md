@@ -219,6 +219,12 @@ Expectation:
 - The exact phrasing can vary slightly only if the phase genuinely requires it.
 - Do not weaken the rule in one phase without a deliberate reason.
 
+### Archive-only skill dependencies
+
+All executable skill references and required companions must use explicit links into `https://github.com/viseshrp/ai-skills-archive`, including evaluators, checklists, patterns, examples, and procedures referenced by another skill. Verify archived paths and dependency links before handoff; resolve relative resource references to their archive copies. If a required resource is missing, report the exact path and stop rather than fetching an upstream or official-source replacement. Keep source metadata and optional related-skill mentions inactive. This source rule governs skill material, not the target-library API/version documentation already required by the Engineering Contract.
+
+Keep dependency loading separate from permission to act: companions do not authorize test writing outside `09`, implementation during review, optional bootstrap scripts, new artifacts, or unrelated hardening or optimization work. Apply UI-only reference sections only when UI work is active. Generated prompts must carry the complete applicable archive links, dependency scope limits, and archive-only handling rule.
+
 ### Universal plain-language skill
 
 `no-ai-slop` is required in:
