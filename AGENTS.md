@@ -255,6 +255,10 @@ Keep the general Simplicity and reuse procedure aligned across all phases and ge
 
 Preserve readability, compatibility, validation, security, and verification over line-count reductions. These are embedded rules derived from Ponytail, not authorization to activate its persistent mode, weaken test requirements, add production assertion demos, or create debt markers or ledgers. Keep provenance in `README.md`.
 
+### Simplification limits and improvement claims
+
+Keep these rules aligned across all phases and generated downstream prompts. Planning must record the rationale, known material limit, and evidence-based revisit trigger for a deliberate simplification. Authorized implementation carries applicable limits into existing durable documentation; review, verification, and audit phases check them through the documentation checkpoint without expanding write permissions. Require comparable before-and-after evidence for latency, memory, or cost improvement claims, identifying the baseline, changed version, workload, measurement method, and relevant environment. Label unsupported expectations `unmeasured`. Do not add comment markers, ledgers, benchmark infrastructure, or workflow artifacts to satisfy these rules.
+
 ### UI work only
 
 Keep UI guidance in a separate `## UI work only` section in every checked-in phase and every generated downstream prompt. Enable it only for tasks or reviewed changes involving UI behavior, layout, presentation, or interaction. Backend-only work must skip the section and its skill downloads, questions, checks, and reporting. UI consumers of a backend service do not by themselves activate it.
