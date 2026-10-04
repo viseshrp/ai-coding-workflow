@@ -124,6 +124,41 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
 - Phase 09 adds the smallest meaningful focused test set. The final automated phase independently audits those tests before human review.
 
+## Simplicity and Reuse
+
+Every phase applies a simplicity and reuse procedure to backend and UI work within its existing permissions:
+
+- inspect existing code, standard-library capabilities, native platform features, and installed dependencies before proposing custom code,
+- justify new abstractions and dependencies by current requirements or necessary ownership boundaries,
+- trace relevant callers before choosing a bug-fix location and verify references and contracts before proposing deletion,
+- preserve readability, compatibility, validation, security, and verification; fewer lines are not an acceptance criterion.
+
+These rules draw from [Ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md) and [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md). The rules are embedded in the prompts; these provenance links do not activate either skill. Persistent modes, line-count scoring, production assertion demos, test quotas, debt markers, and separate ledgers are excluded. Existing scope, dependency approval, and test-phase boundaries still apply.
+
+## UI Work Only
+
+Every checked-in phase and generated downstream prompt has a separate `## UI work only` section. Enable it only when the task or reviewed change includes UI behavior, layout, presentation, or interaction. Backend-only work skips the section, including its skill downloads, questions, checks, and reporting. A backend service having UI consumers does not by itself enable it.
+
+| Stage | UI requirements when applicable |
+|---|---|
+| 01 and generated planning | Resolve data and state cases, keyboard and touch behavior, motion purpose, acceptance checks, and documentation impact. |
+| 02, generated revision, and 03 | Critique and verify those decisions and the complete conditional UI contract in the actual execution prompt. |
+| Generated execution, review fixes, and 08 | Implement approved UI behavior with existing components and tokens; verify interactions using existing facilities and report required checks still pending. |
+| 04 through 07 | Review changed behavior, verify accepted fixes, refresh evidence, and conduct independent human review under the existing approval gates. |
+| 09 and 10 | Write and independently audit the smallest meaningful behavior tests; distinguish automated proof from visual or device checks. |
+
+The conditional skill set comes from the archived [Emil Kowalski collection](https://github.com/viseshrp/ai-skills-archive/tree/main/archives/emilkowalski__skills/snapshot/skills):
+
+- `emil-design-eng` for web UI design decisions and `animation-vocabulary` when a requested motion effect needs clarification,
+- `break-ui` with `CATALOG.md` for applicable realistic data and state cases, using its analysis only,
+- `animate` with `RECIPES.md` for web motion construction, with `pick-ui-library` only when that work requires selecting a UI primitive,
+- `review-animations` with `STANDARDS.md` for changed web motion,
+- `mobile-native` for mobile-web behavior.
+
+Each prompt carries the full GitHub links for its applicable skills and companions. Web-specific guidance applies only to web UI. Existing design decisions and tokens take precedence over recipe values; aesthetic preferences do not become required fixes without evidence of a defect or contract mismatch. Verify version-sensitive APIs and performance claims against the target stack.
+
+UI skills do not authorize prototypes, development toggles, extra reports, dependencies, or a new workflow phase. Phase 09 alone may author test-local fixtures. Keep UI evidence in existing artifacts or chat, and identify observed behavior, code-only conclusions, and required browser or device checks still pending. Preserve documentation checkpoints, `AGREE`, `RESOLVE`, and the final human approval gates.
+
 ## Documentation Checkpoints
 
 Documentation follows the same gate discipline as code and verification:

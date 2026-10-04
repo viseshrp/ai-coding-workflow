@@ -10,6 +10,8 @@
 
 ## Skill Handling Rule
 
+Apply the activation and skill-loading rules in `## UI work only` to all UI skill links, including generated-prompt templates. Skip those links when UI work is out of scope. Keep all other required skill loading unchanged.
+
 Use only this prompt's explicitly linked skills.
 
 Fetch and read each linked skill and required companion completely from its GitHub URL before use. Follow the linked procedures directly; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
@@ -96,6 +98,16 @@ Apply this contract during planning, execution, review, and review fixes.
 - If changes reinvent or duplicate something already in the source code, stop and flag it.
 - Do not hardcode numbers, versions, or other constants. Reuse existing constants, or create new constants in the right places and reuse them appropriately.
 
+### Simplicity and reuse
+
+Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
+
+- Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
+- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
+- Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
+
 ### Types
 
 - When adding types, use correct ones.
@@ -159,6 +171,32 @@ The following typing coverage is a hard requirement:
 - Run only focused existing tests or checks needed to substantiate findings; do not manually run the entire suite.
 - Review existing or changed tests under the phase-specific test-review rules below.
 - Defer all test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
+
+## UI work only
+
+Enable this section only when the approved task or reviewed change includes UI behavior, layout, presentation, or interaction. In phases that review or write tests, determine applicability from the changed production behavior. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
+
+Fetch and completely read only the applicable skills and companions explicitly linked in this section from GitHub before using them. These conditional links are exempt from unconditional skill-fetch instructions elsewhere in the prompt. If an applicable required file cannot be read completely, stop and report the blocker. Apply web-specific guidance only to web UI; do not impose CSS, React, browser, or mobile-web conventions on another UI stack.
+
+### Conditional UI skills
+
+- For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
+- For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the limits below.
+- When reviewing changed web motion: [review-animations](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/review-animations/SKILL.md) and its required [STANDARDS.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/review-animations/STANDARDS.md).
+- When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
+
+### UI skill limits
+
+- Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
+- Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
+- Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
+- Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add a new artifact or override `no-ai-slop` and its evaluator.
+
+### Phase requirements
+
+- Inspect the changed UI and relevant existing behavior against approved requirements or, if planning artifacts are absent, repository contracts and the branch diff. Check applicable data and state cases, container widths, zoom, keyboard and focus, touch access, reduced motion, and mobile-web behavior.
+- Review changed motion for purpose, frequency, interruption, exit, token reuse, and supported accessibility behavior. Reproduce material issues with existing tooling where available; cite the location, triggering case, expected behavior, and evidence. Treat unsupported aesthetic preferences as optional suggestions, not blocking or non-blocking defects that require fixes.
+- Record UI evidence, pending browser or device checks, and documentation results inside the existing review artifacts. Do not create fixtures, toggles, prototypes, or a separate UI report; do not change production code or tests.
 
 ## Prompt
 
@@ -366,6 +404,42 @@ Every line of code must have an English explanation beside it.
 
 Use short, readable excerpts and keep each explanation beside the code it describes.
 
+## UI section in the generated review-fix prompt
+
+Always embed the following complete, isolated section in `REVIEW_FIX_PROMPT.md`, including its explicit skill links and companions. Use accepted `REVIEW.md` findings and the current branch as the UI contract when planning artifacts are absent. Retain the general Simplicity and reuse procedure in the full Engineering Contract for all work. Do not replace either contract with a reference to this phase.
+
+```markdown
+## UI work only
+
+Enable this section only when the approved task or reviewed change includes UI behavior, layout, presentation, or interaction. In phases that review or write tests, determine applicability from the changed production behavior. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
+
+Fetch and completely read only the applicable skills and companions explicitly linked in this section from GitHub before using them. These conditional links are exempt from unconditional skill-fetch instructions elsewhere in the prompt. If an applicable required file cannot be read completely, stop and report the blocker. Apply web-specific guidance only to web UI; do not impose CSS, React, browser, or mobile-web conventions on another UI stack.
+
+### Conditional UI skills
+
+- For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
+- For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the limits below.
+- When implementing web motion: [animate](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/SKILL.md) and its required [RECIPES.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/RECIPES.md).
+- Only when motion work requires choosing a web UI primitive: [pick-ui-library](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/pick-ui-library/SKILL.md), the procedure referenced by `animate`. Use it to evaluate existing options; new dependencies still require explicit approval.
+- When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
+
+### UI skill limits
+
+- Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
+- Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
+- Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
+- Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add a new artifact or override `no-ai-slop` and its evaluator.
+
+### Phase requirements
+
+- Implement only the approved UI behavior using existing components and tokens. Complete applicable loading, error, and empty states, keyboard, focus, and touch behavior, and realistic data handling from the plan or accepted finding.
+- For approved motion, implement its purpose and frequency decision, interruption and exit behavior, reduced-motion alternative, and hover capability gating where relevant. Use the simplest compatible existing tool; no library is required merely for a fade.
+- Verify the changed UI with applicable realistic data, container widths, zoom, supported locale/direction, keyboard/touch interaction, and rapid interruption. Verify mobile viewport, safe-area, scrolling, and input behavior when in scope. Use existing preview/data facilities; do not create tests or a dev toggle. Report observed results and any required device checks still pending in the existing handoff, alongside the documentation checkpoint.
+- Apply these requirements only to valid accepted review findings. Do not implement optional aesthetic suggestions without approval.
+```
+
+Verify that the actual generated fix prompt includes the complete UI activation gate, links, companions, limits, requirements, and documentation checkpoint before handoff.
+
 ## Required output 3: `REVIEW_FIX_PROMPT.md`
 
 Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings, including both `Blocking Issues` and `Non-Blocking Issues`. There is no separate checked-in review-fix prompt file after this review step.
@@ -386,6 +460,7 @@ The generated review-fix prompt must have a clear title and these top-level sect
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Engineering Contract`
+- `## UI work only`
 - `## Prompt`
 
 The generated review-fix prompt must include these skill links explicitly:
@@ -399,7 +474,7 @@ The generated review-fix prompt must include these skill links explicitly:
 The generated review-fix prompt must include a `## Skill Handling Rule` that instructs the review-fix model to:
 
 - use only the prompt's explicitly linked skills,
-- fetch and read every linked skill and required companion completely from its GitHub URL before use; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
+- fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution when they are present,
 - proceed from `REVIEW.md`, `WALKTHROUGH.md`, and the current branch diff when prior planning or execution artifacts are absent,

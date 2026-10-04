@@ -249,6 +249,22 @@ The `### Tests` subsection is deliberately phase-specific:
 
 Documentation is a cross-phase completion gate. Keep a named documentation-checkpoint rule in every checked-in prompt and every generated downstream prompt. Planning, critique, review, verification, and the human walkthrough must identify the documentation impact and require an explicit update-or-not-applicable result; implementation, fix, and follow-up phases must complete and validate applicable durable documentation in the same change set. Phases `09` and `10` must verify that prior documentation checkpoints passed and stop/escalate if they did not, without editing documentation.
 
+### Simplicity and reuse
+
+Keep the general Simplicity and reuse procedure aligned across all phases and generated planning, revision, execution, and review-fix prompts. Apply it to backend and UI work within each phase's permissions. Require inspection of existing code, standard-library capabilities, native features, and installed dependencies; justification for new abstractions; caller tracing for bug fixes; and reference and contract checks before deletion.
+
+Preserve readability, compatibility, validation, security, and verification over line-count reductions. These are embedded rules derived from Ponytail, not authorization to activate its persistent mode, weaken test requirements, add production assertion demos, or create debt markers or ledgers. Keep provenance in `README.md`.
+
+### UI work only
+
+Keep UI guidance in a separate `## UI work only` section in every checked-in phase and every generated downstream prompt. Enable it only for tasks or reviewed changes involving UI behavior, layout, presentation, or interaction. Backend-only work must skip the section and its skill downloads, questions, checks, and reporting. UI consumers of a backend service do not by themselves activate it.
+
+- Keep conditional skill links and required companions explicit and self-contained. Apply the same activation rules to UI links in generated-prompt templates; unconditional skill-loading rules must not force UI downloads for backend-only work.
+- Preserve phase-specific UI responsibilities: planning acceptance criteria, scoped construction, evidence-based review and verification, independent human walkthrough, minimal test authoring in `09`, and read-only test audit in `10`.
+- Preserve existing design decisions, tokens, platform support, dependency approval, and output formats. Apply web guidance only to web UI. Do not promote recipe values or aesthetic preferences to automatic blockers; verify version-sensitive APIs and performance claims.
+- Override upstream prototype, development-toggle, fixture-retention, separate-report, and alternate-plan workflows. Phase `09` alone may author test-local fixtures; UI guidance must not expand another phase's write permissions or bypass `AGREE`, `RESOLVE`, or the final go-ahead.
+- Verify that generated planning, revision, execution, and review-fix prompts carry complete conditional UI sections, including activation, links, companions, limits, and verification requirements. Record observed behavior separately from code-only conclusions and required browser or device checks still pending.
+
 ### Combined planning artifact policy
 
 Current default:
