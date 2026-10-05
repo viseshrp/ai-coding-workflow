@@ -5,18 +5,18 @@ Run this independent phase only when I explicitly request UI prototypes before p
 ## Skills
 
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md).
+- [prototype](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/prototype/SKILL.md), including its required [PICKER.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/prototype/PICKER.md).
+- [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
 
-UI skills and their required companions are listed in `## UI work only`.
+These procedures describe web UI. For a native UI request, resolve a compatible prototype approach before building; do not impose HTML, CSS, or browser conventions on the production stack or silently substitute a web implementation.
 
 ## Skill Handling Rule
 
 Fetch skill procedures and their required companions only from `https://github.com/viseshrp/ai-skills-archive`. Resolve relative resource references to the explicitly linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy. If a required archive resource is absent or unreadable, stop and report its exact missing path. Keep optional related-skill mentions and provenance links inactive unless this prompt explicitly authorizes the procedure. Target-library API and version documentation remains governed by the Engineering Contract; it is not a substitute source for skill material.
 
-Use linked companions within this phase's scope. Skip UI-only sections for backend work, preserve the test-authoring boundary and named outputs, and do not run optional bootstrap scripts. When `spec-driven-development` is explicitly linked, use only its specification and planning procedures; do not invoke its implementation-stage skills. When this phase generates a downstream prompt, embed this archive-only rule, every applicable explicit skill and companion link, and the same scope limits.
+Use linked companions within this phase's scope. Preserve the test-authoring boundary and named outputs, and do not run optional bootstrap scripts.
 
 Use only this prompt's explicitly linked skills. Fetch and read each applicable skill and required companion completely from its GitHub URL before use. Do not depend on local skill repositories, installed slash commands, or earlier prompt text. If a required file cannot be fetched and read completely, stop and report the blocker.
-
-Apply the activation rules in `## UI work only` to conditional UI skill links. Skip those links when UI work is out of scope. Keep all other required skill loading unchanged.
 
 The prompt is the contract. Skills are supporting procedures only. If a skill conflicts with this prompt, this prompt wins. If a conflict is material, stop and ask instead of silently choosing. Do not invoke unlisted skills or let a skill expand the phase's write permissions, outputs, or approval scope.
 
@@ -38,7 +38,7 @@ Ignore skill greeting and pause routines. Follow the prototype skill through var
 
 ### Simplicity and reuse
 
-Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
+Apply this procedure within the prototype's scope and output boundaries:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
 - Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
@@ -56,20 +56,9 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - In `UI_PROTOTYPE.md`, record the durable documentation files and sections a selected design would affect, the planned validation, or an evidence-based `Not applicable` decision. Do not edit those durable files in this phase.
 - Record prototype limitations, simulated behavior, and material simplification limits with revisit triggers. The prototype is evidence for planning, not proof of production readiness.
 
-## UI work only
+## Prototype requirements
 
-Enable this section only for an explicitly requested UI prototype. For backend-only work, do not fetch UI skills, create prototypes, or invent UI work; state that this phase is not applicable and stop. A backend service having UI consumers does not activate it.
-
-### Conditional UI skills
-
-Fetch and completely read these skills and companions from GitHub before building a web UI prototype:
-
-- [prototype](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/prototype/SKILL.md), including its required [PICKER.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/prototype/PICKER.md).
-- [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
-
-These procedures describe web UI. For a native UI request, resolve a compatible prototype approach before building; do not impose HTML, CSS, or browser conventions on the production stack or silently substitute a web implementation.
-
-### UI skill limits
+### Skill limits
 
 - This phase alone permits isolated prototype files and a picker. It does not enable prototypes, development toggles, or additional artifacts in phases `01` through `10` or the complexity audit.
 - Reuse the project's visual language and component conventions where the isolation boundary permits. Existing tokens, approved behavior, accessibility, and supported platforms take precedence over generic aesthetic preferences or recipe values. Do not add motion solely to distinguish variants or introduce a dependency to satisfy a skill recipe.

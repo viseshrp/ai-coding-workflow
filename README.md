@@ -155,7 +155,7 @@ Reviews and handoffs must support latency, memory, or cost improvement claims wi
 
 ## UI Work Only
 
-Every checked-in phase and generated downstream prompt has a separate `## UI work only` section. Enable it only when the task or reviewed change includes UI behavior, layout, presentation, or interaction. Backend-only work skips the section, including its skill downloads, questions, checks, and reporting. A backend service having UI consumers does not by itself enable it.
+Phases `01` through `11` and generated downstream prompts have a separate `## UI work only` section. Enable it only when the task or reviewed change includes UI behavior, layout, presentation, or interaction. Backend-only work skips the section, including its skill downloads, questions, checks, and reporting. A backend service having UI consumers does not by itself enable it. Phase `12` is entirely UI prototyping: its skills and requirements apply directly, without a separate UI activation gate.
 
 | Stage | UI requirements when applicable |
 |---|---|
