@@ -301,6 +301,16 @@ Keep UI guidance in a separate `## UI work only` section in phases `01` through 
 
 Optional phase `12` is entirely UI prototyping and the only exception to the prototype prohibition. List its skills directly under `## Skills`; do not add a conditional UI section or backend-only skip rule. Keep its explicit opt-in entry point, isolated directory, synthetic sample data, named `UI_PROTOTYPE.md` artifact, browser verification, selection gate, and planning handoff self-contained. Do not copy this write permission into `01` through `10` or `11`. Prototype sample data is not authorization to author shared test fixtures. Override the upstream prototype skill's automatic promotion and cleanup steps: user selection records a design choice, and production integration remains subject to planning and execution gates. Phase `11` has no UI skill downloads and applies only its complexity evidence bar to in-scope UI code.
 
+### Conditional frontend design
+
+Keep [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) inside the existing `UI work only` sections of phases `01` through `06` and `08`, including the generated planning, revision, execution, and review-fix contracts. Preserve the other UI skills and their activation rules.
+
+- Keep the same narrow gate everywhere: landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. Backend-only work skips all UI downloads and reporting; ineligible UI work records `Frontend design: Not applicable` in its existing artifact or chat.
+- Preserve the user request, locked artifacts, existing brand/design system, repository conventions, accessibility, SEO, analytics, and dependency approval above skill defaults. Its dials, style bans, recipes, and preflight preferences cannot authorize dependencies, frameworks, assets, motion, themes, content/route/form/analytics changes, architecture changes, or broader scope.
+- Planning must lock `## Frontend Design Contract` inside `FEATURE_SPEC_AND_PLAN.md`, carrying the resolved brief, required design decisions, preservation rules, approved dependencies, and desktop/mobile acceptance checks. Generated execution prompts consume that contract; generated revision prompts repair and preserve it. Verify the actual generated prompts contain the complete explicit link, gate, contract requirements, and rendered-verification instructions.
+- Review and fix phases must distinguish objective failures from aesthetic suggestions and record rendered evidence or pending checks in existing artifacts or execution responses. Direct-entry review uses repository and branch evidence when planning artifacts are absent. `FOLLOWUP.md` remains human-approved only; design guidance cannot add an item or bypass its approval.
+- Keep direct skill use out of `07`, `09`, `10`, `11`, and `12`. Exclude `gpt-taste`; `image-to-code`, `brandkit`, and `redesign-existing-projects` require explicit task-specific authorization and their own archive links. Preserve immutable `sources/` and historical `archived/` material.
+
 ### Combined planning artifact policy
 
 Current default:

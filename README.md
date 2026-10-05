@@ -179,6 +179,26 @@ UI skills do not authorize prototypes, development toggles, extra reports, depen
 
 The isolated preview and `UI_PROTOTYPE.md` in optional phase `12` are the only prototype exception. This exception applies only when that phase is explicitly requested; the other phases retain their existing UI restrictions. Prototype sample data stays local to the preview and does not authorize shared test fixtures. Optional phase `11` applies only the complexity evidence bar to UI code and adds no visual audit or UI skill downloads.
 
+### Conditional Frontend Design
+
+Alongside the UI skills above, [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) supports landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. It excludes backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. Mixed tasks apply it only to the eligible surface.
+
+Its explicit link and gate live inside the existing `UI work only` sections of phases `01` through `06` and `08` and their generated planning, revision, execution, and review-fix prompts. In those phases, other UI work keeps its existing skill guidance and records `Frontend design: Not applicable`; backend-only work skips UI downloads and reporting entirely. Phases `07`, `09`, `10`, `11`, and `12` have no direct use of this skill.
+
+| Stage | Frontend design responsibility |
+|---|---|
+| 01 and generated Opus planning | Clarify the brief in `DRAFT_PLAN.md`, then lock `## Frontend Design Contract` inside `FEATURE_SPEC_AND_PLAN.md`. |
+| 02, generated Opus revision, and 03 | Critique, repair, and verify the contract and its enforcement in the actual `EXECUTION_PROMPT.md`. |
+| Generated execution and review fixes; 04 | Implement the approved contract or accepted finding; review rendered UI against that baseline. Direct-entry review may use repository evidence when planning artifacts are absent. |
+| 05 and 06 | Verify accepted fixes and refresh the final rendered evidence without reopening the design direction. |
+| 08 | Apply the skill only to explicitly human-approved eligible `FOLLOWUP.md` items. |
+
+The contract records the audience, visual direction and references, existing brand/assets/tokens, redesign mode, required design decisions, responsive/accessibility/state behavior, asset policy, protected content/SEO/routes/forms/analytics, approved dependencies, prohibited changes, and representative desktop/mobile verification. Keep locked requirements separate from optional aesthetic suggestions and record evidence or pending checks in existing artifacts and execution responses.
+
+The user request, locked artifacts, existing design system, repository conventions, accessibility, and dependency approvals override skill defaults. Dials, font and palette bans, layout recipes, and motion preferences do not authorize dependencies, framework or design-system changes, assets, themes, content rewrites, or a broader redesign. Review findings need an objective defect or contract violation; a different aesthetic remains a suggestion.
+
+`gpt-taste` is excluded. Specialized sibling skills such as `image-to-code`, `brandkit`, and `redesign-existing-projects` require explicit task-specific authorization and their own archive links. They are not loaded automatically.
+
 ## Documentation Checkpoints
 
 Documentation follows the same gate discipline as code and verification:

@@ -191,9 +191,22 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Conditional UI skills
 
+- Only for eligible visual web surfaces under the frontend design gate: [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md).
 - For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
 - For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the limits below.
 - When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
+
+### Frontend design gate
+
+Apply `design-taste-frontend` only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. For mixed work, apply it only to the eligible surface; other UI skills keep their own activation rules.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and approved dependencies override every skill default. The skill cannot authorize new dependencies, framework or design-system changes, generated assets, added motion or color modes, route or slug changes, primary-navigation or form-field changes, analytics-event changes, content or information-architecture rewrites, or architecture or scope expansion.
+
+Treat its dials, font and palette bans, layout recipes, and content or motion preferences as suggestions unless the approved contract requires them. Use only relevant objective preflight checks. A preference alone is not a blocking or non-blocking defect that requires a fix.
+
+Do not activate `gpt-taste`. Specialized sibling skills such as `image-to-code`, `brandkit`, or `redesign-existing-projects` require explicit task-specific authorization and their own archive links; do not load them through this skill.
+
+For ineligible UI work, skip this skill's download and procedures and record `Frontend design: Not applicable` in the existing artifact or chat. Backend-only work skips this entire UI section, including that reporting.
 
 ### UI skill limits
 
@@ -204,6 +217,7 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Phase requirements
 
+- For an eligible surface, critique the `Frontend Design Contract` for missing objective decisions, protected behavior, approved dependencies, and rendered-validation viewports. Check that the actual `EXECUTION_PROMPT.md` retains the complete frontend design gate and enforces the contract. Record gaps in `PLAN_CRITIQUE.md`; alternative aesthetic preferences remain suggestions.
 - Critique the applicable UI acceptance criteria and evidence plan: realistic data and state cases, keyboard and focus, touch, supported sizes/locales, and motion/reduced-motion behavior. Separate missing decisions from preferences.
 - Verify that `EXECUTION_PROMPT.md` contains a complete conditional UI section with the applicable construction skills, companions, limits, and verification instructions. Put gaps in `PLAN_CRITIQUE.md` and preserve or repair the full section through `OPUS_PLAN_REVISION_REQUEST.md`; do not create separate UI plans.
 
@@ -327,10 +341,23 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Conditional UI skills
 
+- Only for eligible visual web surfaces under the frontend design gate: [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md).
 - For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
 - For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the limits below.
 - Only when a requested motion effect needs clarification: [animation-vocabulary](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animation-vocabulary/SKILL.md).
 - When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
+
+### Frontend design gate
+
+Apply `design-taste-frontend` only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. For mixed work, apply it only to the eligible surface; other UI skills keep their own activation rules.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and approved dependencies override every skill default. The skill cannot authorize new dependencies, framework or design-system changes, generated assets, added motion or color modes, route or slug changes, primary-navigation or form-field changes, analytics-event changes, content or information-architecture rewrites, or architecture or scope expansion.
+
+Treat its dials, font and palette bans, layout recipes, and content or motion preferences as suggestions unless the approved contract requires them. Use only relevant objective preflight checks. A preference alone is not a blocking or non-blocking defect that requires a fix.
+
+Do not activate `gpt-taste`. Specialized sibling skills such as `image-to-code`, `brandkit`, or `redesign-existing-projects` require explicit task-specific authorization and their own archive links; do not load them through this skill.
+
+For ineligible UI work, skip this skill's download and procedures and record `Frontend design: Not applicable` in the existing artifact or chat. Backend-only work skips this entire UI section, including that reporting.
 
 ### UI skill limits
 
@@ -341,20 +368,28 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Phase requirements
 
+- For an eligible surface, place the resolved UI decisions in a dedicated `## Frontend Design Contract` section of `FEATURE_SPEC_AND_PLAN.md`: page kind and audience; visual direction and references; existing brand, assets, and tokens; preserve-versus-overhaul mode; required layout, typography, spacing, color, motion, density, and supported themes; responsive, keyboard/focus, contrast, reduced-motion, and state behavior; asset policy; protected content, SEO, routes/navigation, forms, and analytics; approved dependencies; prohibited changes; and representative desktop/mobile viewports with objective acceptance checks.
+- Separate locked requirements from optional aesthetic suggestions. Require the actual `EXECUTION_PROMPT.md` to retain the complete frontend design gate and implement this contract with existing tooling. Resolve required design decisions before execution and record unavailable rendered checks as pending rather than passed.
+- Preserve the established applicability decision and repair the existing contract within approved scope. Carry its gate, accepted decisions, and rendered-verification requirements into the revised `EXECUTION_PROMPT.md`; do not introduce a new design direction.
 - For each affected UI surface, specify applicable loading, error, empty, partial-data, and permission states; realistic or schema-backed long or missing values, Unicode, and zero, one, or many items; container widths, zoom, and supported locales. Resolve choices such as wrapping versus truncation before locking implementation. Do not require every catalog case for every component.
 - Specify keyboard, focus, and touch behavior, existing components and tokens to reuse, and applicable mobile viewport, safe-area, scrolling, and input behavior. For motion, record its purpose, frequency, interruption and exit behavior, reduced-motion alternative, and acceptance checks. Preserve feedback and access without requiring animation.
 - Put these decisions, verification steps, and documentation impact in the existing planning artifacts. Keep unresolved design decisions explicit. Do not build prototypes, change UI code, or author tests during planning.
 ```
 
-Require the revision prompt to preserve or repair the complete isolated UI section already in `EXECUTION_PROMPT.md`, including its applicable construction skill links and companions, activation gate, accepted UI criteria, write limits, and verification instructions. Copy that execution section in full into the revision request as the contract to retain; do not use a reference to this phase or earlier chat. If it is absent, use the explicit execution skill links below and embed the complete activation gate and UI skill limits above, plus direct instructions to implement only approved UI behavior, reuse existing components and tokens, verify applicable data and state cases, keyboard and touch interaction, and reduced-motion behavior with existing tooling, report observed versus pending browser or device checks, and complete the documentation checkpoint. Do not authorize tests, prototypes, toggles, or extra reports.
+Require the revision prompt to preserve or repair the complete isolated UI section already in `EXECUTION_PROMPT.md`, including its applicable construction skill links and companions, activation gate, accepted UI criteria, write limits, and verification instructions. Copy that execution section in full into the revision request as the contract to retain; do not use a reference to this phase or earlier chat.
 
+Preserve or repair the complete frontend design gate and require eligible execution to follow the locked `Frontend Design Contract`, inspect the existing rendered surface when available, validate its desktop/mobile viewports, and report evidence or pending checks in the final response's `## Frontend Design Verification`.
+
+If the execution UI section is absent, use the explicit execution skill links below and embed the complete activation gate, frontend design gate, and UI skill limits above. Require direct instructions to implement only approved UI behavior, reuse existing components and tokens, verify applicable data and state cases, keyboard and touch interaction, and reduced-motion behavior with existing tooling, report observed versus pending browser or device checks, and complete the documentation checkpoint. Do not authorize tests, prototypes, toggles, or extra reports.
+
+- Only for eligible visual web surfaces under the frontend design gate: [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md).
 - For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
 - For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the UI skill limits above.
 - When implementing web motion: [animate](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/SKILL.md) and its required [RECIPES.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/RECIPES.md).
 - Only when motion work requires choosing a web UI primitive: [pick-ui-library](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/pick-ui-library/SKILL.md), the procedure referenced by `animate`. Use it to evaluate existing options; new dependencies still require explicit approval.
 - When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
 
-Verify both generated sections before handoff. Keep the general Simplicity and reuse procedure in the revision prompt's Engineering Contract and the revised execution prompt for backend and UI tasks alike.
+Verify both generated sections before handoff, including the explicit design-skill link, complete frontend design gate, locked-contract requirements, and rendered-verification instructions in the actual revision and execution prompts. Keep the general Simplicity and reuse procedure in the revision prompt's Engineering Contract and the revised execution prompt for backend and UI tasks alike.
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
