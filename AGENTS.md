@@ -217,6 +217,7 @@ Expectation:
 
 - Keep the rule semantically aligned everywhere.
 - The exact phrasing can vary slightly only if the phase genuinely requires it.
+- Match handling instructions to the phase: include downstream-prompt rules only in prompt producers, skill-specific restrictions only where that skill is linked, and artifact-writing instructions only where files may be written. Keep shared constraints aligned without copying inapplicable procedures.
 - Do not weaken the rule in one phase without a deliberate reason.
 
 ### Archive-only skill dependencies

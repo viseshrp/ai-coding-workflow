@@ -185,7 +185,7 @@ The following typing coverage is a hard requirement:
 
 ## UI work only
 
-Enable this section only when the approved task or reviewed change includes UI behavior, layout, presentation, or interaction. In phases that review or write tests, determine applicability from the changed production behavior. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
+Enable this section only when the requested or planned work includes UI behavior, layout, presentation, or interaction. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
 
 Fetch and completely read only the applicable skills and companions explicitly linked in this section from GitHub before using them. These conditional links are exempt from unconditional skill-fetch instructions elsewhere in the prompt. If an applicable required file cannot be read completely, stop and report the blocker. Apply web-specific guidance only to web UI; do not impose CSS, React, browser, or mobile-web conventions on another UI stack.
 
@@ -321,7 +321,7 @@ Include a separate `## UI work only` section in `OPUS_PLAN_REVISION_REQUEST.md`.
 ```markdown
 ## UI work only
 
-Enable this section only when the approved task or reviewed change includes UI behavior, layout, presentation, or interaction. In phases that review or write tests, determine applicability from the changed production behavior. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
+Enable this section only when the requested or planned work includes UI behavior, layout, presentation, or interaction. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
 
 Fetch and completely read only the applicable skills and companions explicitly linked in this section from GitHub before using them. These conditional links are exempt from unconditional skill-fetch instructions elsewhere in the prompt. If an applicable required file cannot be read completely, stop and report the blocker. Apply web-specific guidance only to web UI; do not impose CSS, React, browser, or mobile-web conventions on another UI stack.
 
