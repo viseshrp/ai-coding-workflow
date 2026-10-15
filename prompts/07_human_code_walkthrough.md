@@ -85,7 +85,7 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Phase requirements
 
-- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the chat-only code map and semantic blocks.
+- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the prose overview and semantic blocks.
 - Where available, inspect the running interaction using existing facilities. Discuss observed behavior separately from inferred behavior and pending browser or device checks. Do not create HTML, prototype pages, toggles, fixtures, or additional visual artifacts.
 - Record documentation and required pending UI checks in the primary checklist. Preserve `AGREE` for each exact follow-up item, renewed review on changed code, `RESOLVE` plus verified GitHub Viewed state for file completion, and the final go-ahead before implementation.
 
@@ -101,17 +101,15 @@ Help me review the current PR from the actual code and PR changes. Start by show
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 
-Use `show-me` for focused diffs, pseudocode, and diagrams alongside the required code context. Keep diagrams, presentation diffs, and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create HTML or additional visual artifacts, or require skill installation.
+Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
 
-### Show the code map first
+### Explain the code context first
 
-Open the first review response with a mindmap of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code. Show the flow diagrams next, before any code blocks.
+Open the first review response with a brief prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
 
-Follow it with flow diagrams tracing every reachable control-flow branch and data/state transition through that code. Label branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Show loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
+Explain every reachable control-flow branch and data/state transition alongside the relevant semantic block. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
 
-Use Mermaid mindmap and flowchart diagrams, or equivalent text diagrams when Mermaid cannot render. Keep the overview readable by expanding larger branches into separate diagrams without omitting paths.
-
-Use the inspected code and PR changes to build the maps, checking any relevant information from `WALKTHROUGH.md` against them. Show the maps in chat and pause for my questions or choice of where to start. Update a map if later inspection changes a relationship, path, or outcome.
+Base the overview and flow explanations on inspected code and PR changes, checking relevant `WALKTHROUGH.md` context against them. Show the overview in chat and pause for my questions or choice of where to start. Correct an explanation if later inspection changes a relationship, path, or outcome.
 
 ### Review a semantic block
 
@@ -119,9 +117,9 @@ Review one primary file at a time and one small semantic block per response. Cho
 
 Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
-For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames. Add sequence or state diagrams when they clarify interactions; do not require every format in every response.
+For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
 
-Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the map. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
+Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
 For each material changed behavior, identify affected durable user-, operator-, API-, configuration-, or developer-facing documentation. Record the exact documentation update and validation evidence, or an evidence-based `Not applicable` decision, in the primary checklist. Discuss a missing or inaccurate documentation result alongside the relevant code; do not implement the documentation change here.
 
@@ -132,7 +130,7 @@ For each material changed behavior, identify affected durable user-, operator-, 
 - Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, review the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
 - For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the review or `RESOLVE` gate.
 - If the GitHub update or verification fails, report the failure and keep completion pending. Do not silently skip it, claim success, or advance to another file. File completion must not resolve review conversations or submit PR approval.
-- After verified file completion, show the next file's first semantic block and connect it to the code map. If every file is resolved, wait for my final go-ahead before implementation.
+- After verified file completion, show the next file's first semantic block and explain how it connects to the surrounding code. If every file is resolved, wait for my final go-ahead before implementation.
 
 Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
