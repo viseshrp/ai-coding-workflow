@@ -236,7 +236,7 @@ Role:
 
 Task:
 
-- Compare the current branch against `main` and against any available locked planning artifacts.
+- Independently review the current branch against `main`, available requirements and public contracts, the existing architecture, and any available locked planning artifacts.
 - Gather all changes introduced by the current branch and review them thoroughly.
 - Identify real defects, plan divergence when a plan is available, and high-value follow-up suggestions without expanding scope.
 - Identify all possible regressions within the scope of the current branch's changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
@@ -257,7 +257,7 @@ The named planning and execution artifacts are optional. Do not require, recreat
 
 Success criteria:
 
-- every blocking issue is grounded in specific diff, code, repository contract, or available plan evidence,
+- every reported issue is actionable and grounded in inspected repository evidence and applicable requirements, contracts, or available plan evidence,
 - plan divergence is clearly separated from optional suggestions when a plan is available; when no plan is available, its absence is recorded without becoming a finding or blocker,
 - every material changed behavior has a documentation-checkpoint result grounded in the actual branch: exact durable documentation and validation, or an evidence-based `Not applicable` decision,
 - the review and generated review-fix prompt remain usable without any artifact from an earlier workflow phase,
@@ -269,7 +269,7 @@ Constraints:
 - backwards compatibility is top priority,
 - do not stop or ask for input solely because prior-phase artifacts are absent,
 - do not invent undocumented intent; evaluate objective correctness and repository compatibility, and label genuinely intent-dependent conclusions as open questions,
-- do not turn preferences into blocking findings unless they are justified by real risk or contract mismatch.
+- do not report preferences, speculative risks, or unverified assumptions as findings; require evidence of a defect or contract mismatch.
 
 Working method:
 
@@ -280,10 +280,9 @@ Working method:
 - give architecture and other high-impact changes deeper scrutiny, including changes to shared behavior, public contracts, persistent data, security boundaries, or concurrency. Assess impact from affected consumers and failure consequences, even for small diffs. Trace the relevant compatibility, migration, and failure/recovery paths and prioritize independent verification of those risks,
 - when planning artifacts are available, audit compliance with them; when they are absent, use the branch diff as the scope boundary and existing behavior, public APIs, documentation, configuration, and tests as evidence,
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
-- quote or clearly point to the exact evidence for each material finding,
 - separate confirmed issues from preferences, open questions, and optional suggestions,
 - do not recreate missing prior-phase artifacts or treat their absence as a review defect,
-- after checking 100% compliance with any available plan, or completing the full evidence-based review when no plan is available, provide suggestions,
+- complete the evidence-based review and assess every requirement in any available plan before reporting optional suggestions,
 - do not make any changes you propose until I give the go-ahead.
 
 This branch will be merged into main.
@@ -293,7 +292,7 @@ This branch will be merged into main.
 Review for:
 
 - readability,
-- quality,
+- correctness, including missing edge cases, regressions, incorrect assumptions, and integration failures,
 - idiomatic use of the target language and its standard library,
 - type declarations and annotations that clarify rather than crowd the code; flag overly complex annotations when a simpler accurate type or well-named type alias would improve readability,
 - backwards compatibility,
@@ -315,7 +314,7 @@ Review for:
 - comment quality and missing comments where code is not obvious,
 - bloated comment blocks,
 - cross-platform Linux/Windows safety,
-- test quality, only for tests that already exist or were explicitly requested.
+- test quality and missing tests for material acceptance criteria.
 
 ### Language-specific review guidance
 
@@ -424,11 +423,17 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 ## Suggestions
 ```
 
-Put suggestions directly below the relevant review findings.
+Report only actionable, evidence-backed findings under `Blocking Issues` or `Non-Blocking Issues`, ordered by severity within each section. For each finding, include:
 
-Every valid review issue must be categorized under either `Blocking Issues` or `Non-Blocking Issues`.
+- severity and a concise description of the defect,
+- the exact inspected file path and a narrow line range,
+- the affected requirement or existing contract and the concrete impact,
+- minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code,
+- the smallest justified correction or the acceptance check needed to demonstrate resolution.
 
-Use `Suggestions` only for optional improvements that are not required in the review-fix pass.
+For static issues, provide repeatable inspection or call-trace steps that demonstrate the mismatch. Label unexecuted reproduction scenarios `Not run`; never invent observations. Keep unanswered intent questions and pending verification in the existing review-basis and evidence sections, separate from confirmed defects.
+
+Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
 In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
 
