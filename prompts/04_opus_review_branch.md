@@ -47,6 +47,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -342,10 +343,10 @@ All changes must be strictly cross-platform and must work on both Linux and Wind
 
 ## Independent verification and incident diagnostics
 
-Independently challenge the author's completion claims using the procedure below. A passing author-written test is supporting evidence; it does not by itself establish that the running behavior meets the requirements.
+Independently challenge the author's completion claims using the procedure below. Tests can reinforce the same unsupported assumptions as the implementation. Judge both against acceptance criteria grounded in product requirements and public contracts; passing author-written tests alone do not establish correct running behavior.
 
 1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
-2. Independently derive test scenarios from those requirements, public contracts, and inspected code before adopting the author's test cases or expected results. Try to disprove completion claims with relevant boundary, failure, recovery, and regression cases. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.
+2. Establish independent acceptance criteria and expected outcomes from the available requirements, approved clarifications, and public contracts before adopting the author's test cases or expected results. Use inspected code to identify paths to exercise, and try to disprove completion claims with relevant boundary, failure, recovery, and regression scenarios. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.
 3. For changed runtime behavior, exercise the running application through its real entry points and call the relevant real APIs. Use an authorized local or test environment and existing tools. Remote requests must be read-only unless the user has authorized their side effects. Do not install dependencies or change configuration to enable a review. Record the revision, environment, scenario, expected result, observed result, command or interaction, and evidence. Keep observed behavior, code-only conclusions, and pending checks distinct. Missing access or an unavailable environment leaves the required check pending and prevents a passing verdict; explain `Not applicable` for changes with no runnable behavior.
 4. When one defect is found, search throughout the codebase for the same failure pattern, including sibling implementations and other callers. Inspect candidate matches and distinguish confirmed occurrences from false positives. Record search scope and unexamined areas. Report occurrences outside the branch's scope separately; discovery does not authorize broader fixes.
 5. Inspect logs and error handling for the changed failure paths as if diagnosing an incident. Check whether an engineer could identify the failing operation, correlate a request or job, understand the cause and trace, and determine retry or recovery outcomes where applicable. Use captured runtime evidence when available and identify gaps in existing logging, while checking for secrets, sensitive payloads, or excessive noise. Do not add instrumentation during review.
@@ -355,11 +356,12 @@ Independently challenge the author's completion claims using the procedure below
 Review existing or changed tests; do not author tests in this phase.
 
 - Require the fewest tests that cover distinct changed behavior and material regression risks. Flag duplicate, transient, temporary-hack, or coverage-only tests.
-- Require observable behavior rather than implementation details, one clear behavior per test, and small linear test functions, fixtures, and helpers.
+- Require observable behavior tied to an independent acceptance criterion and its requirement source, one clear behavior per test, and small linear test functions, fixtures, and helpers. Flag tests that validate an implementation assumption instead of the product requirement.
+- For material component or API interactions, require focused integration proof through the actual public entry point and relevant components. Mocked unit tests alone do not prove those interactions; route missing test authoring to `09`.
 - Check that tests follow the existing test framework's configuration and conventions and prefer existing fixtures, native APIs, and installed extensions over hand-rolled test infrastructure.
 - Flag any test that patches or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
 - Limit mocks to impractical external boundaries; flag internal call choreography and implementation-detail mocks.
-- Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or network access, and expected values that mirror production logic.
+- Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or uncontrolled network access, and expected values that mirror production logic.
 - Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only.
 
 ### Language-specific test review guidance
@@ -639,7 +641,8 @@ Focused verification:
 - inspect all changes made by this fix pass for possible regressions, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix regressions within the approved review-fix scope; stop and ask if a fix would exceed it,
 - inspect the changes made by this pass for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - run focused verification relevant to the fixes,
-- derive verification scenarios from the accepted finding and original requirement, then replay the reviewer's independent scenarios against the changed behavior. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
+- judge test and runtime results against the independent acceptance criteria. Investigate any disagreement between passing tests and failed real API checks; do not weaken expectations or claim completion until the required behavior is verified,
+- derive verification scenarios from the accepted finding and independent acceptance criteria grounded in the available original requirements or public contracts, then replay the reviewer's independent scenarios against the changed behavior. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
 - recheck the same defect pattern throughout the codebase and assess incident diagnostics for affected failure paths. Fix only accepted in-scope occurrences; report other supported occurrences and gaps for the appropriate approval path,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,

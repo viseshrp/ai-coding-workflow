@@ -49,6 +49,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -281,7 +282,7 @@ Constraints:
 Working method:
 
 - Revisit the available original requirements and compare them with the final branch before refreshing.
-- Refresh the review loop's independent scenarios, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
+- Refresh the review loop's acceptance criteria and requirement references, independent scenarios, focused integration proof, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Preserve the acceptance baseline and check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
 - Use the running application and relevant real APIs for required runtime checks, through existing tools in an authorized environment. Keep remote requests read-only unless side effects are authorized, and distinguish observed behavior from code-only conclusions and missing access.
 - Keep required unavailable checks pending and withhold a passing verdict. Preserve the severe-issue stop rule and do not restart a full review.
 

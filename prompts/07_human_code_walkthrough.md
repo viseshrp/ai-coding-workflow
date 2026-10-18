@@ -125,7 +125,7 @@ For material logic changes, include brief before/after pseudocode covering the r
 
 Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
-Independently derive scenarios that could disprove the block's claimed behavior. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; discuss confirmed occurrences without expanding implementation authority.
+Independently derive scenarios that could disprove the block's claimed behavior. Ground acceptance criteria and expected outcomes in product requirements, approved clarifications, or public contracts; do not treat the implementation or its tests as the specification. Check focused integration proof for material component or API interactions. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; discuss confirmed occurrences without expanding implementation authority.
 
 For runtime changes, use available running applications and real APIs through existing tools in an authorized environment. Remote requests remain read-only unless their side effects are authorized. Record observed behavior, code-only conclusions, and required pending checks in the primary checklist; required runtime verification gaps keep the relevant item pending.
 
@@ -155,7 +155,7 @@ Each item must include:
 - exact symbol(s)/location(s),
 - exact change to make,
 - why we agreed to it,
-- acceptance criteria,
+- acceptance criteria tied to product requirements or approved clarifications, with independent expected outcomes and applicable integration/API checks,
 - verification needed,
 - documentation checkpoint: exact durable documentation file/section, update, and validation, or the evidence-based `Not applicable` rationale,
 - any risks or constraints.

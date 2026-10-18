@@ -47,6 +47,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -271,6 +272,7 @@ Review for:
 
 - missing design decisions,
 - unclear requirements,
+- acceptance criteria or expected results that repeat implementation assumptions or test assertions without an independent product requirement or public contract,
 - divergence from original scope,
 - insufficient file/class/method/function/variable detail,
 - missing execution order,
@@ -291,6 +293,7 @@ Review for:
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing independent scenarios and expected results, running-application and relevant real-API checks for runtime changes, or explicit handling of unavailable verification,
+- missing focused integration proof for material component or API interactions; test authoring must remain deferred to `09`,
 - missing incident diagnostic requirements for changed failure and recovery paths,
 - missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
 - anything in the execution prompt that gives the implementation model too much freedom.
@@ -538,8 +541,8 @@ Also:
 - ask if a critique item requires a design decision from me,
 - do not silently drop any critique item,
 - ground plan detail in the code and context you inspected,
-- preserve original requirements and approved clarifications, explicit unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for changed failure paths in the revised plan and actual `EXECUTION_PROMPT.md`,
-- preserve independent scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and evidence reporting with required unavailable checks pending. Keep remote requests read-only unless side effects are authorized, changes within approved scope, and test authoring deferred to `09`; do not implement during revision,
+- preserve original requirements, approved clarifications, independent acceptance criteria and their requirement sources, explicit unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for changed failure paths in the revised plan and actual `EXECUTION_PROMPT.md`,
+- preserve independent scenarios and expected results, focused integration proof for material component or API interactions, authorized running-application and relevant real-API checks for runtime changes, and evidence reporting with required unavailable checks pending. Keep remote requests read-only unless side effects are authorized, changes within approved scope, and test authoring deferred to `09`; do not implement during revision,
 - preserve or strengthen the `EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether the current branch already has a pull request, and create a pull request only if none exists,
 - preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,

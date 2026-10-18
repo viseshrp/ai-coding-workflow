@@ -113,7 +113,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Write the fewest tests that provide meaningful confidence.
 - Zero new tests is valid only when existing tests already cover every changed behavior and material regression risk and fresh evidence shows at least 85% coverage for new or changed lines.
 - Before editing, identify the smallest set of distinct behaviors that need coverage and explain why each proposed test is necessary.
-- Derive scenarios and expected outcomes independently from the original requirements, approved changes, public contracts, and inspected production paths. Try to disprove completion claims instead of reproducing the implementation or the author's existing assertions. Re-read the source requirements after long sessions or handoffs and before sign-off; stop on an unresolved conflict rather than encoding implementation drift as the expected result.
+- Identify each test's acceptance criterion and its source in the original requirements, approved changes, or public contracts. Derive scenarios and expected outcomes independently of the implementation and the author's existing assertions; inspect production paths to choose what to exercise. Try to disprove completion claims. Re-read the source requirements after long sessions or handoffs and before sign-off; stop on an unresolved conflict rather than encoding implementation drift as the expected result.
 - Add or extend a regression test for a bug fix only when existing behavior tests leave a genuine gap for the failure being fixed. A bug fix alone does not justify a new test.
 - Prefer extending an existing test to cover a new path when that remains clear and preserves one behavior per test. Do not create a parallel test for behavior already covered.
 - Consolidate trivial tests of the same behavior into one readable test or native parameterization when that preserves meaningful assertions and clear failure diagnostics. Do not combine unrelated behaviors to reduce the test count.
@@ -123,6 +123,8 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 - Keep test code in test files or test directories, separate from production code.
 - Test observable architecture and behavior, not implementation details.
+- For changed behavior that depends on material component or API interactions, require the smallest focused integration test through the actual public entry point and relevant components, asserting the requirement-derived outcome. Reuse existing integration coverage when it already proves that contract; add or extend a test only for a genuine behavior gap.
+- Use the repository's existing isolated integration facilities and native framework APIs. Do not mock the boundary the integration test claims to verify; collaborators outside that boundary may be controlled when necessary. Preserve test-file-only scope, dependency approval, deterministic isolation, and the minimum test set.
 - Each test must cover one behavior and have one clear reason to fail.
 - Keep test functions, fixtures, and helpers small, linear, and easy to read and understand.
 - Prefer a simple Arrange-Act-Assert flow and descriptive behavior-based names.
@@ -176,12 +178,14 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Do not assert exact error wording unless that wording is an intentional user-facing contract.
 - Do not encode packaging or filesystem-layout assumptions that are not part of the public contract.
 - Do not mirror production logic inside the expected-value calculation.
-- Do not use real time, sleeps, network access, uncontrolled randomness, or machine-specific state.
+- Do not use real time, sleeps, uncontrolled randomness, or machine-specific state. Keep tests independent of live external networks; use only the repository's existing isolated facilities for integration boundaries.
 - When an existing relevant test has one of these problems, do not refactor unrelated test code. Report it as a flake risk, acceptable contract test, or maintainability concern and suggest a behavior-level alternative.
 
 ### Coverage and verification
 
-Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add live-network tests, production instrumentation, or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
+Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add tests that depend on live external services. Do not add production instrumentation or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
+
+When tests pass but a real API check fails, investigate the disagreement against the independent acceptance criteria. Do not change expected results to match the implementation or dismiss the API failure because tests pass. Correct test-only gaps here; route production or environment changes to an authorized earlier phase and keep completion pending until required verification passes.
 
 - Use the repository's existing test and coverage commands and configuration.
 - Reach at least 85% coverage for new or changed lines.

@@ -92,8 +92,9 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Audit bar
 
-- Independently derive scenarios and expected outcomes from the available original requirements, approved changes, public contracts, and production paths. Try to disprove the test author's completion claims and identify implementation drift after long sessions or handoffs; do not adopt the author's assertions as the requirement.
+- Independently establish acceptance criteria and expected outcomes from the available original requirements, approved changes, and public contracts. Trace each changed test to that source and use production paths to choose scenarios. Try to disprove the test author's completion claims and identify implementation drift after long sessions or handoffs; do not adopt the implementation or its assertions as the requirement.
 - Every new or changed test must protect a distinct observable behavior, invariant, or independent contract.
+- For material component or API interactions, require focused integration proof through the actual public entry point and relevant components, with outcomes derived from an independent requirement. Mocked unit tests or a mocked boundary do not prove that integration; retain strong existing coverage rather than demanding duplicate tests.
 - Each test must have a credible regression that makes it fail for the intended reason.
 - Stronger existing coverage must not already prove the same contract unless the additional layer covers a distinct risk.
 - Expected values, mocks, fakes, fixtures, and snapshots must not implement or precompute the behavior under test.
@@ -115,6 +116,8 @@ Do not report style preferences, speculative edge cases, or deletion ideas witho
 ### Verification
 
 For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
+
+Investigate any disagreement between passing tests and failed real API checks against the independent acceptance criteria. Record an unresolved acceptance failure or missing integration proof as blocking; route test-only corrections to `09` and production or environment corrections to an authorized earlier phase. Do not change expectations or infer correctness from a green test run.
 
 - Review phase `09`'s exact commands and outputs. Re-run the smallest relevant test or coverage command needed to verify a material claim.
 - Do not run the entire suite unless repository policy or the scope of the claim requires it.

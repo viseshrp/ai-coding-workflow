@@ -47,6 +47,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -257,7 +258,8 @@ Working method:
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to where each concern was addressed,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues and do not mark it ready for implementation,
-- check that the revised plan and `EXECUTION_PROMPT.md` retain original requirements and approved changes, unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for affected failure paths,
+- check that the revised plan and `EXECUTION_PROMPT.md` retain original requirements, approved changes, independent acceptance criteria and their requirement sources, unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for affected failure paths,
+- verify that material component or API interactions have planned focused integration proof, with missing test authoring deferred to `09`; expected results must come from product requirements or public contracts rather than the implementation or its tests,
 - verify that execution instructions require independent scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and read-only remote requests unless side effects are authorized. Missing runtime access must leave required checks pending; tests alone must not imply runtime completion. Check these instructions without implementing or authoring tests here,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
 - verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,

@@ -48,6 +48,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -278,9 +279,9 @@ For each prior review finding:
 
 Focused verification:
 
-- Independently derive scenarios from each prior finding and the available original requirements. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing checks.
+- Independently derive scenarios and expected outcomes from each prior finding and the acceptance criteria grounded in original requirements or public contracts. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
 - For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
-- Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Keep required unavailable checks pending and withhold a ready verdict; explain `Not applicable` when no runnable behavior exists.
+- Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
 - Verify the fix pass's repeated-defect search and incident diagnostics for affected failure paths. Recheck relevant occurrences and diagnostic gaps; distinguish unresolved prior findings from new supported issues. Report broader occurrences without expanding the fix scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.

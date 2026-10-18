@@ -158,6 +158,8 @@ Reviews and handoffs must support latency, memory, or cost improvement claims wi
 
 Phase 04 independently derives scenarios from available original requirements, approved changes, public contracts, and inspected code, then tries to disprove the author's completion claims. For changed runtime behavior, it exercises running applications and relevant real APIs through existing tools in an authorized environment. Remote requests remain read-only unless their side effects are authorized. Passing agent-written tests alone is insufficient; required unavailable checks stay pending and prevent a passing verdict. Changes with no runnable behavior receive an evidence-based `Not applicable` decision.
 
+Planning establishes acceptance criteria and expected outcomes from product requirements and approved clarifications before choosing implementation details or test expectations. Review judges both the implementation and its tests against those criteria. If tests pass while real API checks fail, investigate the disagreement and keep completion pending until the required behavior is verified; do not rewrite expectations to preserve a passing result.
+
 Review records the challenged claims, expected and observed results, revision and environment, repeated-defect search scope and occurrences, and incident diagnostic evidence. Logging review asks whether an engineer could identify the failing operation, correlate a request or job, understand the cause, and determine recovery outcomes without exposing sensitive data. Reviewers re-read original requirements after long sessions or handoffs to identify drift. Planning and generated execution/revision/fix prompts carry the applicable requirements; verification, follow-up, test writing, and test audit apply them within their existing permissions. Test authoring remains in phase 09, and broader defect discovery does not authorize broader fixes.
 
 ## Walkthrough Explanations and Interactive Model
@@ -229,6 +231,8 @@ Optional phase `11` identifies the documentation impact of proposed changes in c
 
 Earlier phases may inspect or run focused tests, but they do not author tests. Prompt 09 owns the complete test-writing contract:
 
+- tie each test's acceptance criterion and expected outcome to an independent product requirement, approved clarification, or public contract,
+- use the smallest focused integration proof for material component or API interactions through actual public entry points; reuse sufficient existing coverage and add tests only for genuine gaps,
 - write the fewest nonduplicative tests for uncovered changed behavior and material regression risks; a bug fix alone does not justify a new regression test,
 - prefer extending existing tests and consolidating trivial tests of the same behavior when assertions and failure diagnostics stay clear,
 - keep tests behavior-focused, deterministic, isolated, and small enough to read linearly; reject tautological or self-testing tests and change detectors that freeze implementation details without an observable contract,
@@ -236,6 +240,8 @@ Earlier phases may inspect or run focused tests, but they do not author tests. P
 - never patch or mock the subject under test itself; patch only impractical external collaborators and avoid implementation-detail assertions,
 - reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
 - change test files only, then hand the test diff to phase 10 without generating another prompt or workflow artifact.
+
+Integration tests use existing isolated facilities and native framework APIs, and must exercise the boundary they claim to verify. Keep automated tests independent of live external services; checks against running applications and real APIs remain separate verification evidence. An unresolved acceptance failure or missing integration proof blocks the final audit. Test-only corrections return to `09`; production or environment changes require an authorized earlier phase.
 
 ### Language-specific testing guidance
 

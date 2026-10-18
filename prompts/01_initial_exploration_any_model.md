@@ -359,6 +359,7 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - current behavior,
    - desired behavior,
    - user-visible behavior,
+   - acceptance criteria grounded in original requirements and approved clarifications, with concrete inputs, expected outcomes, failure cases, and references to their requirement sources; derive these before choosing implementation details or test expectations,
    - public API behavior,
    - backwards compatibility requirements,
    - constraints,
@@ -393,6 +394,7 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - what successful output means,
    - what failures should be pasted back without paraphrasing,
    - no full test-suite run unless explicitly asked,
+   - identify material component or API interactions that need focused integration proof and the smallest existing checks that can exercise them; defer any missing test authoring to phase `09`,
    - for changed runtime behavior, define scenarios with independent expected results, the running application entry points and relevant real APIs to exercise, the authorized environment, and the evidence needed to establish completion. Include relevant failure and recovery paths and their incident diagnostics. Keep remote requests read-only unless side effects are authorized; unavailable runtime checks remain pending rather than passing from agent-written tests alone.
 6. Documentation update plan:
    - a mapping from every implementation step to its documentation checkpoint,
@@ -527,7 +529,7 @@ Execution rules:
 
 - before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
 - re-read the original requirements and approved clarifications after long sessions or context handoffs and before completion. Check the final behavior for drift, omissions, unintended additions, duplicated logic, excess abstractions, unused paths, and avoidable complexity within the locked scope,
-- derive verification scenarios and expected results from the requirements and public contracts. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the revision, environment, expected and observed results, and any blocked checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
+- derive verification scenarios from the locked acceptance criteria and their requirement sources; keep expected results independent of the implementation and its tests. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the revision, environment, expected and observed results, and any blocked checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
 - when a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Fix only within the locked plan, report broader occurrences without changing them, and verify incident diagnostics for the affected failure paths,
 - read likely relevant files in parallel before editing when practical,
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
@@ -700,6 +702,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - No architecture changes.
 - Just execute what is written.
 - Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
+- Derive acceptance criteria and expected results from product requirements, approved clarifications, and public contracts independently of implementation details and agent-written tests. Do not change them merely to make the current code pass.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
