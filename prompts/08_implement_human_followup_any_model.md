@@ -44,6 +44,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -89,6 +90,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -110,8 +112,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -229,6 +231,12 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 ## Prompt
 
+Re-read the original requirements, approved clarifications, and exact human-approved `FOLLOWUP.md` items after long sessions or handoffs and before completion. Check the final diff for drift, omissions, unnecessary duplication, excess abstractions, unused paths, and avoidable complexity within those items. A newly discovered concern does not authorize an additional follow-up change.
+
+Derive focused verification scenarios and expected results from the approved item's acceptance criteria. For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools; remote requests remain read-only unless their side effects are authorized. Record the revision, environment, expected and observed behavior, and any pending checks. Do not claim completion from author-written tests alone; explain `Not applicable` for changes without runnable behavior. Verify incident diagnostics for the affected failure paths and search for repeated defects throughout the codebase. Fix only approved occurrences, report others for human agreement, and do not author tests before phase `09`.
+
+Keep `WALKTHROUGH.html` uncommitted unless explicitly requested. Do not regenerate it here; its recorded revision may become stale after follow-up changes.
+
 Goal:
 
 - execute the human-approved `FOLLOWUP.md` items end-to-end and stop only when you have a verified result or a concrete blocker.
@@ -244,7 +252,7 @@ Success criteria:
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
 - scope stays limited to the approved follow-up work,
 - verification evidence is reported clearly,
-- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- workflow-generated artifacts are not staged or committed unless I explicitly ask for that,
 - if committing is allowed, each commit strictly corresponds to one approved `FOLLOWUP.md` item and does not mix work from multiple follow-up items,
 - if committing is allowed, commits are small, focused, and split into sensible parts rather than one broad commit,
 - the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
@@ -319,7 +327,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,

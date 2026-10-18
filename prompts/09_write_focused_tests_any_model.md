@@ -91,8 +91,8 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -113,12 +113,15 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Write the fewest tests that provide meaningful confidence.
 - Zero new tests is valid only when existing tests already cover every changed behavior and material regression risk and fresh evidence shows at least 85% coverage for new or changed lines.
 - Before editing, identify the smallest set of distinct behaviors that need coverage and explain why each proposed test is necessary.
+- Derive scenarios and expected outcomes independently from the original requirements, approved changes, public contracts, and inspected production paths. Try to disprove completion claims instead of reproducing the implementation or the author's existing assertions. Re-read the source requirements after long sessions or handoffs and before sign-off; stop on an unresolved conflict rather than encoding implementation drift as the expected result.
 - Add or extend a regression test for a bug fix only when existing behavior tests leave a genuine gap for the failure being fixed. A bug fix alone does not justify a new test.
 - Prefer extending an existing test to cover a new path when that remains clear and preserves one behavior per test. Do not create a parallel test for behavior already covered.
 - Consolidate trivial tests of the same behavior into one readable test or native parameterization when that preserves meaningful assertions and clear failure diagnostics. Do not combine unrelated behaviors to reduce the test count.
 - Do not add tests solely to execute lines or inflate coverage.
 
 ### Test design
+
+Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add live-network tests, production instrumentation, or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
 
 - Keep test code in test files or test directories, separate from production code.
 - Test observable architecture and behavior, not implementation details.
@@ -194,7 +197,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 - Review the final diff before staging.
 - Stage only intended test files and test-local support code with `git add`.
-- Do not stage or commit workflow-generated Markdown artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask.
+- Do not stage or commit workflow-generated artifacts, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask.
 - When test changes are needed, create one focused test commit unless separate logical test groups clearly justify more.
 - If fresh evidence proves that zero test changes are needed, do not create an empty commit.
 - Use a detailed commit message and description.

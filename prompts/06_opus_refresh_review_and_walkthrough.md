@@ -1,4 +1,4 @@
-# 06 - Opus Refreshes Final Review + Walkthrough Files
+# 06 - Opus Refreshes Final Review and Walkthrough, Then Generates Interactive HTML
 
 ## Skills
 
@@ -34,6 +34,8 @@ Do not use any skill to expand scope, add architecture changes, add tests, add u
 
 Apply `no-ai-slop` while drafting and run its `eval.md` self-check before saving each Markdown artifact or sending the final response. If its `SKILL.md` or `eval.md` cannot be read and applied, stop before creating or revising Markdown and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
+Apply the same writing guide and evaluator to the explanatory text in `WALKTHROUGH.html` before saving it. The HTML is a workflow explanation, so its generation does not activate UI implementation or design skills for backend-only changes.
+
 
 ## Engineering Contract
 
@@ -43,6 +45,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -88,6 +91,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -109,8 +113,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -218,7 +222,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 - Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
 - Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
 - Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
-- Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add a new artifact or override `no-ai-slop` and its evaluator.
+- Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add artifacts beyond this phase's three required outputs or override `no-ai-slop` and its evaluator.
 
 ### Phase requirements
 
@@ -237,13 +241,18 @@ Task:
 
 - update the review and walkthrough documents to reflect the final code state accurately,
 - confirm that every material changed behavior has a completed documentation checkpoint before final human review,
-- preserve the existing review trail while clearly marking what was fixed during the review loop.
+- preserve the existing review trail while clearly marking what was fixed during the review loop,
+- after refreshing and verifying both Markdown files, generate `WALKTHROUGH.html` to help the human reviewer build a mental model of the final changes.
 
 Artifact location rule:
 
 - `REVIEW.md`, `WALKTHROUGH.md`, and any other workflow-generated Markdown artifacts must stay in the target repo root using their exact required filenames,
 - every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields and refreshing `Updated at` whenever the artifact is updated,
 - do not move or recreate them in subdirectories or alternate paths.
+
+`WALKTHROUGH.html` must also live in the target repo root. Give it visible `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields on refresh. Record the reviewed branch and revision so later readers can identify stale content. Do not stage, commit, push, or change pull-request state in this phase.
+
+The required HTML is this phase's sole visual-artifact exception. UI skills may not create other artifacts or expand these write permissions.
 
 Context to review:
 
@@ -259,7 +268,8 @@ Success criteria:
 - `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
-- the refreshed artifacts are detailed, grounded, and internally consistent.
+- the refreshed artifacts are detailed, grounded, and internally consistent,
+- `WALKTHROUGH.html` reflects those refreshed files and the inspected final code, provides working interactions for exploring relationships and flows, and records browser verification or an explicit pending result.
 
 Constraints:
 
@@ -267,7 +277,10 @@ Constraints:
 - do not modify tests,
 - do not make new review findings unless you discover something severe that was missed,
 - treat missing, inaccurate, or unvalidated required durable documentation as a severe missed issue; stop and ask rather than finalizing the review artifacts,
-- if you discover a severe missed issue, stop and ask before proceeding.
+- if you discover a severe missed issue, stop and ask before proceeding,
+- write only `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html`; do not create application code, tests, dependencies, configuration, or other visual artifacts.
+
+Revisit the available original requirements and compare them with the final branch before refreshing. Preserve the independent scenarios, repeated-defect search results, incident diagnostic findings, and runtime/API evidence from the review loop. Check that evidence still applies to the final revision; repeat only relevant checks made stale by later changes. Required runtime checks must use the running application and relevant real APIs through existing tools in an authorized environment, with remote requests read-only unless side effects are authorized. Keep unobserved behavior and missing access explicit. Do not finalize a passing review while required checks remain pending, and do not turn the refresh into a new full review.
 
 ## Required output 1: refreshed `REVIEW.md`
 
@@ -288,6 +301,9 @@ It must include:
 - assert usage,
 - cross-platform review,
 - test review, if applicable,
+- independent verification, including challenged completion claims, observed runtime/API behavior, and pending checks or evidence-based `Not applicable` decisions,
+- repeated-defect search scope, confirmed occurrences, and any limits,
+- incident diagnostic evidence and any unresolved supported gaps,
 - documentation review with every material changed behavior's update-and-validation evidence or evidence-based `Not applicable` rationale,
 - any remaining suggestions.
 
@@ -299,11 +315,13 @@ Update `WALKTHROUGH.md` in the target repo root so it reflects the final code, n
 
 Document each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
 
+Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts or line-by-line coverage.
+
 Begin with a prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
 
 Describe every reachable control-flow branch and data/state transition through that code in prose. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
 
-Keep presentation diffs and pseudocode out of `WALKTHROUGH.md`; phase `07` presents them in chat from freshly inspected code and PR changes. Preserve source excerpts and prose coverage of relationships and flows here. Do not create diagrams, HTML, or additional visual artifacts.
+Keep presentation diffs and pseudocode out of `WALKTHROUGH.md`; phase `07` presents them in chat from freshly inspected code and PR changes. Preserve source excerpts and prose coverage of relationships and flows here. Do not create diagrams in `WALKTHROUGH.md` or phase `07`. Put the interactive mental model only in the required `WALKTHROUGH.html` after refreshing both Markdown files.
 
 Group the code into small semantic blocks, each covering one coherent operation or decision. Include relevant surrounding lines and file/line locations. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
@@ -315,4 +333,14 @@ Use short, readable excerpts and keep each explanation beside the code it descri
 
 The walkthrough must be suitable as a supplement for my human review and potentially as PR-description source material.
 
-Before finishing, verify that `REVIEW.md` and `WALKTHROUGH.md` match the final code state.
+## Required output 3: `WALKTHROUGH.html`
+
+After refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`, create or refresh `WALKTHROUGH.html` in the target repo root. Generate an interactive explanation of the final changes from those refreshed files and freshly inspected code. Apply the same complete-sentence, beginner-oriented writing standard used for `WALKTHROUGH.md`.
+
+- Start with the original problem, the intended behavior, and a navigable map of affected entry points, files, symbols, dependencies, and shared state. Let the reviewer select a component to inspect its responsibilities, relationships, and verified source locations.
+- Provide selectable success and error scenarios with step-by-step controls. Show inputs, branch conditions, calls, state transitions, side effects, and terminal outcomes, including retries, cleanup, and early exits where they exist. Split large flows into linked views without omitting reachable paths from the reviewed changes.
+- Connect each flow and material change to its rationale, relevant before/after behavior, source excerpts, and current file/line locations. Distinguish observed runtime/API behavior from code-derived explanations, illustrative state, and pending verification. Never imply that the HTML runs or verifies the application.
+- Use a single self-contained HTML file with inline styles and only the JavaScript needed for those interactions. It must open locally without a build step, dependency installation, external scripts, fonts, network requests, or live API calls. Use semantic controls, keyboard access, visible focus, readable responsive layouts, and a readable fallback if scripting fails. Treat source excerpts as text and escape them correctly; omit credentials and real user payloads. This artifact does not authorize prototypes, production UI changes, or generated assets.
+- Open the file in an available browser and verify navigation, scenario selection, step controls, keyboard operation, source references, and agreement with the refreshed Markdown and final code. Record the browser and observed results in `REVIEW.md` and the final response. If browser verification cannot run, report the exact blocker, mark HTML verification pending, and do not claim it passed. Keep the file uncommitted unless explicitly requested; downstream phases may read it as supplemental context but must inspect current code independently.
+
+Before finishing, verify that all three artifacts describe the same final revision. Report their paths and verification status. Pending required checks keep the handoff pending.

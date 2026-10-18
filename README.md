@@ -2,7 +2,7 @@
 
 A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, focused tests, and an independent test audit.
 
-Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `TEST_AUDIT.md` belong in the target repository root.
+Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `WALKTHROUGH.html`, and `TEST_AUDIT.md` belong in the target repository root.
 
 ## Workflow
 
@@ -23,7 +23,7 @@ flowchart TD
     L --> M["Review-fix model fixes valid findings"]
     M --> N["05 Verify review fixes"]
     N -- "more fixes" --> K
-    N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md"]
+    N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md, then generate WALKTHROUGH.html"]
     O --> P["07 Human walkthrough"]
     P --> Q{"Approved FOLLOWUP.md items?"}
     Q -- "yes" --> R["08 Implementation model implements FOLLOWUP.md"]
@@ -53,7 +53,7 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 | 03 | [Plan-revision verification](prompts/03_plan_revision_verification_any_model.md) | Any capable repo-aware model | `PLAN_REVISION_VERIFICATION.md` |
 | 04 | [Implemented-branch review](prompts/04_opus_review_branch.md) | Claude Opus | `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md` |
 | 05 | [Review-fix verification](prompts/05_opus_verify_review_fixes.md) | Claude Opus | `REVIEW_FIX_VERIFICATION.md` |
-| 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md` |
+| 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md`, then interactive `WALKTHROUGH.html` |
 | 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed |
 | 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Approved follow-up changes |
 | 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by phase-10 audit |
@@ -83,7 +83,7 @@ Use `12` when choosing between UI directions before locking a plan. It uses `pro
 5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
 7. Run [prompt 04](prompts/04_opus_review_branch.md). If it creates `REVIEW_FIX_PROMPT.md`, paste that generated prompt into any capable repository-aware coding model, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all valid blocking and non-blocking findings are resolved.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md), then use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
+8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
 11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes through the human approval and follow-up path before repeating `09` and `10`.
@@ -96,11 +96,11 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 ## Operator Rules
 
 - Run the workflow in the target code repository, never in this prompt-pack repository.
-- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename.
+- Store every workflow-generated Markdown artifact and `WALKTHROUGH.html` in the target repository root under its exact required filename.
 - Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
 - Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
-- Do not stage or commit workflow-generated Markdown artifacts unless explicitly requested.
+- Do not stage or commit workflow-generated artifacts, including `WALKTHROUGH.html`, unless explicitly requested.
 - Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
 - Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phases `09` and `10` verify this status but cannot edit documentation.
 - Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
@@ -119,6 +119,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `PLAN_REVISION_VERIFICATION.md` | 03 | Execution gate |
 | `REVIEW.md` | 04, refreshed by 06 | Review-fix context and later workflow context |
 | `WALKTHROUGH.md` | 04, refreshed by 06 | Review-fix and human walkthrough context |
+| `WALKTHROUGH.html` | 06, after refreshing both Markdown files | Interactive mental model for the human reviewer; supplemental context only |
 | `REVIEW_FIX_PROMPT.md` | 04 | Review-fix pass |
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
 | `FOLLOWUP.md` | 07 | 08 |
@@ -143,8 +144,8 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 Every phase applies a simplicity and reuse procedure to backend and UI work within its existing permissions:
 
 - inspect existing code, standard-library capabilities, native platform features, and installed dependencies before proposing custom code,
-- justify new abstractions and dependencies by current requirements or necessary ownership boundaries,
-- trace relevant callers before choosing a bug-fix location and verify references and contracts before proposing deletion,
+- explicitly review duplication, excess abstractions, unused paths, and avoidable complexity; justify abstractions and dependencies by current requirements or necessary ownership boundaries,
+- trace relevant callers before choosing a bug-fix location, search the codebase for the same failure pattern when a defect is found, and verify references and contracts before proposing deletion. Fix only approved occurrences and report others within the phase's existing output,
 - preserve readability, compatibility, validation, security, and verification; fewer lines are not an acceptance criterion.
 
 These rules draw from [Ponytail](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail/SKILL.md) and [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md). The rules are embedded in the prompts; these provenance links do not activate either skill. Persistent modes, line-count scoring, production assertion demos, test quotas, debt markers, and separate ledgers are excluded. Existing scope, dependency approval, and test-phase boundaries still apply.
@@ -152,6 +153,20 @@ These rules draw from [Ponytail](https://github.com/viseshrp/ai-skills-archive/b
 Deliberate simplifications with material limits must name why they meet current requirements, their known limit, and the evidence that would trigger revisiting them. Record these decisions in existing planning sections and carry applicable limits into durable documentation during authorized implementation. Review and audit phases verify them through the existing documentation checkpoint.
 
 Reviews and handoffs must support latency, memory, or cost improvement claims with comparable before-and-after measurements. Identify the baseline, changed version, workload, method, and relevant environment; otherwise label the expected improvement `unmeasured`. This adapts [ponytail-gain's honesty boundary](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-gain/SKILL.md); the provenance link does not activate the skill or its benchmark scoreboard. These rules add no comment markers, debt ledger, benchmark infrastructure, or workflow artifacts.
+
+## Review Evidence and Original Intent
+
+Phase 04 independently derives scenarios from available original requirements, approved changes, public contracts, and inspected code, then tries to disprove the author's completion claims. For changed runtime behavior, it exercises running applications and relevant real APIs through existing tools in an authorized environment. Remote requests remain read-only unless their side effects are authorized. Passing agent-written tests alone is insufficient; required unavailable checks stay pending and prevent a passing verdict. Changes with no runnable behavior receive an evidence-based `Not applicable` decision.
+
+Review records the challenged claims, expected and observed results, revision and environment, repeated-defect search scope and occurrences, and incident diagnostic evidence. Logging review asks whether an engineer could identify the failing operation, correlate a request or job, understand the cause, and determine recovery outcomes without exposing sensitive data. Reviewers re-read original requirements after long sessions or handoffs to identify drift. Planning and generated execution/revision/fix prompts carry the applicable requirements; verification, follow-up, test writing, and test audit apply them within their existing permissions. Test authoring remains in phase 09, and broader defect discovery does not authorize broader fixes.
+
+## Walkthrough Explanations and Interactive Model
+
+Phases 04, 06, and 07 use ISO-style plain language and ASD-STE100-inspired technical writing without claiming formal compliance. Explanations use complete sentences, define terms and abbreviations, and explain symbols, background, and cause and effect without assuming prior chat or repository knowledge. Exact identifiers, source excerpts, and line-by-line coverage remain required, with `no-ai-slop` as the final writing guide.
+
+After refreshing and verifying both Markdown files, phase 06 generates one self-contained `WALKTHROUGH.html`. It provides a navigable code map, component details, selectable success/error scenarios, and step controls connected to verified source locations. It opens locally without dependencies or network access, records the reviewed revision and browser verification status, and distinguishes observed behavior from code-derived explanations. Required browser verification stays pending when unavailable.
+
+This HTML explains the changes; it does not execute the application or replace independent human review, `AGREE`, `RESOLVE`, or the final go-ahead. Only phase 06 generates or refreshes it. Later code changes can make it stale, so consumers check it against current code. Keep it uncommitted unless explicitly requested.
 
 ## UI Work Only
 

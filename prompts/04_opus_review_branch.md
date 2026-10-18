@@ -43,6 +43,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -88,6 +89,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -109,8 +111,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -281,6 +283,8 @@ Working method:
 - after checking 100% compliance with any available plan, or completing the full evidence-based review when no plan is available, provide suggestions,
 - do not make any changes you propose until I give the go-ahead.
 
+Independently challenge the author's completion claims using the procedure below. A passing author-written test is supporting evidence; it does not by itself establish that the running behavior meets the requirements.
+
 This branch will be merged into main.
 
 ## Review dimensions
@@ -305,6 +309,8 @@ Review for:
 - assumptions in code,
 - assert statements in production code,
 - reinvention/duplication of existing code,
+- excess abstractions, unused paths, and avoidable complexity, with caller and contract evidence before recommending removal,
+- incident diagnostics for changed failure paths,
 - comment quality and missing comments where code is not obvious,
 - bloated comment blocks,
 - cross-platform Linux/Windows safety,
@@ -335,6 +341,14 @@ If the changes reinvent/duplicate something already in the source code, flag it.
 Ensure every non-obvious change has an explanatory comment. Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
 
 All changes must be strictly cross-platform and must work on both Linux and Windows. Mac is not a concern.
+
+## Independent verification and incident diagnostics
+
+1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
+2. Independently derive test scenarios from those requirements, public contracts, and inspected code before adopting the author's test cases or expected results. Try to disprove completion claims with relevant boundary, failure, recovery, and regression cases. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.
+3. For changed runtime behavior, exercise the running application through its real entry points and call the relevant real APIs. Use an authorized local or test environment and existing tools. Remote requests must be read-only unless the user has authorized their side effects. Do not install dependencies or change configuration to enable a review. Record the revision, environment, scenario, expected result, observed result, command or interaction, and evidence. Keep observed behavior, code-only conclusions, and pending checks distinct. Missing access or an unavailable environment leaves the required check pending and prevents a passing verdict; explain `Not applicable` for changes with no runnable behavior.
+4. When one defect is found, search throughout the codebase for the same failure pattern, including sibling implementations and other callers. Inspect candidate matches and distinguish confirmed occurrences from false positives. Record search scope and unexamined areas. Report occurrences outside the branch's scope separately; discovery does not authorize broader fixes.
+5. Inspect logs and error handling for the changed failure paths as if diagnosing an incident. Check whether an engineer could identify the failing operation, correlate a request or job, understand the cause and trace, and determine retry or recovery outcomes where applicable. Use captured runtime evidence when available and identify gaps in existing logging, while checking for secrets, sensitive payloads, or excessive noise. Do not add instrumentation during review.
 
 ## Test review rules
 
@@ -395,6 +409,12 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 
 ## Test Review
 
+## Independent Verification
+
+## Repeated Defect Search
+
+## Incident Diagnostics
+
 ## Documentation Review
 
 ## Suggestions
@@ -410,11 +430,15 @@ In `## Review Basis`, list the branch comparison used, the repository evidence i
 
 In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
+In `## Independent Verification`, record the independently derived scenarios, claims challenged, runtime/API evidence, and any pending checks or evidence-based `Not applicable` decision. In `## Repeated Defect Search`, record the pattern, search scope, confirmed occurrences, and limits, or state that no defect triggered a search. In `## Incident Diagnostics`, record the relevant failure paths, available diagnostic evidence, and supported gaps, or explain why logging does not apply. Categorize supported defects under the issue headings; keep evidence gaps explicit and do not report pending required verification as passed.
+
 In `## Documentation Review`, record the documentation-checkpoint result for every material changed behavior. Treat missing, inaccurate, or unvalidated required durable documentation as a valid review issue rather than an optional suggestion.
 
 ## Required output 2: `WALKTHROUGH.md`
 
 Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
+
+Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts or line-by-line coverage.
 
 Begin with a prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
 
@@ -560,7 +584,8 @@ Success criteria:
 - verification evidence is reported clearly,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
-- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- workflow-generated artifacts are not staged or committed unless I explicitly ask for that,
+- `WALKTHROUGH.html` is also an uncommitted workflow artifact unless I explicitly ask for it to be committed; only phase `06` generates or refreshes it,
 - the fix pass stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one.
 
 Context to read before acting:
@@ -614,9 +639,11 @@ Focused verification:
 - inspect all changes made by this fix pass for possible regressions, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix regressions within the approved review-fix scope; stop and ask if a fix would exceed it,
 - inspect the changes made by this pass for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - run focused verification relevant to the fixes,
+- derive verification scenarios from the accepted finding and original requirement, then replay the reviewer's independent scenarios against the changed behavior. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
+- recheck the same defect pattern throughout the codebase and assess incident diagnostics for affected failure paths. Fix only accepted in-scope occurrences; report other supported occurrences and gaps for the appropriate approval path,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,

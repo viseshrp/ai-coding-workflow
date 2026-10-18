@@ -128,6 +128,8 @@ Working method:
 - do not accept vague answers that leave important ambiguity; follow up until Opus can proceed without guessing,
 - keep going until the goal, constraints, non-goals, likely implementation surface, and definition of done are clear enough to seed Opus.
 
+Before finalizing the draft and generated planning prompt, re-read the original request and approved clarifications. Preserve their intent explicitly so later phases can check for implementation drift after long sessions or context handoffs.
+
 Stop rules:
 
 - do not produce final artifacts until exploration is complete or I explicitly ask you to stop and generate them,
@@ -390,7 +392,8 @@ Required output 1: `FEATURE_SPEC_AND_PLAN.md`
    - exact checks to run,
    - what successful output means,
    - what failures should be pasted back without paraphrasing,
-   - no full test-suite run unless explicitly asked.
+   - no full test-suite run unless explicitly asked,
+   - for changed runtime behavior, define scenarios with independent expected results, the running application entry points and relevant real APIs to exercise, the authorized environment, and the evidence needed to establish completion. Include relevant failure and recovery paths and their incident diagnostics. Keep remote requests read-only unless side effects are authorized; unavailable runtime checks remain pending rather than passing from agent-written tests alone.
 6. Documentation update plan:
    - a mapping from every implementation step to its documentation checkpoint,
    - likely docs folder/file(s) and how you found them,
@@ -479,7 +482,8 @@ Success criteria:
 - focused verification is run and reported with fresh evidence,
 - any workflow-generated Markdown artifacts created or updated during the workflow remain in the target repo root and are never moved to subdirectories or alternate paths,
 - any workflow-generated Markdown artifacts created or updated during the workflow include `Created by`, `Created at`, and `Updated at` metadata with `Updated at` refreshed on every edit,
-- workflow-generated Markdown artifacts are not staged or committed unless I explicitly ask for that,
+- workflow-generated artifacts are not staged or committed unless I explicitly ask for that,
+- `WALKTHROUGH.html` is also an uncommitted workflow artifact unless I explicitly ask for it to be committed; only phase `06` generates or refreshes it,
 - the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one.
 
 Context to read before acting:
@@ -522,6 +526,9 @@ Stop rules:
 Execution rules:
 
 - before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
+- re-read the original requirements and approved clarifications after long sessions or context handoffs and before completion. Check the final behavior for drift, omissions, unintended additions, duplicated logic, excess abstractions, unused paths, and avoidable complexity within the locked scope,
+- derive verification scenarios and expected results from the requirements and public contracts. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the revision, environment, expected and observed results, and any blocked checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
+- when a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Fix only within the locked plan, report broader occurrences without changing them, and verify incident diagnostics for the affected failure paths,
 - read likely relevant files in parallel before editing when practical,
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
 - carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
@@ -543,7 +550,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated Markdown artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,
@@ -689,6 +696,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -734,6 +742,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -755,8 +764,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 

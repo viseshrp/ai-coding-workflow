@@ -43,6 +43,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -88,6 +89,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -109,8 +111,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -279,6 +281,7 @@ Review for:
 - unnecessary brute-force or quadratic operations,
 - poor reuse / DRY violations,
 - failure to reuse existing code,
+- excess abstractions, unused paths, and avoidable complexity without a current requirement,
 - separation-of-concerns violations,
 - missing documentation grounding for library/framework usage,
 - outdated API usage,
@@ -287,6 +290,8 @@ Review for:
 - cross-platform Linux/Windows risks,
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
+- missing independent scenarios and expected results, running-application and relevant real-API checks for runtime changes, or explicit handling of unavailable verification,
+- missing incident diagnostic requirements for changed failure and recovery paths,
 - missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
 - anything in the execution prompt that gives the implementation model too much freedom.
 
@@ -461,6 +466,8 @@ It must state that:
 
 The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
 
+Require the revised plan and actual `EXECUTION_PROMPT.md` to preserve original requirements and approved clarifications, explicit unnecessary-code checks, repository-wide searches for repeated defects, and incident diagnostics for changed failure paths. Preserve independent verification scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and evidence reporting with required unavailable checks pending. Keep remote requests read-only unless side effects are authorized, test authoring deferred to `09`, and changes within approved scope. These requirements do not authorize implementation during critique or revision.
+
 Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
 
 - role,
@@ -503,7 +510,7 @@ Success criteria:
 - the revised planning artifacts still belong only in the target repo root and do not introduce any alternate artifact path,
 - the revised planning artifacts preserve or add `Created by`, `Created at`, and `Updated at` metadata correctly,
 - the revised execution prompt preserves explicit instructions to stage changes, commit, push, and create a pull request only if the current branch does not already have one,
-- the revised execution prompt preserves explicit instructions not to stage or commit workflow-generated Markdown artifacts unless I explicitly ask for that,
+- the revised execution prompt preserves explicit instructions not to stage or commit workflow-generated artifacts unless I explicitly ask for that,
 - no detail from the current plan artifacts, critique, or draft-plan lineage is silently dropped.
 
 Constraints:
@@ -537,7 +544,7 @@ Also:
 - preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,
 - preserve or strengthen the artifact-metadata rule that all workflow-generated Markdown artifacts include `Created by`, `Created at`, and `Updated at`, preserving creation fields and refreshing `Updated at` on edits,
-- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated Markdown artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and the other workflow output Markdown files unless I explicitly ask for that,
+- preserve or strengthen the `EXECUTION_PROMPT.md` instructions not to stage or commit workflow-generated artifacts such as `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and the other workflow output Markdown files unless I explicitly ask for that,
 - if the revised `EXECUTION_PROMPT.md` needs a fallback instruction for checking whether the current branch already has a pull request, use GitHub CLI (`gh`) for that fallback and do not invent a duplicate-prone alternative,
 - preserve explicit success criteria, stop rules, and verification expectations in the revised artifacts.
 
@@ -587,7 +594,7 @@ Final checks:
   - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md),
   - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md),
 - verify that the execution prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,
-- verify that the execution prompt still forbids committing workflow-generated Markdown artifacts by default,
+- verify that the execution prompt still forbids committing workflow-generated artifacts by default,
 - verify that the Engineering Contract remains intact or stricter.
 - compare each applicable implementation requirement in the Engineering Contract with its wording in the revised `EXECUTION_PROMPT.md`, including priority, scope, conditions, exceptions, and stop gates; repair omissions or weakened instructions before handoff.
 

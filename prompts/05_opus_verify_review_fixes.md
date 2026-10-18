@@ -44,6 +44,7 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
@@ -89,6 +90,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Use custom errors/exception classes instead. Reuse existing classes in the codebase or create custom ones if needed.
 - Do not chain exceptions when doing so would expose implementation/library details to users.
 - If logging is used and available, log the trace with the logger for debugging.
+- For changed failure paths, assess whether incident logs identify the failed operation, relevant request or job context, error cause and trace, and retry or recovery outcome where applicable. Follow existing logging conventions and levels; avoid secrets, sensitive payloads, and duplicate noise. Identify diagnostic gaps within the approved change scope.
 - If changes touch public APIs or add new public APIs, ensure they are user-friendly, intuitive, blend well with the existing public API set, and have appropriate names.
 
 ### Code quality and maintainability
@@ -110,8 +112,8 @@ Apply this contract during planning, execution, review, and review fixes.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -266,6 +268,10 @@ Constraints:
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
+Independently derive scenarios from each prior finding and the available original requirements, then try to disprove the fix model's completion claims. Re-run the reviewer's relevant scenarios and focused existing checks. For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools; remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation. Record the revision, environment, expected and observed results, and exact evidence; passing author-written tests alone is insufficient. Keep required unavailable checks pending and withhold a ready verdict. Explain `Not applicable` when there is no runnable behavior to verify.
+
+Verify that the fix pass searched the codebase for the same defect pattern and checked incident diagnostics for affected failure paths. Recheck relevant occurrences and diagnostic gaps; distinguish unresolved prior findings from new supported issues. Report broader occurrences without expanding the fix scope.
+
 For each prior review finding:
 
 - identify the original finding,
@@ -297,6 +303,8 @@ Use this structure:
 
 ## Documentation Checkpoint Verification
 
+## Independent Behavior and Diagnostic Evidence
+
 ## New Issues Introduced
 
 ## Remaining Blocking Issues
@@ -313,4 +321,4 @@ If anything remains unresolved:
 - state that `04` is the only phase that should author `REVIEW_FIX_PROMPT.md`,
 - if `REVIEW_FIX_PROMPT.md` was missing, weak, or failed to retain needed fix instructions, report the upstream review/request failure; do not compensate here.
 
-If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved and every documentation checkpoint is complete, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh.
+If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved, every required verification check and documentation checkpoint is complete, and no new blocking issue remains, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh followed by `WALKTHROUGH.html` generation in phase `06`.

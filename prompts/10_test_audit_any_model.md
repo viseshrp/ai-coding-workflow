@@ -74,8 +74,8 @@ If a conflict is material, stop and ask instead of silently choosing.
 Apply this procedure to backend and UI work within this phase's existing permissions. In review-only phases, assess proposed or existing changes without implementing them:
 
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
-- Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Address the root cause within approved scope; if a shared fix would exceed that scope or alter compatibility, stop and ask.
+- Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -92,6 +92,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Audit bar
 
+- Independently derive scenarios and expected outcomes from the available original requirements, approved changes, public contracts, and production paths. Try to disprove the test author's completion claims and identify implementation drift after long sessions or handoffs; do not adopt the author's assertions as the requirement.
 - Every new or changed test must protect a distinct observable behavior, invariant, or independent contract.
 - Each test must have a credible regression that makes it fail for the intended reason.
 - Stronger existing coverage must not already prove the same contract unless the additional layer covers a distinct risk.
@@ -101,6 +102,8 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Tests must not exist only to preserve production exports, flags, wrappers, reset hooks, or dead paths that no production caller needs.
 - The measured coverage claim must match the command and scope actually reported. Broader file or package coverage is not changed-line coverage.
 - At least 85% coverage for new or changed lines remains required. Do not weaken configuration or add coverage-only proof.
+
+For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
 
 ### Finding classes
 

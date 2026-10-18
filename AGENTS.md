@@ -107,7 +107,7 @@ These are the main design constraints that define this repo:
 - The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
-- Execution phases must also require the model not to stage or commit workflow-generated Markdown artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md` unless the user explicitly asks for that.
+- Execution phases must also require the model not to stage or commit workflow-generated artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md` unless the user explicitly asks for that.
 - Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phases `09` and `10` may only verify and escalate a gap because their scopes forbid documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must fetch and completely read each shared and applicable language-specific `SKILL.md` and the required `no-ai-slop` evaluator from their GitHub links.
@@ -116,6 +116,7 @@ These are the main design constraints that define this repo:
 - Phase `10` may create or update only `TEST_AUDIT.md`. It must not edit code, tests, documentation, configuration, dependencies, Git state, or pull-request state.
 - Phase `10` routes test-only findings back to `09` and other findings to an authorized implementation or human-follow-up phase. Human review of the audited test diff is the terminal workflow step after phase `10` passes.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
+- Phase `06` additionally generates `WALKTHROUGH.html` in the target repository root only after refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`. Keep this explanatory artifact uncommitted unless explicitly requested; it does not authorize production UI changes or replace human review.
 
 ## Canonical Workflow Phases
 
@@ -145,6 +146,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - If issues remain, the workflow returns to `04`; this phase does not author an alternate `REVIEW_FIX_PROMPT.md`.
 6. `06_opus_refresh_review_and_walkthrough.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
+   - Then generates and browser-verifies a self-contained interactive `WALKTHROUGH.html` to explain the final changes.
 7. `07_human_code_walkthrough.md`
    - Starts human review with a brief prose overview of the code and explains success/error flows alongside semantic blocks.
    - Reviews small semantic blocks with excerpts for references defined outside the block.
@@ -279,9 +281,17 @@ The `### Tests` subsection is deliberately phase-specific:
 
 Documentation is a cross-phase completion gate. Keep a named documentation-checkpoint rule in every checked-in prompt and every generated downstream prompt. Planning, critique, review, verification, and the human walkthrough must identify the documentation impact and require an explicit update-or-not-applicable result; implementation, fix, and follow-up phases must complete and validate applicable durable documentation in the same change set. Phases `09` and `10` must verify that prior documentation checkpoints passed and stop/escalate if they did not, without editing documentation.
 
+### Review evidence and original intent
+
+Phase `04` must independently derive scenarios from original requirements, approved scope changes, public contracts, and inspected code, and try to disprove the author's completion claims. For changed runtime behavior, require running-application and relevant real-API evidence from an authorized environment using existing tools; keep remote requests read-only unless their side effects are authorized. Agent-written tests alone do not prove runtime completion. Record expected and observed results, revision, environment, pending checks, and evidence-based `Not applicable` decisions for changes without runnable behavior. Required unavailable checks prevent a passing verdict.
+
+Keep applicable requirements in planning, critique, verification, generated planning/revision/execution/fix prompts, human review, follow-up implementation, test writing, and test audit. Re-read original requirements after long sessions or context handoffs and before sign-off to detect implementation drift. Inspect incident diagnostics for changed failure paths: operation, request/job context, error cause/trace, and retry/recovery outcome where applicable, following existing conventions without secrets or noisy duplicate events. When a defect is found, search the codebase for the same failure pattern, inspect candidate matches, and report scope, confirmed occurrences, and limits in existing outputs. These checks do not authorize broader implementation, new artifacts, test writing outside `09`, instrumentation during review, or a new whole-repository audit. Phase `06` refreshes existing evidence and repeats only relevant checks made stale by later changes; preserve its severe-issue stop rule.
+
 ### Simplicity and reuse
 
 Keep the general Simplicity and reuse procedure aligned across all phases and generated planning, revision, execution, and review-fix prompts. Apply it to backend and UI work within each phase's permissions. Require inspection of existing code, standard-library capabilities, native features, and installed dependencies; justification for new abstractions; caller tracing for bug fixes; and reference and contract checks before deletion.
+
+Explicitly check duplication, excess abstractions, unused paths, and avoidable complexity. Require caller and contract evidence before treating code as unnecessary; do not make a single caller or a lower line count an automatic finding. Repeated-defect searches in applicable phases identify other occurrences without expanding write permissions or approved scope.
 
 Preserve readability, compatibility, validation, security, and verification over line-count reductions. These are embedded rules derived from Ponytail, not authorization to activate its persistent mode, weaken test requirements, add production assertion demos, or create debt markers or ledgers. Keep provenance in `README.md`.
 
@@ -328,6 +338,7 @@ The review/fix/human-review portion relies on a stable artifact chain:
 
 - `REVIEW.md`
 - `WALKTHROUGH.md`
+- `WALKTHROUGH.html` (generated only by `06`, after both Markdown files are refreshed)
 - `REVIEW_FIX_PROMPT.md`
 - `REVIEW_FIX_VERIFICATION.md`
 - `FOLLOWUP.md`
@@ -342,6 +353,10 @@ The explicit `AGREE` gate in `07_human_code_walkthrough.md` is intentional and h
 `FOLLOWUP.md` must remain human-approved only. Do not weaken this gate accidentally.
 
 Phase `07` uses the explicitly linked `show-me` skill for focused source diffs and pseudocode in chat. Start with a brief prose overview, then explain relationships and all reachable success/error flows while reviewing small semantic blocks with pseudocode for material logic changes and the declarations and definitions needed to understand their references. Preserve `AGREE`, `RESOLVE`, and the documentation checkpoint without imposing a fixed per-response template. Keep presentation diffs and pseudocode in chat only; create no diagrams, mindmaps, HTML, or additional visual artifacts. The `WALKTHROUGH.md` producers `04` and `06` retain equivalent relationship/flow coverage in prose, semantic grouping, source excerpts, and adjacent line-by-line explanations.
+
+Phases `04`, `06`, and `07` must use ISO-style plain language and ASD-STE100-inspired technical writing without claiming formal compliance. Require complete sentences with explicit subjects, actions, and outcomes; first-use definitions for technical terms and abbreviations; and enough background to explain symbols and cause and effect without prior chat or repository knowledge. Preserve exact identifiers, excerpts, and line-by-line coverage. `no-ai-slop` remains the final writing guide.
+
+Only phase `06` may generate or refresh the interactive `WALKTHROUGH.html`, after refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`. Require a single local HTML file with inline assets, no dependencies or network requests, a navigable relationship map, selectable success/error flows, step controls, verified source references, readable fallback content, keyboard access, visible artifact metadata, and the reviewed branch/revision. Apply the writing standard and `no-ai-slop` evaluator to its prose. Browser-check the interactions and record evidence in `REVIEW.md` and chat; unavailable required verification remains pending. This is an explanatory workflow artifact, not a UI prototype or application implementation. Consumers may use it only as supplemental context after checking for stale code; it must not import AI findings into phase `07` or bypass human approval. Later implementation and test phases keep it uncommitted unless explicitly requested and do not regenerate it.
 
 On `RESOLVE`, phase `07` refreshes the file's PR changes. Changes since review require further review and renewed `RESOLVE`. Otherwise, use `gh api graphql` with `markFileAsViewed` and verify the file's `viewerViewedState` is `VIEWED` before resolving the checklist item and advancing. Already-viewed status does not bypass review or approval. Update or verification failures keep completion pending; do not silently skip them. File completion must not resolve review conversations or submit PR approval. Preserve the final go-ahead gate before implementation.
 
@@ -506,6 +521,7 @@ When making non-trivial changes, search for these strings before finalizing:
 - `EXECUTION_PROMPT.md`
 - `REVIEW.md`
 - `WALKTHROUGH.md`
+- `WALKTHROUGH.html`
 - `FOLLOWUP.md`
 - `TEST_AUDIT.md`
 - `DO NOT MAKE ASSUMPTIONS`
