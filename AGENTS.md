@@ -56,10 +56,8 @@ If you change wording that changes behavior, you are changing product logic.
   - Preserved chat/export context.
 - `archived/agentic_coding_prompt_pack_refactored.md`
   - Historical consolidated/refactored prompt-pack document for reference/audit, not the main editable surface.
-- `.agents/`
-  - Present but currently empty.
-- `.codex/`
-  - Present but currently empty.
+- `.agents/` and `.codex/`
+  - Not present in the repository. Do not create them unless explicitly asked.
 
 ## Canonical Editing Surface
 
@@ -71,7 +69,7 @@ Default to editing only:
 
 Never edit, rename, or rewrite anything under `archived/` unless the user explicitly asks for archive work.
 
-Do not populate `.agents/` or `.codex/` unless explicitly asked.
+Do not create or populate `.agents/` or `.codex/` unless explicitly asked.
 
 ## Immutable Source Material - Hard Rule
 
@@ -107,7 +105,7 @@ These are the main design constraints that define this repo:
 - The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
-- Execution phases must also require the model not to stage or commit workflow-generated artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md` unless the user explicitly asks for that.
+- Execution phases must also require the model not to stage or commit workflow-generated artifacts such as `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/` unless the user explicitly asks for that. The execution lists in `01`, `04`, `08`, and `09` carry this full set; keep them synchronized.
 - Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phases `09` and `10` may only verify and escalate a gap because their scopes forbid documentation edits.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must fetch and completely read each shared and applicable language-specific `SKILL.md` and the required `no-ai-slop` evaluator from their GitHub links.
@@ -124,6 +122,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
 
 1. `01_initial_exploration_any_model.md`
    - Clarifies a vague idea.
+   - Reads `UI_PROTOTYPE.md` and the selected `.ui-prototypes/<slug>/` files as read-only design input when optional phase `12` ran, and carries the selection into both generated artifacts.
    - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
    - The Opus prompt produced here is the final paste-ready prompt for the main planning pass.
    - The main Opus planning phase is driven by that generated artifact rather than by a separate checked-in prompt file.
@@ -131,8 +130,9 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Critiques the locked planning artifacts.
    - Produces `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`.
    - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
+   - That revision pass may update only `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md` and must produce `PLAN_REVISION_SUMMARY.md`.
 3. `03_plan_revision_verification_any_model.md`
-   - Verifies that the revision addressed the critique.
+   - Verifies that the revision addressed the critique, using `PLAN_CRITIQUE.md`, `PLAN_REVISION_SUMMARY.md`, and the revised planning artifacts.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
    - If issues remain, the workflow returns to `02`; this phase does not author an alternate `OPUS_PLAN_REVISION_REQUEST.md`.
    - Locked execution is then driven by the generated `EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file.
@@ -549,6 +549,8 @@ When making non-trivial changes, search for these strings before finalizing:
 - `WALKTHROUGH.html`
 - `FOLLOWUP.md`
 - `TEST_AUDIT.md`
+- `PLAN_REVISION_SUMMARY.md`
+- `UI_PROTOTYPE.md`
 - `DO NOT MAKE ASSUMPTIONS`
 - `Do not write tests`
 - `85% coverage`

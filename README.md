@@ -100,7 +100,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 - Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
 - Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
-- Do not stage or commit workflow-generated artifacts, including `WALKTHROUGH.html`, unless explicitly requested.
+- Do not stage or commit workflow-generated artifacts, including `WALKTHROUGH.html`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless explicitly requested.
 - Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
 - Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phases `09` and `10` verify this status but cannot edit documentation.
 - Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.

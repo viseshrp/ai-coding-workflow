@@ -129,6 +129,15 @@ Working method:
 - do not accept vague answers that leave important ambiguity; follow up until Opus can proceed without guessing,
 - keep going until the goal, constraints, non-goals, likely implementation surface, and definition of done are clear enough to seed Opus.
 
+Optional UI prototype input:
+
+- if `UI_PROTOTYPE.md` exists in the target repo root or I provide it, read it and the selected prototype files it names under `.ui-prototypes/<slug>/` before asking UI questions. Optional phase `12` produces these files,
+- confirm that the artifact covers the requested UI surface. If it covers a different surface or its ownership is unclear, ask me before using it,
+- treat `Human Selection` as an approved design direction only when it records my explicit choice. If it is `Pending`, resolve the selection with me before locking UI decisions,
+- carry the selected variant, prototype path, recorded constraints, simulated behavior, material simplification limits and revisit triggers, pending checks, and documentation impact into `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`,
+- treat the prototype as design evidence, not production code or proof of production readiness. Production integration and any cleanup of the prototype files must be planned explicitly,
+- do not edit, move, or delete `UI_PROTOTYPE.md` or the prototype files.
+
 Before finalizing the draft and generated planning prompt, re-read the original request and approved clarifications. Preserve their intent explicitly so later phases can check for implementation drift after long sessions or context handoffs.
 
 Stop rules:
@@ -167,6 +176,7 @@ Create `DRAFT_PLAN.md` in the target repo root with:
 - technical assumptions,
 - open questions,
 - decisions already made,
+- the selected UI prototype direction from `UI_PROTOTYPE.md`, if present: selected variant, prototype path, constraints, simplification limits, pending checks, and the need to plan production integration and prototype cleanup explicitly,
 - likely files/modules involved, if known,
 - documentation impact for each likely implementation step, including the exact durable documentation to update or an evidence-based `Not applicable` rationale,
 - risks,
@@ -266,6 +276,7 @@ Task:
 Context to read before answering:
 
 - Read `DRAFT_PLAN.md`, prior interviewing/grilling notes, and relevant repository context.
+- If `DRAFT_PLAN.md` records a selected UI prototype, read `UI_PROTOTYPE.md` and the selected prototype files as design reference. Treat the prototype as evidence for the chosen direction, not production code. Plan production integration and any prototype cleanup explicitly, and do not edit those files.
 
 Success criteria:
 
@@ -557,7 +568,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,
