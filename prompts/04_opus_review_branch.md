@@ -277,6 +277,7 @@ Working method:
 - establish the review basis from the diff and repository evidence before judging,
 - inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
 - trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
+- give architecture and other high-impact changes deeper scrutiny, including changes to shared behavior, public contracts, persistent data, security boundaries, or concurrency. Assess impact from affected consumers and failure consequences, even for small diffs. Trace the relevant compatibility, migration, and failure/recovery paths and prioritize independent verification of those risks,
 - when planning artifacts are available, audit compliance with them; when they are absent, use the branch diff as the scope boundary and existing behavior, public APIs, documentation, configuration, and tests as evidence,
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
 - quote or clearly point to the exact evidence for each material finding,
@@ -429,7 +430,7 @@ Every valid review issue must be categorized under either `Blocking Issues` or `
 
 Use `Suggestions` only for optional improvements that are not required in the review-fix pass.
 
-In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence.
+In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
 
 In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
@@ -646,7 +647,7 @@ Focused verification:
 - inspect the changes made by this pass for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - run focused verification relevant to the fixes,
 - judge test and runtime results against the independent acceptance criteria. Investigate any disagreement between passing tests and failed real API checks; do not weaken expectations or claim completion until the required behavior is verified,
-- derive verification scenarios from the accepted finding and independent acceptance criteria grounded in the available original requirements or public contracts, then replay the reviewer's independent scenarios against the changed behavior. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
+- derive verification scenarios from the accepted finding and independent acceptance criteria grounded in the available original requirements or public contracts, then replay the reviewer's independent scenarios against the changed behavior. Give fixes in architecture or other high-impact areas deeper verification of the affected consumers and risks recorded in `REVIEW.md`. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
 - recheck the same defect pattern throughout the codebase and assess incident diagnostics for affected failure paths. Fix only accepted in-scope occurrences; report other supported occurrences and gaps for the appropriate approval path,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,

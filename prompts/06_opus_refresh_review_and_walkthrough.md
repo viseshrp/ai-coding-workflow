@@ -282,7 +282,7 @@ Constraints:
 Working method:
 
 - Revisit the available original requirements and compare them with the final branch before refreshing.
-- Refresh the review loop's acceptance criteria and requirement references, independent scenarios, focused integration proof, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Preserve the acceptance baseline and check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
+- Refresh the review loop's risk assessment for architecture and high-impact changes, acceptance criteria and requirement references, independent scenarios, focused integration proof, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Preserve the acceptance baseline and check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
 - Use the running application and relevant real APIs for required runtime checks, through existing tools in an authorized environment. Keep remote requests read-only unless side effects are authorized, and distinguish observed behavior from code-only conclusions and missing access.
 - Keep required unavailable checks pending and withhold a passing verdict. Preserve the severe-issue stop rule and do not restart a full review.
 

@@ -299,6 +299,8 @@ Explicitly check duplication, excess abstractions, unused paths, and avoidable c
 
 In phase `04`, explicitly verify that new code fits and reuses the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Require concrete evidence for unapproved parallel architecture or bypassed layers, record it in the existing quality/reuse review sections, and carry the established repair path into the generated review-fix prompt. This does not authorize a redesign; new architecture decisions still require explicit approval.
 
+Give architecture and other high-impact changes deeper scrutiny based on affected consumers and failure consequences, even for small diffs. Phase `04` traces the relevant compatibility, migration, security, concurrency, and recovery risks and records the additional evidence gathered or still required in `Review Basis`. Carry those risks into the generated review-fix prompt and phase `05` verification. Phase `06` refreshes the assessment and final-revision evidence without restarting a full review. Preserve existing scope, write permissions, and test-authoring boundaries.
+
 Preserve readability, compatibility, validation, security, and verification over line-count reductions. These are embedded rules derived from Ponytail, not authorization to activate its persistent mode, weaken test requirements, add production assertion demos, or create debt markers or ledgers. Keep provenance in `README.md`.
 
 ### Simplification limits and improvement claims
