@@ -276,6 +276,7 @@ Working method:
 - compare the current branch against the head of `main`,
 - establish the review basis from the diff and repository evidence before judging,
 - inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
+- trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
 - when planning artifacts are available, audit compliance with them; when they are absent, use the branch diff as the scope boundary and existing behavior, public APIs, documentation, configuration, and tests as evidence,
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
 - quote or clearly point to the exact evidence for each material finding,
@@ -296,7 +297,7 @@ Review for:
 - type declarations and annotations that clarify rather than crowd the code; flag overly complex annotations when a simpler accurate type or well-named type alias would improve readability,
 - backwards compatibility,
 - performance,
-- proper reuse of existing code,
+- alignment with the existing architecture and reuse of established components, services, abstractions, and extension points,
 - plan compliance when planning artifacts are available; otherwise record that plan compliance was not assessed,
 - minimal change scope and blast radius; flag changes to surrounding code unless they are absolutely necessary for the branch's changed behavior or an available task contract,
 - source/documentation grounding,
@@ -431,6 +432,8 @@ Use `Suggestions` only for optional improvements that are not required in the re
 In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence.
 
 In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
+
+In `## Code Quality / Readability` and `## Reuse / DRY / Duplication`, explain how the new code fits the existing architecture. Cite the relevant components, callers, and established paths it reuses or bypasses. Distinguish justified additions within the approved design from unapproved parallel architecture; for each supported mismatch, identify the existing path the code should use and the concrete compatibility or maintenance impact.
 
 In `## Independent Verification`, record the independently derived scenarios, claims challenged, runtime/API evidence, and any pending checks or evidence-based `Not applicable` decision. In `## Repeated Defect Search`, record the pattern, search scope, confirmed occurrences, and limits, or state that no defect triggered a search. In `## Incident Diagnostics`, record the relevant failure paths, available diagnostic evidence, and supported gaps, or explain why logging does not apply. Categorize supported defects under the issue headings; keep evidence gaps explicit and do not report pending required verification as passed.
 
@@ -616,6 +619,7 @@ Constraints:
 - keep all fixes within the scope established by `REVIEW.md` and the current branch diff; when the original implementation scope can be established from available planning artifacts, preserve it too,
 - preserve plan scope when a plan is available,
 - preserve backwards compatibility,
+- fix valid architectural mismatches by using the established components and extension points identified in the review. Do not create a replacement architecture or broaden the redesign; stop and ask if a compliant fix requires a new architecture decision,
 - workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
 - workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
 - no architecture changes,

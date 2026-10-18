@@ -297,6 +297,8 @@ Keep the general Simplicity and reuse procedure aligned across all phases and ge
 
 Explicitly check duplication, excess abstractions, unused paths, and avoidable complexity. Require caller and contract evidence before treating code as unnecessary; do not make a single caller or a lower line count an automatic finding. Repeated-defect searches in applicable phases identify other occurrences without expanding write permissions or approved scope.
 
+In phase `04`, explicitly verify that new code fits and reuses the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Require concrete evidence for unapproved parallel architecture or bypassed layers, record it in the existing quality/reuse review sections, and carry the established repair path into the generated review-fix prompt. This does not authorize a redesign; new architecture decisions still require explicit approval.
+
 Preserve readability, compatibility, validation, security, and verification over line-count reductions. These are embedded rules derived from Ponytail, not authorization to activate its persistent mode, weaken test requirements, add production assertion demos, or create debt markers or ledgers. Keep provenance in `README.md`.
 
 ### Simplification limits and improvement claims
