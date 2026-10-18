@@ -112,7 +112,7 @@ These are the main design constraints that define this repo:
 - Phase `09` may change test files only. It must not generate another prompt, plan, review, walkthrough, summary, or workflow artifact, and it must not retain, stage, or commit generated coverage output.
 - Phase `10` is a read-only independent test audit by any capable repository-aware agent. It must fetch and completely read the generic `test-audit` skill, its applicable Python or JavaScript/TypeScript sections, the other explicitly linked skills, and the required `no-ai-slop` evaluator.
 - Phase `10` may create or update only `TEST_AUDIT.md`. It must not edit code, tests, documentation, configuration, dependencies, Git state, or pull-request state.
-- Phase `10` routes test-only findings back to `09` and other findings to an authorized implementation or human-follow-up phase. Human review of the audited test diff is the terminal workflow step after phase `10` passes.
+- Phase `10` routes test-only findings back to `09` and other findings to phase `07`, where only `AGREE`d items enter `FOLLOWUP.md` for `08`. Human review of the audited test diff is the terminal workflow step after phase `10` passes.
 - Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, and similar files are outputs described by prompts. They are not part of the default checked-in source set for this repo.
 - Phase `06` additionally generates `WALKTHROUGH.html` in the target repository root only after refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`. Keep this explanatory artifact uncommitted unless explicitly requested; it does not authorize production UI changes or replace human review.
 
@@ -131,6 +131,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Produces `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`.
    - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
    - That revision pass may update only `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md` and must produce `PLAN_REVISION_SUMMARY.md`.
+   - On re-entry from `03`, it and its generated revision prompt read `PLAN_REVISION_VERIFICATION.md`, the prior `PLAN_CRITIQUE.md`, and `PLAN_REVISION_SUMMARY.md`. It updates `PLAN_CRITIQUE.md` in place and carries forward every unresolved, remaining, or new issue and pending user decision.
 3. `03_plan_revision_verification_any_model.md`
    - Verifies that the revision addressed the critique, using `PLAN_CRITIQUE.md`, `PLAN_REVISION_SUMMARY.md`, and the revised planning artifacts.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
@@ -151,6 +152,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Starts human review with a brief prose overview of the code and explains success/error flows alongside semantic blocks.
    - Reviews small semantic blocks with excerpts for references defined outside the block.
    - Creates `FOLLOWUP.md` only from explicitly agreed items.
+   - On re-entry from `10`, discusses routed `TEST_AUDIT.md` findings against the code and records only `AGREE`d corrections, citing the finding identifier.
 8. `08_implement_human_followup_any_model.md`
    - Implements only human-approved `FOLLOWUP.md` items.
 9. `09_write_focused_tests_any_model.md`
@@ -164,7 +166,8 @@ The numbered prompt files define the workflow order and should stay in sequence.
    - Reviews the final test diff and the production seams it requires.
    - Is explicitly model- and language-agnostic, with Python and JavaScript/TypeScript guidance supplied by the linked generic `test-audit` skill.
    - Remains read-only except for creating or updating `TEST_AUDIT.md`.
-   - Routes supported findings to the correct earlier phase and hands a passing audit to the human reviewer, which ends the workflow.
+   - Keeps stable finding identifiers and `Open`, `Resolved`, or `Declined by human` statuses across audit passes, and never reposts an existing finding.
+   - Routes test-only findings to `09` and other supported findings to `07`, and hands a passing audit to the human reviewer, which ends the workflow.
 
 ### Optional independent phases
 
@@ -306,7 +309,7 @@ The initial phase `04` pass reviews the full branch. Later review and phase `05`
 
 Keep applicable requirements in planning, critique, verification, generated planning/revision/execution/fix prompts, human review, follow-up implementation, test writing, and test audit. Re-read original requirements after long sessions or context handoffs and before sign-off to detect implementation drift. Inspect incident diagnostics for changed failure paths: operation, request/job context, error cause/trace, and retry/recovery outcome where applicable, following existing conventions without secrets or noisy duplicate events. When a defect is found, search the codebase for the same failure pattern, inspect candidate matches, and report scope, confirmed occurrences, and limits in existing outputs. These checks do not authorize broader implementation, new artifacts, test writing outside `09`, instrumentation during review, or a new whole-repository audit. Phase `06` refreshes existing evidence and repeats only relevant checks made stale by later changes; preserve its severe-issue stop rule.
 
-Require focused integration proof for changed behavior that depends on material component or API interactions. Phase `09` owns test authoring: use existing isolated facilities and native APIs, exercise the actual public entry point and relevant components, and do not mock the boundary being claimed. Reuse sufficient existing coverage; preserve the minimum test set and 85% changed-line coverage gate. Automated tests must remain independent of live external services; real application/API checks remain separate evidence. Keep detailed authoring rules in `09` and concise review criteria in other phases. If tests pass but real API checks fail, investigate against the independent acceptance criteria and keep completion pending. Phase `10` treats unresolved acceptance failures or missing required integration proof as blocking, routing test-only corrections to `09` and production or environment corrections to an authorized earlier phase.
+Require focused integration proof for changed behavior that depends on material component or API interactions. Phase `09` owns test authoring: use existing isolated facilities and native APIs, exercise the actual public entry point and relevant components, and do not mock the boundary being claimed. Reuse sufficient existing coverage; preserve the minimum test set and 85% changed-line coverage gate. Automated tests must remain independent of live external services; real application/API checks remain separate evidence. Keep detailed authoring rules in `09` and concise review criteria in other phases. If tests pass but real API checks fail, investigate against the independent acceptance criteria and keep completion pending. Phase `10` treats unresolved acceptance failures or missing required integration proof as blocking, routing test-only corrections to `09` and production or environment corrections to phase `07`.
 
 ### Simplicity and reuse
 
@@ -382,6 +385,8 @@ Phase `07` uses the explicitly linked `show-me` skill for focused source diffs a
 Phases `04`, `06`, and `07` must use ISO-style plain language and ASD-STE100-inspired technical writing without claiming formal compliance. Require complete sentences with explicit subjects, actions, and outcomes; first-use definitions for technical terms and abbreviations; and enough background to explain symbols and cause and effect without prior chat or repository knowledge. Preserve exact identifiers, excerpts, and line-by-line coverage. `no-ai-slop` remains the final writing guide.
 
 Only phase `06` may generate or refresh the interactive `WALKTHROUGH.html`, after refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`. Require a single local HTML file with inline assets, no dependencies or network requests, a navigable relationship map, selectable success/error flows, step controls, verified source references, readable fallback content, keyboard access, visible artifact metadata, and the reviewed branch/revision. Apply the writing standard and `no-ai-slop` evaluator to its prose. Browser-check the interactions and record evidence in `REVIEW.md` and chat; unavailable required verification remains pending. This is an explanatory workflow artifact, not a UI prototype or application implementation. Consumers may use it only as supplemental context after checking for stale code; it must not import AI findings into phase `07` or bypass human approval. Later implementation and test phases keep it uncommitted unless explicitly requested and do not regenerate it.
+
+Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to `07`. On that re-entry, `07` reads the `Open` `TEST_AUDIT.md` findings routed to it as discussion input, checks each against the code, and limits the checklist to the files they cite and files changed since an earlier review, after the human confirms the list. Only `AGREE`d corrections enter `FOLLOWUP.md`, citing the finding identifier. A declined finding stays out of `FOLLOWUP.md`; the human supplies that decision to the next `10` pass, which marks it `Declined by human` and still withholds the pass statement. `REVIEW.md` remains discarded in `07`.
 
 On `RESOLVE`, phase `07` refreshes the file's PR changes. Changes since review require further review and renewed `RESOLVE`. Otherwise, use `gh api graphql` with `markFileAsViewed` and verify the file's `viewerViewedState` is `VIEWED` before resolving the checklist item and advancing. Already-viewed status does not bypass review or approval. Update or verification failures keep completion pending; do not silently skip them. File completion must not resolve review conversations or submit PR approval. Preserve the final go-ahead gate before implementation.
 

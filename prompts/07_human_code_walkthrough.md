@@ -107,6 +107,16 @@ Use ISO-style plain language and ASD-STE100-inspired technical writing as guidan
 
 Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
 
+### Re-entry from the test audit
+
+Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase. When I start this walkthrough for those findings:
+
+- Read `TEST_AUDIT.md` and list each `Open` finding whose destination is phase `07` by its identifier. Unlike `REVIEW.md`, these findings are input for our discussion. Check each one against the actual code and PR changes, show the code it cites, and explain whether the evidence supports it. The audit's conclusion is not my decision.
+- Limit the checklist to the files those findings cite and the files whose `viewerViewedState` is not `VIEWED` because they changed after an earlier review. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.
+- Record an agreed correction in `FOLLOWUP.md` only after `AGREE`, as a new item that cites the audit finding's identifier. Keep existing items and their checkboxes unchanged.
+- When I decline a finding, keep it out of `FOLLOWUP.md`. State its identifier and my reason in chat so I can supply that decision to the next phase-`10` pass.
+- The existing block review, documentation checkpoint, `RESOLVE`, Viewed-state verification, and final go-ahead rules apply unchanged.
+
 ### Explain the code context first
 
 Open the first review response with a brief prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
@@ -158,6 +168,7 @@ Each item must include:
 - acceptance criteria tied to product requirements or approved clarifications, with independent expected outcomes and applicable integration/API checks,
 - verification needed,
 - documentation checkpoint: exact durable documentation file/section, update, and validation, or the evidence-based `Not applicable` rationale,
+- the `TEST_AUDIT.md` finding identifier, when the item comes from a routed audit finding,
 - any risks or constraints.
 
 Do not include speculative items.

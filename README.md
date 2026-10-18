@@ -80,13 +80,13 @@ Use `12` when choosing between UI directions before locking a plan. It uses `pro
 2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
 3. Paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
 4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If revision is required, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus.
-5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked.
+5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
 7. Run [prompt 04](prompts/04_opus_review_branch.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all findings assigned to `Review fix` are resolved. Carry test-only findings marked `Deferred to 09` to phase 09.
 8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
-11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes through the human approval and follow-up path before repeating `09` and `10`.
+11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes back to [prompt 07](prompts/07_human_code_walkthrough.md), where only `AGREE`d corrections enter `FOLLOWUP.md` for `08`, before repeating `09` and `10`. Audit findings keep stable identifiers and statuses across passes.
 12. Human-review the audited test diff after phase `10` passes.
 
 You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
@@ -115,15 +115,15 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `EXECUTION_PROMPT.md` | Opus planning/revision | Locked implementation |
 | `PLAN_CRITIQUE.md` | 02 | Opus revision and 03 |
 | `OPUS_PLAN_REVISION_REQUEST.md` | 02 | Opus revision |
-| `PLAN_REVISION_SUMMARY.md` | Opus revision | 03 |
-| `PLAN_REVISION_VERIFICATION.md` | 03 | Execution gate |
+| `PLAN_REVISION_SUMMARY.md` | Opus revision | 03; 02 and the next Opus revision on another pass |
+| `PLAN_REVISION_VERIFICATION.md` | 03 | Execution gate; 02 and the next Opus revision when issues remain |
 | `REVIEW.md` | 04, refreshed by 06 | Review-fix context and later workflow context |
 | `WALKTHROUGH.md` | 04, refreshed by 06 | Review-fix and human walkthrough context |
 | `WALKTHROUGH.html` | 06, after refreshing both Markdown files | Interactive mental model for the human reviewer; supplemental context only |
 | `REVIEW_FIX_PROMPT.md` | 04 | Review-fix pass |
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
 | `FOLLOWUP.md` | 07 | 08 |
-| `TEST_AUDIT.md` | 10 | Human reviewer; 09 when test-only findings require another pass |
+| `TEST_AUDIT.md` | 10 | Human reviewer; 09 for test-only findings; 07 for production or documentation findings; 10 on the next audit pass |
 | `UI_PROTOTYPE.md` | Optional 12 | Human selection; 01 when planning is requested |
 
 Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Prompt 10 then performs a read-only audit, writes only `TEST_AUDIT.md`, and routes supported findings to the correct earlier phase. Human review of the audited test diff ends the workflow after phase 10 passes.
@@ -253,7 +253,7 @@ Earlier phases may inspect or run focused tests, but they do not author tests. P
 - reach at least 85% coverage for new or changed lines without weakening coverage configuration or adding coverage-only tests,
 - change test files only, then hand the test diff to phase 10 without generating another prompt or workflow artifact.
 
-Integration tests use existing isolated facilities and native framework APIs, and must exercise the boundary they claim to verify. Keep automated tests independent of live external services; checks against running applications and real APIs remain separate verification evidence. An unresolved acceptance failure or missing integration proof blocks the final audit. Test-only corrections return to `09`; production or environment changes require an authorized earlier phase.
+Integration tests use existing isolated facilities and native framework APIs, and must exercise the boundary they claim to verify. Keep automated tests independent of live external services; checks against running applications and real APIs remain separate verification evidence. An unresolved acceptance failure or missing integration proof blocks the final audit. Test-only corrections return to `09`; production or environment changes return to `07` for human approval.
 
 ### Language-specific testing guidance
 

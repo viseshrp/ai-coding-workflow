@@ -67,7 +67,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 - Do not edit tests, production code, documentation, dependencies, build files, test configuration, coverage configuration, or other workflow artifacts.
 - Do not stage, commit, push, create or update a pull request, resolve review threads, or merge.
 - Temporary test or coverage output may exist while commands run, but remove only output created by this phase and do not retain it.
-- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, or configuration work returns to an authorized implementation or human-follow-up phase.
+- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, configuration, or environment work returns to phase `07`. There, the human decides whether to record it in `FOLLOWUP.md` with `AGREE` for phase `08`. This audit does not create follow-up items.
 - Human review of the audited test diff remains the terminal workflow gate.
 
 ### Simplicity and reuse
@@ -114,13 +114,21 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 Do not report style preferences, speculative edge cases, or deletion ideas without the evidence required by `test-audit`.
 
+### Findings across audit passes
+
+- Give each actionable finding a stable identifier, such as `TA-1`, and one status: `Open`, `Resolved`, or `Declined by human`.
+- On a later pass, read the existing `TEST_AUDIT.md` before judging. Record its audited revision and the current revision in `Audit scope`. Audit the full final test diff again, and re-check every `Open` and `Declined by human` finding against the current revision.
+- Never repost an existing finding. Match it by failure mechanism and affected contract, even when wording or line numbers change. Keep its identifier and original evidence, and update its status and evidence in place. Create a new identifier only for a distinct finding.
+- Mark a finding `Resolved` only with fresh evidence from the current revision. Move it to `Finding History` with that evidence, outside the active issue lists.
+- Mark a finding `Declined by human` only when I supply that decision from phase `07` with the finding's identifier and my reason. Keep it in its issue list with the reason. A declined finding still prevents the pass statement; report it in the handoff so I can decide whether to end the workflow.
+
 ### Verification
 
-For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
+For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to phase `07`, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
 
 Reuse prior runtime evidence across test-only commits only when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged, and record that comparison and why reuse is valid. Independently check the disposition of every finding deferred to `09` against current requirements and actual coverage; an unsupported or incomplete disposition blocks a pass. Preserve its identifier in `TEST_AUDIT.md` rather than opening a duplicate finding.
 
-Investigate any disagreement between passing tests and failed real API checks against the independent acceptance criteria. Record an unresolved acceptance failure or missing integration proof as blocking; route test-only corrections to `09` and production or environment corrections to an authorized earlier phase. Do not change expectations or infer correctness from a green test run.
+Investigate any disagreement between passing tests and failed real API checks against the independent acceptance criteria. Record an unresolved acceptance failure or missing integration proof as blocking; route test-only corrections to `09` and production or environment corrections to phase `07`. Do not change expectations or infer correctness from a green test run.
 
 - Review phase `09`'s exact commands and outputs. Re-run the smallest relevant test or coverage command needed to verify a material claim.
 - Do not run the entire suite unless repository policy or the scope of the claim requires it.
@@ -157,7 +165,7 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 - Audit whether the final UI tests protect the claimed observable behavior through the relevant production path, with independent expectations and no duplicate coverage. Check that realistic data and state cases protect a material changed behavior rather than mechanically enumerating the catalog.
 - Reject incidental animation-value, DOM, or screenshot change detectors unless an intentional observable contract justifies them. Preserve the existing 85% changed-line gate; passing tests do not prove unobserved animation feel or device behavior.
-- Record evidence and any required pending UI verification in `TEST_AUDIT.md`. Remain read-only except for that artifact; route test-only findings to `09` and production, documentation, dependency, or configuration findings to an authorized earlier phase. Do not perform a whole-repo UI audit.
+- Record evidence and any required pending UI verification in `TEST_AUDIT.md`. Remain read-only except for that artifact; route test-only findings to `09` and production, documentation, dependency, or configuration findings to phase `07`. Do not perform a whole-repo UI audit.
 
 ## Prompt
 
@@ -185,6 +193,7 @@ Context to read before judging:
 - test-runner, framework, coverage, CI, and changed-file routing configuration;
 - relevant history for suspicious tests or production seams;
 - `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present, including the finding identifiers and scenarios deferred to `09`;
+- `TEST_AUDIT.md`, if present from an earlier pass, for the audited revision, finding identifiers, statuses, and evidence;
 - phase `09`'s final chat evidence or equivalent recorded commands and results;
 - durable documentation and its earlier checkpoint result.
 
@@ -208,7 +217,7 @@ Working method:
 3. Apply the authoring gate, low-value patterns, retention bar, and language-specific instructions from `test-audit` to every changed test.
 4. Investigate each candidate using the complete test, production owner, overlapping proof, configuration, and relevant history.
 5. Re-run only the commands needed to verify material pass, coverage, isolation, and routing claims.
-6. Write or update `TEST_AUDIT.md` with findings sorted by severity and evidence. Preserve its original `Created by` and `Created at` fields when updating it.
+6. Write or update `TEST_AUDIT.md` with findings sorted by severity and evidence. Keep existing finding identifiers. Preserve its original `Created by` and `Created at` fields when updating it.
 7. Re-read the final branch diff and audit artifact. Confirm that no repository file other than `TEST_AUDIT.md` changed during this phase.
 8. Apply `no-ai-slop`, run its evaluator, and send the concise chat disposition.
 
@@ -238,12 +247,14 @@ Include:
 - `Non-Blocking Issues`
 - `Retained Tests`
 - `Rejected Candidates`
+- `Finding History`
 - `Verification Evidence`
 - `Git and Pull Request State`
 - `Disposition`
 
 For each actionable finding, include:
 
+- stable identifier and status;
 - severity;
 - exact test name and location;
 - observable contract or claimed regression;
@@ -251,10 +262,10 @@ For each actionable finding, include:
 - stronger existing proof or missing owner-boundary proof;
 - any production or test-support seam involved;
 - smallest justified correction;
-- destination phase: `09` for test-only changes, or an authorized implementation/human-follow-up phase for any other change;
+- destination phase: `09` for test-only changes, or `07` for production, documentation, dependency, build, configuration, or environment changes;
 - focused command that should verify the correction.
 
-Use `None.` under both issue headings when no actionable findings exist. Do not omit the headings.
+Use `None.` under both issue headings when no actionable findings exist, and under `Finding History` when no earlier finding has been resolved. Do not omit the headings.
 
 ## Final handoff
 
@@ -262,6 +273,7 @@ In the final chat response, state:
 
 - pass or changes required;
 - blocking and non-blocking finding counts;
+- the identifiers of findings resolved since the previous pass, still `Open`, or `Declined by human`;
 - retained false-positive count;
 - exact verification commands and results;
 - documentation-checkpoint status;

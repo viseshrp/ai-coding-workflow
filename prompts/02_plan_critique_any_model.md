@@ -254,11 +254,14 @@ Context to review:
 - `FEATURE_SPEC_AND_PLAN.md`,
 - `EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
-- relevant repository context if needed.
+- relevant repository context if needed,
+- on a later pass, `PLAN_REVISION_VERIFICATION.md` from phase `03`, for every concern not marked `Resolved` or `Invalid Concern`, every remaining issue, and every new issue introduced by the revision,
+- on a later pass, the prior `PLAN_CRITIQUE.md` and `PLAN_REVISION_SUMMARY.md`, for earlier critique items, their dispositions, and user decisions still pending.
 
 Working method:
 
 - inspect the planning artifacts and any necessary repository files before finalizing; inspect independent files in parallel when your available tools make that efficient,
+- on a later pass, update `PLAN_CRITIQUE.md` instead of starting over. Carry every concern that `PLAN_REVISION_VERIFICATION.md` marks `Partially Resolved` or `Not Resolved`, every remaining issue, and every new issue introduced by the revision into the matching section, and cite the verification entry for each. Carry user decisions that `PLAN_REVISION_SUMMARY.md` still lists as pending into `Missing Questions For User`. Do not reopen a concern marked `Resolved` or `Invalid Concern` unless the revised artifacts changed it again; then cite the new evidence. Preserve the `Created by` and `Created at` fields and refresh `Updated at`,
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to the exact passage that triggered each blocking issue,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues before declaring it ready for implementation,
@@ -550,6 +553,8 @@ Context to read before answering:
 
 - `PLAN_CRITIQUE.md`, if present,
 - `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
+- `PLAN_REVISION_VERIFICATION.md`, if present from a prior pass,
+- `PLAN_REVISION_SUMMARY.md`, if present from a prior pass,
 - current `FEATURE_SPEC_AND_PLAN.md`,
 - current `EXECUTION_PROMPT.md`,
 - the original draft plan/interviewing notes if available,
@@ -558,6 +563,7 @@ Context to read before answering:
 Success criteria:
 
 - every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- on a later pass, every concern that `PLAN_REVISION_VERIFICATION.md` reports as `Partially Resolved` or `Not Resolved`, every remaining issue, and every new issue introduced by the revision is addressed, rejected with reasoning, or escalated for a user decision, and the updated `PLAN_REVISION_SUMMARY.md` records the result for each one,
 - the revised plan stays within original scope,
 - the revised execution prompt remains strict enough to prevent divergence during execution,
 - the revised plan and execution prompt preserve a documentation checkpoint for every implementation step, including exact durable documentation/validation or an evidence-based `Not applicable` decision,

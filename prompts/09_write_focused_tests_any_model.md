@@ -259,7 +259,7 @@ Context to read before acting:
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `FOLLOWUP.md`, if present,
 - `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for test-only findings marked `Deferred to 09`; validate them against current requirements and code rather than blindly adopting their suggested tests,
-- `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported test-only findings as correction input without editing or staging the artifact,
+- `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported `Open` findings with destination `09` as correction input without editing or staging the artifact,
 - durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
 - relevant public documentation or source for test-runner, framework, coverage-tool, or extension APIs when their use is uncertain.
 
@@ -317,7 +317,7 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
-- the disposition and evidence for each deferred finding identifier, plus any blocker, prior audit finding, or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
+- the disposition and evidence for each deferred finding identifier and each `TEST_AUDIT.md` finding identifier routed to `09`, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
 
 End with `Tests are ready for agent audit.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 
