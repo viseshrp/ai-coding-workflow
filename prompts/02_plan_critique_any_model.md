@@ -75,11 +75,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -146,16 +144,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -166,8 +160,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 
@@ -286,14 +279,14 @@ Review for:
 - excess abstractions, unused paths, and avoidable complexity without a current requirement,
 - separation-of-concerns violations,
 - missing documentation grounding for library/framework usage,
-- outdated API usage,
+- deprecated or unsupported APIs for the installed or approved version,
 - unnecessary third-party dependencies,
 - missing custom exception/error translation at public API boundaries,
-- cross-platform Linux/Windows risks,
+- risks to existing or explicitly approved platform support,
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing independent scenarios and expected results, running-application and relevant real-API checks for runtime changes, or explicit handling of unavailable verification,
-- missing focused integration proof for material component or API interactions; test authoring must remain deferred to `09`,
+- a missing plan for focused integration proof of material component or API interactions; test authoring must remain deferred to `09`,
 - missing incident diagnostic requirements for changed failure and recovery paths,
 - missing per-implementation-step documentation checkpoints, durable documentation updates, validation, or evidence-based `Not applicable` decisions,
 - anything in the execution prompt that gives the implementation model too much freedom.

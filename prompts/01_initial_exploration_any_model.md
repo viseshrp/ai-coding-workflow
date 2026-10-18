@@ -285,14 +285,10 @@ Constraints:
 Working method:
 
 - analyze the code one more time,
-- take the draft plan file and interviewing output we have,
-- read and critique that material,
+- read and critique `DRAFT_PLAN.md` and the exploration output,
 - ask all remaining design questions together in one batch,
 - independently specify every remaining detail after gathering my design decisions,
-- expand the initial interviewing plan into a more detailed implementation plan,
-- work independently within the existing plan/change scope; the plan file does not limit the detail you can add,
-- use the existing plan file only as an initial source,
-- use the existing plan as a seed artifact, not the ceiling for detail,
+- expand that material into a complete implementation plan within the requested scope; add grounded detail without treating the draft's level of detail as a limit,
 - preserve all valid task-specific detail from `DRAFT_PLAN.md` and the exploration output,
 - if exploration notes conflict materially with repo reality or with each other, keep the more scope-conservative interpretation and surface the conflict to the user instead of silently choosing,
 - ground file/class/function details in actual repository context and never speculate about code you have not read,
@@ -528,9 +524,7 @@ Stop rules:
 Execution rules:
 
 - before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
-- re-read the original requirements and approved clarifications after long sessions or context handoffs and before completion. Check the final behavior for drift, omissions, unintended additions, duplicated logic, excess abstractions, unused paths, and avoidable complexity within the locked scope,
 - derive verification scenarios from the locked acceptance criteria and their requirement sources; keep expected results independent of the implementation and its tests. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the revision, environment, expected and observed results, and any blocked checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
-- when a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Fix only within the locked plan, report broader occurrences without changing them, and verify incident diagnostics for the affected failure paths,
 - read likely relevant files in parallel before editing when practical,
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
 - carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
@@ -730,11 +724,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -801,16 +793,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -821,8 +809,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 

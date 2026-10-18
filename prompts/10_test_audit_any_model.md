@@ -61,7 +61,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 
 - Audit the final branch test changes against the head of `main` and the changed production behavior they claim to protect.
 - Inspect relevant existing tests and any production or test-support seams needed by the changed tests.
-- Treat repository instructions and observable behavior as authoritative. Use planning and workflow artifacts as context, not as substitutes for code evidence.
+- Derive expected behavior from repository instructions, original requirements, approved changes, and public contracts. Use code and observed behavior as evidence to verify, not as a replacement for those requirements.
 - Remain read-only except for creating or updating `TEST_AUDIT.md` in the target repository root.
 - Do not edit tests, production code, documentation, dependencies, build files, test configuration, coverage configuration, or other workflow artifacts.
 - Do not stage, commit, push, create or update a pull request, resolve review threads, or merge.
@@ -117,7 +117,7 @@ Do not report style preferences, speculative edge cases, or deletion ideas witho
 
 For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
 
-Investigate any disagreement between passing tests and failed real API checks against the independent acceptance criteria. Record an unresolved acceptance failure or missing integration proof as blocking; route test-only corrections to `09` and production or environment corrections to an authorized earlier phase. Do not change expectations or infer correctness from a green test run.
+Reuse prior runtime evidence across test-only commits only when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged, and record that basis. Independently check the disposition of every finding deferred to `09` against current requirements and actual coverage; an unsupported or incomplete disposition blocks a pass. Preserve its identifier in `TEST_AUDIT.md` rather than opening a duplicate finding. An unresolved acceptance failure or missing required integration proof also blocks a pass. Investigate disagreement between passing tests and failed real API checks against the independent acceptance criteria; route test-only corrections to `09` and production or environment corrections to an authorized earlier phase.
 
 - Review phase `09`'s exact commands and outputs. Re-run the smallest relevant test or coverage command needed to verify a material claim.
 - Do not run the entire suite unless repository policy or the scope of the claim requires it.
@@ -181,7 +181,7 @@ Context to read before judging:
 - overlapping tests at other boundaries;
 - test-runner, framework, coverage, CI, and changed-file routing configuration;
 - relevant history for suspicious tests or production seams;
-- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present;
+- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present, including the finding identifiers and scenarios deferred to `09`;
 - phase `09`'s final chat evidence or equivalent recorded commands and results;
 - durable documentation and its earlier checkpoint result.
 

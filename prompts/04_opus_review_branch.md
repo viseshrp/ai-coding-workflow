@@ -75,11 +75,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -146,16 +144,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -166,8 +160,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 
@@ -183,8 +176,8 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this review phase.
 - Run only focused existing tests or checks needed to substantiate findings; do not manually run the entire suite.
-- Review existing or changed tests under the phase-specific test-review rules below.
-- Defer all test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Assess existing tests against independent requirements. Assign findings that require only test changes or final coverage proof to `09` with status `Deferred to 09`; do not require their implementation during review fixes.
+- Phase `09` owns test authoring, focused integration tests, and the final 85% changed-line coverage gate; phase `10` audits them. Deferred test work does not block the earlier review handoff, but production defects, failed acceptance behavior, and missing required runtime verification do.
 
 ## UI work only
 
@@ -275,7 +268,7 @@ Constraints:
 Working method:
 
 - use the branch comparison against `main` for the first pass. For later passes, establish the last reviewed state from existing review artifacts or Git/PR evidence and compare it with the current state. Account for previously reviewed uncommitted changes as well as commits; do not treat an unchanged working-tree diff as new. If the prior baseline cannot be recovered, review only identifiable new changes and keep the remaining scope pending; do not silently restart a full review,
-- establish the review basis from the diff and repository evidence before judging,
+- establish the review basis from the diff and repository evidence before judging. Confirm that prior evidence belongs to this branch and change; ignore unrelated review artifacts and treat a branch with no prior review as an initial pass. Reuse evidence only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged,
 - inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
 - trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
 - give architecture and other high-impact changes deeper scrutiny, including changes to shared behavior, public contracts, persistent data, security boundaries, or concurrency. Assess impact from affected consumers and failure consequences, even for small diffs. Trace the relevant compatibility, migration, and failure/recovery paths and prioritize independent verification of those risks,
@@ -305,7 +298,7 @@ Review for:
 - every string transformation in code is documented with concrete examples showing representative input and expected output,
 - completion of the documentation checkpoint for every material changed behavior, including durable documentation accuracy, validation, and any `Not applicable` rationale,
 - justified library/framework usage,
-- outdated APIs,
+- deprecated or unsupported APIs for the installed or approved version,
 - public API usability/intuitiveness/naming/blending with existing APIs,
 - assumptions in code,
 - assert statements in production code,
@@ -314,34 +307,15 @@ Review for:
 - incident diagnostics for changed failure paths,
 - comment quality and missing comments where code is not obvious,
 - bloated comment blocks,
-- cross-platform Linux/Windows safety,
+- compatibility with the repository's supported and explicitly approved platforms,
 - test quality and missing tests for material acceptance criteria.
 
 ### Language-specific review guidance
 
 #### Python
 
-- When the reviewed code is Python, assess whether it uses the language and standard library idiomatically.
-- Treat missing or inaccurate type hints on any added or changed function or method parameter, including `*args` and `**kwargs`, return value, class variable, class attribute, instance attribute, or module-level mutable or optional state as a blocking finding. Do not require `self`, `cls`, or trivial immutable module constants to be annotated.
-- Flag local variable annotations inside function or method bodies unless a real configured type-checker error requires them. Also flag advanced, crowded, or type-only annotations that are not required by that checker.
+- For Python, treat missing or inaccurate type hints required by the Engineering Contract as blocking findings. Apply its exceptions for `self`, `cls`, trivial immutable constants, and configured-checker requirements; assess local annotations and advanced type constructs under that same contract.
 
-
-Verify library/framework usage against the correct documentation; ground 100% of usage in those docs. If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-
-Ensure usage follows the latest APIs and flag outdated APIs.
-
-
-If the changes touch public APIs or add new public APIs, check whether they are user-friendly and intuitive, blend well with the existing public API set, and have appropriate names.
-
-Surface all assumptions in the code.
-
-Report assert usage and flag any assertions outside test files.
-
-If the changes reinvent/duplicate something already in the source code, flag it.
-
-Ensure every non-obvious change has an explanatory comment. Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-
-All changes must be strictly cross-platform and must work on both Linux and Windows. Mac is not a concern.
 
 ## Independent verification and incident diagnostics
 
@@ -350,8 +324,8 @@ Independently challenge the author's completion claims using the procedure below
 1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim affected by the selected changes to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
 2. Establish independent acceptance criteria and expected outcomes from the available requirements, approved clarifications, and public contracts before adopting the author's test cases or expected results. Use inspected code to identify paths to exercise, and try to disprove completion claims with relevant boundary, failure, recovery, and regression scenarios. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.
 3. For changed runtime behavior, exercise the running application through its real entry points and call the relevant real APIs. Use an authorized local or test environment and existing tools. Remote requests must be read-only unless the user has authorized their side effects. Do not install dependencies or change configuration to enable a review. Record the revision, environment, scenario, expected result, observed result, command or interaction, and evidence. Keep observed behavior, code-only conclusions, and pending checks distinct. Missing access or an unavailable environment leaves the required check pending and prevents a passing verdict; explain `Not applicable` for changes with no runnable behavior.
-4. When one defect is found, identify its root cause or defect category and search throughout the codebase for the same failure pattern, including sibling implementations and other callers. Inspect candidate matches and distinguish confirmed occurrences from false positives. Group confirmed occurrences under one finding with evidence for each location and a correction that addresses the category. Record search scope and unexamined areas. On later passes, reuse that inventory and inspect new or affected occurrences rather than repeating an unchanged scan. Report occurrences outside the approved scope separately; discovery does not authorize broader fixes.
-5. Inspect logs and error handling for the changed failure paths as if diagnosing an incident. Check whether an engineer could identify the failing operation, correlate a request or job, understand the cause and trace, and determine retry or recovery outcomes where applicable. Use captured runtime evidence when available and identify gaps in existing logging, while checking for secrets, sensitive payloads, or excessive noise. Do not add instrumentation during review.
+4. Group confirmed matches from the required repeated-defect search only when the same failure mechanism and corrective rule apply, with evidence for each location. On later passes, reuse the occurrence inventory and inspect new or affected matches rather than repeating unchanged scans. Report occurrences outside the approved scope separately; discovery does not authorize broader fixes.
+5. Use captured runtime evidence where available to assess the Engineering Contract's incident-diagnostic requirements. Record supported logging gaps and affected failure paths; do not add instrumentation during review.
 
 ## Test review rules
 
@@ -359,12 +333,12 @@ Review existing or changed tests; do not author tests in this phase.
 
 - Require the fewest tests that cover distinct changed behavior and material regression risks. Flag duplicate, transient, temporary-hack, or coverage-only tests.
 - Require observable behavior tied to an independent acceptance criterion and its requirement source, one clear behavior per test, and small linear test functions, fixtures, and helpers. Flag tests that validate an implementation assumption instead of the product requirement.
-- For material component or API interactions, require focused integration proof through the actual public entry point and relevant components. Mocked unit tests alone do not prove those interactions; route missing test authoring to `09`.
+- For material component or API interactions, inspect existing integration proof through the actual public entry point and relevant components. Mocked unit tests alone do not prove those interactions. Record missing integration tests as `Deferred to 09`; required running-application and real-API checks remain part of this review.
 - Check that tests follow the existing test framework's configuration and conventions and prefer existing fixtures, native APIs, and installed extensions over hand-rolled test infrastructure.
 - Flag any test that patches or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
 - Limit mocks to impractical external boundaries; flag internal call choreography and implementation-detail mocks.
 - Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or uncontrolled network access, and expected values that mirror production logic.
-- Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only.
+- Check deterministic isolation and report available coverage evidence using existing tooling. Defer missing test coverage and the final 85% gate to `09`; do not present that later gate as passed here. Run focused tests only.
 
 ### Language-specific test review guidance
 
@@ -426,13 +400,15 @@ Create or update a detailed `REVIEW.md` document in the target repo root with:
 
 Report only actionable, evidence-backed findings under `Blocking Issues` or `Non-Blocking Issues`, ordered by severity within each section. For each finding, include:
 
-- a stable finding identifier, severity, and a concise description of the defect category or root cause,
+- a stable finding identifier, status, destination (`Review fix` or `09`), severity, and a concise description of the defect category or root cause,
 - the exact inspected file path and a narrow line range,
 - the affected requirement or existing contract and the concrete impact,
 - minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code,
 - the smallest justified correction or the acceptance check needed to demonstrate resolution.
 
 For static issues, provide repeatable inspection or call-trace steps that demonstrate the mismatch. Label unexecuted reproduction scenarios `Not run`; never invent observations. Keep unanswered intent questions and pending verification in the existing review-basis and evidence sections, separate from confirmed defects.
+
+Mark test-only findings `Deferred to 09`, retaining their identifiers, severity, evidence, and required scenarios in the issue list and `Test Review`. In `Verdict`, distinguish readiness for phase `06` and human code review from completion of phases `09` and `10`. Deferral applies only to test work; it cannot excuse a production defect, failed acceptance behavior, or a required runtime check that has not passed.
 
 Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
@@ -523,7 +499,7 @@ Verify that the actual generated fix prompt includes the complete UI activation 
 
 ## Required output 3: `REVIEW_FIX_PROMPT.md`
 
-Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings, including both `Blocking Issues` and `Non-Blocking Issues`. There is no separate checked-in review-fix prompt file after this review step.
+Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings assigned to `Review fix`, including both blocking and non-blocking issues. Carry test-only deferrals to `09` without authoring tests here. There is no separate checked-in review-fix prompt file after this review step.
 
 If a later verification pass says another fix iteration is needed, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
 
@@ -588,12 +564,12 @@ Inside those sections, it must instruct the review-fix model as follows.
 
 Goal:
 
-- fix all valid review findings from Opus and stop only when you have fresh verification evidence or a concrete blocker.
+- fix all valid findings assigned to `Review fix` and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
 - each implemented fix is validated against the actual review finding and the current code,
-- all valid findings in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues,
+- all valid findings assigned to `Review fix` in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues; findings marked `Deferred to 09` remain tracked for that phase,
 - scope stays within the review contract and, when available, the original implementation contract,
 - backwards compatibility is preserved,
 - each fixed or retained material behavior completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
@@ -626,7 +602,8 @@ Execution posture:
 Constraints:
 
 - do not blindly implement every review comment,
-- address all valid review findings in `Blocking Issues` and `Non-Blocking Issues`,
+- address all valid findings assigned to `Review fix`; do not implement findings marked `Deferred to 09`,
+- if no unresolved finding is assigned to this pass, report that no review-fix changes are needed; do not create an empty commit or change branch or pull-request state,
 - do not implement optional suggestions unless explicitly approved,
 - keep all fixes within the scope established by `REVIEW.md` and the current branch diff; when the original implementation scope can be established from available planning artifacts, preserve it too,
 - preserve plan scope when a plan is available,
@@ -644,7 +621,7 @@ Per-review-item process:
 
 1. Verify the review item against the actual code.
 2. Determine whether it is valid.
-3. Fix each unresolved valid defect category from `Blocking Issues` and `Non-Blocking Issues`, including minor valid issues. Confirm its root cause, inspect the existing occurrence inventory, and correct every confirmed occurrence within the approved scope. Use the smallest coherent correction; avoid broad mechanical replacements, unrelated refactors, or abstractions without a current need. Preserve finding identifiers in the fix summary, and do not redo resolved fixes whose behavior is unchanged.
+3. Fix each unresolved valid defect category assigned to `Review fix`, including minor valid issues. Confirm its root cause, inspect the existing occurrence inventory, and correct every confirmed occurrence within the approved scope. Use the smallest coherent correction; avoid broad mechanical replacements, unrelated refactors, or abstractions without a current need. Preserve finding identifiers in the fix summary, including deferred test work, and do not redo resolved fixes whose behavior is unchanged.
 4. Complete the documentation checkpoint for the changed behavior before treating the review item as fixed.
 5. Do not implement items from `Suggestions` unless explicitly approved.
 6. If a review item is wrong, stale, or conflicts with an available plan or code reality, stop and ask.

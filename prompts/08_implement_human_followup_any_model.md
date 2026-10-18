@@ -76,11 +76,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -147,16 +145,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -167,8 +161,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 
@@ -302,7 +295,7 @@ Stop rules:
 
 Execution rules:
 
-- before completion, check the full diff against the Engineering Contract and approved `FOLLOWUP.md` items for drift, omissions, duplication, excess abstractions, unused paths, and avoidable complexity. New concerns do not authorize additional follow-up changes,
+- before completion, check the full diff against the Engineering Contract and approved `FOLLOWUP.md` items. New concerns do not authorize additional follow-up changes,
 - inspect all changes made by this follow-up pass for possible regressions, including indirect effects on existing callers, behavior, compatibility, and error paths. Fix regressions within the approved `FOLLOWUP.md` items; stop and ask if a fix would exceed them,
 - inspect the changes made by this pass for added or changed meta content wherever it appears, including in comments, docstrings, durable documentation, or user-facing text: descriptions of the branch, task, implementation process, or the fact that a change was made instead of the resulting code or behavior. Remove or rewrite it within the approved scope,
 - read likely relevant files in parallel before editing when practical,
@@ -318,7 +311,6 @@ Execution rules:
 - do not create, modify, or delete tests in this phase; defer test-authoring items in `FOLLOWUP.md` to `09_write_focused_tests_any_model.md` and report the deferral in the handoff,
 - run focused verification relevant to the approved follow-up items, using scenarios and expected results from each item's acceptance criteria. For changed runtime behavior, exercise the running application and relevant real APIs with existing tools in an authorized environment; remote requests remain read-only unless their side effects are authorized,
 - record the revision, environment, expected and observed behavior, and required pending checks. Author-written tests alone do not establish completion; explain `Not applicable` for changes without runnable behavior,
-- verify incident diagnostics for affected failure paths and search the codebase for the same defect pattern. Fix only approved occurrences and report others for human agreement,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
 - before marking each approved item complete, update and validate the exact durable documentation in the same change set, or report the item's evidence-based `Not applicable` decision,

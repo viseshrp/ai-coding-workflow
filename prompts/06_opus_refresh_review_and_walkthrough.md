@@ -1,4 +1,4 @@
-# 06 - Opus Refreshes Final Review and Walkthrough, Then Generates Interactive HTML
+# 06 - Refresh Final Review and Walkthrough, Then Generate Interactive HTML - Any Model
 
 ## Skills
 
@@ -77,11 +77,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -148,16 +146,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -168,8 +162,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 
@@ -185,9 +178,9 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests while refreshing review artifacts.
 - Run only focused existing tests or checks needed to support the refreshed review; do not manually run the entire suite.
-- Review tests for the smallest nonduplicative behavior-focused set, one clear behavior per test, small readable functions and helpers, existing test-framework fixtures and native APIs instead of hand-rolled test infrastructure, limited boundary mocking, deterministic isolation, and at least 85% coverage for new or changed lines.
+- Refresh prior test-review evidence against independent requirements; recheck only changed or affected tests for distinct behavior coverage, readable functions and helpers, native framework APIs, limited boundary mocking, and deterministic isolation.
 - Flag implementation coupling, patching or mocking the subject under test itself, unscoped global-state mutation, fragile message or layout assertions, mirrored production logic, and coverage-only tests.
-- Defer new test authoring and the detailed test-framework-specific contract to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Preserve test-only findings as `Deferred to 09`, including missing integration tests and final 85% changed-line coverage proof. Phase `09` owns test authoring and that coverage gate; phase `10` audits completion. These deferrals permit the earlier handoff only when production correctness and required runtime verification have passed.
 
 #### Python / pytest
 
@@ -235,7 +228,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
+- You are a capable repository-aware model refreshing the final review artifacts after the AI review/fix loop is complete.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -263,7 +256,7 @@ Context to review:
 
 Success criteria:
 
-- `REVIEW.md` matches the final code and clearly distinguishes resolved findings from any remaining suggestions,
+- `REVIEW.md` matches the final code and distinguishes resolved findings, test-only findings deferred to `09`, and optional suggestions,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
 - the refreshed artifacts are detailed, grounded, and internally consistent,
@@ -284,7 +277,7 @@ Working method:
 - Revisit the available original requirements and compare them with the final branch before refreshing.
 - Refresh the review loop's risk assessment for architecture and high-impact changes, acceptance criteria and requirement references, independent scenarios, focused integration proof, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Preserve the acceptance baseline and check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
 - Use the running application and relevant real APIs for required runtime checks, through existing tools in an authorized environment. Keep remote requests read-only unless side effects are authorized, and distinguish observed behavior from code-only conclusions and missing access.
-- Keep required unavailable checks pending and withhold a passing verdict. Preserve the severe-issue stop rule and do not restart a full review.
+- Keep required current-phase checks pending and withhold the handoff if they cannot run. Preserve test-only deferrals for `09` without claiming final test completion. Preserve the severe-issue stop rule and do not restart a full review.
 
 ## Required output 1: refreshed `REVIEW.md`
 
@@ -304,7 +297,7 @@ It must include:
 - assumptions surfaced,
 - assert usage,
 - cross-platform review,
-- test review, if applicable,
+- test review, including the identifiers, evidence, and required scenarios for any test-only findings deferred to `09`,
 - independent verification, including challenged completion claims, observed runtime/API behavior, and pending checks or evidence-based `Not applicable` decisions,
 - repeated-defect search scope, confirmed occurrences, and any limits,
 - incident diagnostic evidence and any unresolved supported gaps,
@@ -339,7 +332,7 @@ The walkthrough must be suitable as a supplement for my human review and potenti
 
 ## Required output 3: `WALKTHROUGH.html`
 
-After refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`, create or refresh `WALKTHROUGH.html` in the target repo root. Generate an interactive explanation of the final changes from those refreshed files and freshly inspected code. Apply the same complete-sentence, beginner-oriented writing standard used for `WALKTHROUGH.md`.
+After refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`, create or refresh `WALKTHROUGH.html` in the target repo root. Generate an interactive explanation of the final changes from those refreshed files and freshly inspected code. Apply the same complete-sentence, beginner-oriented writing standard used for `WALKTHROUGH.md`, including `no-ai-slop` and its evaluator for the explanatory prose. Creating this artifact does not activate `UI work only` for backend-only reviewed changes.
 
 - Start with the original problem, the intended behavior, and a navigable map of affected entry points, files, symbols, dependencies, and shared state. Let the reviewer select a component to inspect its responsibilities, relationships, and verified source locations.
 - Provide selectable success and error scenarios with step-by-step controls. Show inputs, branch conditions, calls, state transitions, side effects, and terminal outcomes, including retries, cleanup, and early exits where they exist. Split large flows into linked views without omitting reachable paths from the reviewed changes.

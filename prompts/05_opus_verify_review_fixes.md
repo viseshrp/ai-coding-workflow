@@ -1,4 +1,4 @@
-# 05 - Opus Verifies Review Fixes
+# 05 - Verify Review Fixes - Any Model
 
 ## Skills
 
@@ -76,11 +76,9 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
-- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Ensure usage follows the latest APIs.
-- Flag outdated APIs.
+- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -147,16 +145,12 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Always add brief, detailed comments where they help readers understand the code with little effort.
-- Comments must help readers understand the code with little effort.
+- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Ensure every non-obvious change has an explanatory comment.
-- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
-- Always update related documentation.
+- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
-- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -167,8 +161,7 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- All changes must be strictly cross-platform and must work on both Linux and Windows.
-- Mac is not a concern.
+- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
 
 ### Git and verification
 
@@ -229,12 +222,12 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are Claude Opus verifying review fixes after the review-fix model updated the branch.
+- You are a capable repository-aware model verifying review fixes after the review-fix model updated the branch.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
 
-- verify whether the review-fix model satisfied all previously raised concerns, including the previously raised review findings,
+- verify every finding assigned to `Review fix` and confirm that test-only findings remain explicitly deferred to `09`,
 - verify that every material changed behavior still has a completed documentation checkpoint,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
@@ -245,7 +238,7 @@ Artifact location rule:
 - all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
 - treat any artifact-path drift as a workflow failure to call out explicitly.
 
-Treat all valid findings from both `Blocking Issues` and `Non-Blocking Issues` as required for this verification pass.
+Treat all valid findings assigned to `Review fix`, whether blocking or non-blocking, as required for this pass. A `Deferred to 09` finding must require only test work; production defects, failed acceptance behavior, and missing required runtime checks cannot be deferred this way.
 
 Context to review:
 
@@ -270,13 +263,13 @@ Constraints:
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
-Use the last reviewed or verified state recorded in the existing artifacts as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect; do not repeat the full branch review. Reuse completed verification for unchanged behavior, carry unresolved findings and pending checks forward, and record the previous and current revisions and any included uncommitted changes in the verification evidence. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
+Use the last independently reviewed or verified state for this branch as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect; do not repeat the full branch review. Reuse completed verification only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged. Carry unresolved findings and pending checks forward, and record the compared revisions and any included uncommitted changes. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
 
 For each prior review finding:
 
 - identify the original finding by its existing identifier; reference earlier evidence and statuses rather than reposting the finding,
 - inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
-- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
+- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, `Invalid Finding`, or `Deferred to 09`,
 - cite fresh verification evidence or reference the unchanged prior evidence,
 - identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
 
@@ -285,7 +278,7 @@ Focused verification:
 - For new or affected findings, independently derive scenarios and expected outcomes from the finding and the acceptance criteria grounded in original requirements or public contracts. Give architecture and high-impact fixes deeper scrutiny by tracing affected consumers and the relevant compatibility, migration, security, concurrency, and recovery risks identified in `REVIEW.md`. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
 - For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
 - Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
-- Verify that each accepted defect category is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
+- Verify that each defect category assigned to `Review fix` is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
 
@@ -299,7 +292,8 @@ Use this structure:
 # Review Fix Verification
 
 ## Verdict
-- All valid blocking and non-blocking review findings resolved: Yes/No
+- All valid findings assigned to Review fix resolved: Yes/No
+- Test-only findings deferred to 09: IDs/None
 - Documentation checkpoints complete: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
@@ -321,11 +315,11 @@ Use this structure:
 ## Required Next Action
 ```
 
-If anything remains unresolved:
+If a finding assigned to `Review fix`, a required current-phase check, or a documentation checkpoint remains unresolved:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_opus_review_branch.md`,
 - state that `04` is the only phase that should author `REVIEW_FIX_PROMPT.md`,
 - if `REVIEW_FIX_PROMPT.md` was missing, weak, or failed to retain needed fix instructions, report the upstream review/request failure; do not compensate here.
 
-If all valid findings from both `Blocking Issues` and `Non-Blocking Issues` are resolved, every required verification check and documentation checkpoint is complete, and no new blocking issue remains, say the code is ready for final `REVIEW.md` / `WALKTHROUGH.md` refresh followed by `WALKTHROUGH.html` generation in phase `06`.
+If all valid findings assigned to `Review fix` are resolved, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved; final test completion still requires phases `09` and `10`.

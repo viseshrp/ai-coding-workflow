@@ -76,7 +76,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - You may create or update tests for the behavior changed on the current branch.
 - Test files, test-local fixtures, and test-local helpers are the only repository files this phase may create or modify.
 - Compare the current branch with the head of `main` and test only changed behavior and material regression risks.
-- Treat actual code and observable contracts as authoritative. Use planning and follow-up artifacts as context, not as substitutes for inspecting code.
+- Treat product requirements, approved changes, and public contracts as the acceptance baseline. Inspect actual code to identify paths and implementation behavior, not to redefine expected results.
 - Do not change production code, public APIs, documentation, dependency files, build files, test configuration, or coverage configuration.
 - Do not create or update a test plan, review, walkthrough, summary file, generated prompt, or any other workflow artifact. Coverage tools may create temporary output while running, but do not retain, stage, or commit that output.
 - Do not generate a downstream prompt or define another workflow phase. Phase `10` uses its checked-in prompt for an independent test audit.
@@ -183,7 +183,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Coverage and verification
 
-Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add tests that depend on live external services. Do not add production instrumentation or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
+Keep automated tests deterministic and independent of live external services. They do not replace running-application and real-API verification. Check the available evidence and its source revision; a test-only commit does not invalidate runtime evidence when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged. Record why reused evidence still applies. Use relevant existing incident diagnostics as evidence and report production gaps without editing production code. Missing or stale required proof returns to authorized implementation or review; do not add production instrumentation or workflow artifacts to supply it.
 
 When tests pass but a real API check fails, investigate the disagreement against the independent acceptance criteria. Do not change expected results to match the implementation or dismiss the API failure because tests pass. Correct test-only gaps here; route production or environment changes to an authorized earlier phase and keep completion pending until required verification passes.
 
@@ -257,6 +257,7 @@ Context to read before acting:
 - existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `FOLLOWUP.md`, if present,
+- `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for test-only findings marked `Deferred to 09`; validate them against current requirements and code rather than blindly adopting their suggested tests,
 - `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported test-only findings as correction input without editing or staging the artifact,
 - durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
 - relevant public documentation or source for test-runner, framework, coverage-tool, or extension APIs when their use is uncertain.
@@ -277,13 +278,13 @@ Success criteria:
 
 Working method:
 
-1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source, existing tests, fixtures, test-runner and framework configuration, coverage configuration, installed extensions, and `TEST_AUDIT.md` when present. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
+1. Inspect the branch diff, repository instructions, relevant durable documentation, source, existing tests and support, runner/framework and coverage configuration, installed extensions, and available review/audit artifacts. Verify the prior documentation checkpoint and identify test-only deferrals before editing tests.
 2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
 3. Build a compact behavior-to-test matrix containing:
    - changed behavior or regression risk,
    - existing test coverage,
    - proposed test, if still needed,
-   - why that test is necessary.
+   - why that test is necessary and any deferred finding identifier it addresses.
 4. Reduce the proposal to the minimum set. Prefer zero or one high-value test over several overlapping tests when the same confidence is preserved.
 5. Implement the tests using existing conventions and the applicable native test-framework APIs.
 6. Run the smallest relevant tests and focused coverage measurement.
@@ -314,7 +315,7 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
-- any blocker, prior audit finding, or existing-test concern that was deliberately left unchanged.
+- the disposition and evidence for each deferred finding identifier, plus any blocker, prior audit finding, or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
 
 End with `Tests are ready for agent audit.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 
