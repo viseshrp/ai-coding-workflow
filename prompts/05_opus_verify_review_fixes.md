@@ -1,4 +1,4 @@
-# 05 - Verify Review Fixes - Any Model
+# 05 - Opus Verifies Review Fixes
 
 ## Skills
 
@@ -76,9 +76,13 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs, including deprecated or unsupported usage.
+- If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -145,12 +149,17 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation during authorized implementation and fix passes. Planning, review, and verification phases must identify required updates and require their completion through the documentation checkpoint; they must not edit durable documentation when their scope forbids it.
+- Do not mark documentation `Not applicable` merely because the current phase has no permission to edit it.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -161,7 +170,9 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
+- If repository support or an explicitly approved task requirement conflicts with this platform rule, stop and ask. Do not silently waive Linux/Windows support, drop existing required platform support, or expand the platform scope.
 
 ### Git and verification
 
@@ -222,7 +233,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are a capable repository-aware model verifying review fixes after the review-fix model updated the branch.
+- You are Claude Opus verifying review fixes after the review-fix model updated the branch.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -247,7 +258,7 @@ Context to review:
 - existing `REVIEW_FIX_VERIFICATION.md`, if present, for prior verification evidence and finding statuses,
 - `REVIEW_FIX_PROMPT.md`, if present,
 - the review-fix model's summary, if present,
-- changes since the last reviewed or verified revision; use the branch comparison against `main` only to establish overall scope,
+- changes since the last reviewed or verified revision; use the branch comparison against the current head of `main` to establish overall scope and include paths newly affected by changes to the base branch or repository contracts,
 - `FEATURE_SPEC_AND_PLAN.md`, if present.
 
 Success criteria:
@@ -260,10 +271,11 @@ Success criteria:
 Constraints:
 
 - do not modify code,
+- create or update only `REVIEW_FIX_VERIFICATION.md`. Do not edit tests, durable documentation, configuration, dependencies, `REVIEW.md`, `WALKTHROUGH.md`, or `REVIEW_FIX_PROMPT.md`; do not stage, commit, push, or change pull-request state,
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
-Use the last independently reviewed or verified state for this branch as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect; do not repeat the full branch review. Reuse completed verification only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged. Carry unresolved findings and pending checks forward, and record the compared revisions and any included uncommitted changes. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
+Use the last independently reviewed or verified state for this branch as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect, including newly affected integration paths when `main`, requirements, or repository contracts changed; do not repeat the full branch review. Reuse completed verification only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged. Carry unresolved findings and pending checks forward, and record exact base and head revisions, the comparison, and enough evidence to identify included uncommitted content. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
 
 For each prior review finding:
 
@@ -277,7 +289,7 @@ Focused verification:
 
 - For new or affected findings, independently derive scenarios and expected outcomes from the finding and the acceptance criteria grounded in original requirements or public contracts. Give architecture and high-impact fixes deeper scrutiny by tracing affected consumers and the relevant compatibility, migration, security, concurrency, and recovery risks identified in `REVIEW.md`. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
 - For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
-- Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
+- Record the requirement or claim, scenario, exact command or interaction, revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
 - Verify that each defect category assigned to `Review fix` is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
@@ -292,6 +304,7 @@ Use this structure:
 # Review Fix Verification
 
 ## Verdict
+- All valid blocking and non-blocking review findings resolved: Yes/No
 - All valid findings assigned to Review fix resolved: Yes/No
 - Test-only findings deferred to 09: IDs/None
 - Documentation checkpoints complete: Yes/No
@@ -314,6 +327,8 @@ Use this structure:
 
 ## Required Next Action
 ```
+
+The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`. Deferral schedules work; it does not resolve or waive it. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
 
 If a finding assigned to `Review fix`, a required current-phase check, or a documentation checkpoint remains unresolved:
 

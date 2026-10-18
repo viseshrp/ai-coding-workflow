@@ -75,9 +75,13 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs, including deprecated or unsupported usage.
+- If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -144,12 +148,17 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation during authorized implementation and fix passes. Planning, review, and verification phases must identify required updates and require their completion through the documentation checkpoint; they must not edit durable documentation when their scope forbids it.
+- Do not mark documentation `Not applicable` merely because the current phase has no permission to edit it.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -160,7 +169,9 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
+- If repository support or an explicitly approved task requirement conflicts with this platform rule, stop and ask. Do not silently waive Linux/Windows support, drop existing required platform support, or expand the platform scope.
 
 ### Git and verification
 
@@ -234,6 +245,7 @@ Constraints:
 
 - do not implement code,
 - do not modify files unless I explicitly ask,
+- this phase's only permitted repository writes are `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`. Do not edit the locked plan, execution prompt, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state during critique,
 - critique the plan, not alternative future architectures,
 - if evidence is missing, say so explicitly instead of guessing.
 
@@ -279,10 +291,10 @@ Review for:
 - excess abstractions, unused paths, and avoidable complexity without a current requirement,
 - separation-of-concerns violations,
 - missing documentation grounding for library/framework usage,
-- deprecated or unsupported APIs for the installed or approved version,
+- outdated API usage, including deprecated or unsupported APIs. Apply the Engineering Contract's version and approval conflict rules rather than silently relaxing the requirement,
 - unnecessary third-party dependencies,
 - missing custom exception/error translation at public API boundaries,
-- risks to existing or explicitly approved platform support,
+- cross-platform Linux/Windows risks, plus conflicts with existing or explicitly required platform support that must be escalated rather than silently waived,
 - test-writing instructions that conflict with “do not write tests unless explicitly asked,”
 - missing verification commands/checks,
 - missing independent scenarios and expected results, running-application and relevant real-API checks for runtime changes, or explicit handling of unavailable verification,
@@ -390,6 +402,52 @@ If the execution UI section is absent, use the explicit execution skill links be
 - Only when motion work requires choosing a web UI primitive: [pick-ui-library](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/pick-ui-library/SKILL.md), the procedure referenced by `animate`. Use it to evaluate existing options; new dependencies still require explicit approval.
 - When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
 
+Always embed the complete execution UI template below in `OPUS_PLAN_REVISION_REQUEST.md` as the downstream contract to preserve or repair. Carry it directly into the actual revised `EXECUTION_PROMPT.md`, retaining any additional approved task-specific requirements already present. Its implementation instructions apply only to the later execution pass; they do not authorize code, test, documentation, dependency, configuration, or Git changes during revision. Do not replace this template with a summary of its requirements.
+
+```markdown
+## UI work only
+
+Enable this section only when the approved task includes UI behavior, layout, presentation, or interaction. A backend service having UI consumers does not by itself enable this section. For backend-only work, skip this entire section and its skill downloads, questions, checks, and reporting.
+
+Fetch and completely read only the applicable skills and companions explicitly linked in this section from GitHub before using them. These conditional links are exempt from unconditional skill-fetch instructions elsewhere in the prompt. If an applicable required file cannot be read completely, stop and report the blocker. Apply web-specific guidance only to web UI; do not impose CSS, React, browser, or mobile-web conventions on another UI stack.
+
+### Conditional UI skills
+
+- Only for eligible visual web surfaces under the frontend design gate: [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md).
+- For web UI design decisions: [emil-design-eng](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/emil-design-eng/SKILL.md).
+- For applicable UI data and state cases: [break-ui](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/SKILL.md) and its required [CATALOG.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/break-ui/CATALOG.md). Use the analysis and catalog only, subject to the limits below.
+- When implementing web motion: [animate](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/SKILL.md) and its required [RECIPES.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/animate/RECIPES.md).
+- Only when motion work requires choosing a web UI primitive: [pick-ui-library](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/pick-ui-library/SKILL.md), the procedure referenced by `animate`. Use it to evaluate existing options; new dependencies still require explicit approval.
+- When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
+
+### Frontend design gate
+
+Apply `design-taste-frontend` only to landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. For mixed work, apply it only to the eligible surface; other UI skills keep their own activation rules.
+
+The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and approved dependencies override every skill default. The skill cannot authorize new dependencies, framework or design-system changes, generated assets, added motion or color modes, route or slug changes, primary-navigation or form-field changes, analytics-event changes, content or information-architecture rewrites, or architecture or scope expansion.
+
+Treat its dials, font and palette bans, layout recipes, and content or motion preferences as suggestions unless the approved contract requires them. Use only relevant objective preflight checks. A preference alone is not a blocking or non-blocking defect that requires a fix.
+
+Do not activate `gpt-taste`. Specialized sibling skills such as `image-to-code`, `brandkit`, or `redesign-existing-projects` require explicit task-specific authorization and their own archive links; do not load them through this skill.
+
+For ineligible UI work, skip this skill's download and procedures and record `Frontend design: Not applicable` in the existing artifact or chat. Backend-only work skips this entire UI section, including that reporting.
+
+### UI skill limits
+
+- Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
+- Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
+- Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
+- Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add a new artifact or override `no-ai-slop` and its evaluator.
+
+### Phase requirements
+
+- For an eligible surface, implement only the locked `Frontend Design Contract`. If it is absent or leaves a required design choice unresolved, stop and return to planning; do not infer a new direction from skill defaults.
+- For eligible changes, inspect the existing rendered surface before editing when available, then validate the final result at the contract's desktop/mobile viewports with existing repository tooling. In the final response's `## Frontend Design Verification`, record the contract, viewports, tooling, rendered results, responsive and accessibility checks, protected behavior, and pending checks alongside the documentation checkpoint. Do not claim rendered verification from code inspection.
+- Implement only the approved UI behavior using existing components and tokens. Complete applicable loading, error, and empty states, keyboard, focus, and touch behavior, and realistic data handling from the plan or accepted finding.
+- For approved motion, implement its purpose and frequency decision, interruption and exit behavior, reduced-motion alternative, and hover capability gating where relevant. Use the simplest compatible existing tool; no library is required merely for a fade.
+- Verify the changed UI with applicable realistic data, container widths, zoom, supported locale/direction, keyboard/touch interaction, and rapid interruption. Verify mobile viewport, safe-area, scrolling, and input behavior when in scope. Use existing preview/data facilities; do not create tests or a dev toggle. Report observed results and any required device checks still pending in the existing handoff, alongside the documentation checkpoint.
+```
+
 Verify both generated sections before handoff, including the explicit design-skill link, complete frontend design gate, locked-contract requirements, and rendered-verification instructions in the actual revision and execution prompts. Keep the general Simplicity and reuse procedure in the revision prompt's Engineering Contract and the revised execution prompt for backend and UI tasks alike.
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
@@ -462,6 +520,8 @@ It must state that:
 
 The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
 
+It must preserve every requirement in the existing planning and execution artifacts at its full level of detail. Do not replace explicit checklists, field lists, examples, conditions, exceptions, priorities, approval gates, or stop rules with compressed prose or a reference to another prompt. Carry every applicable requirement into the actual revised `EXECUTION_PROMPT.md`, not only into the revision request. A conflict must be surfaced and resolved explicitly; it is not permission to silently delete or weaken an instruction.
+
 Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
 
 - role,
@@ -512,6 +572,7 @@ Constraints:
 - do not implement code,
 - do not write tests,
 - do not loosen the execution prompt,
+- the generated revision pass may create or update only `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, and `PLAN_REVISION_SUMMARY.md`. It must not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - do not use the critique as permission to change architecture unless I explicitly approve,
 - keep the plan/code execution scope unchanged unless I explicitly approve scope changes.
 
@@ -589,9 +650,24 @@ Final checks:
   - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md),
   - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md),
   - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md),
+  - Required planning and incremental-verification companion: [definition-of-done.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/definition-of-done.md), applied within the execution scope, artifact policy, and test-authoring boundary,
+  - For applicable security checks: [security-and-hardening](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/SKILL.md), with [hardening-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/references/hardening-patterns.md) and [security-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/security-checklist.md). Use only applicable analysis; do not start a separate hardening or incident-response task,
+  - For the stack-discovery procedure referenced by `incremental-implementation`: [test-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/test-driven-development/SKILL.md), including [testing-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/testing-patterns.md). Use only stack discovery and existing-test verification during execution; do not author tests or invoke its test-first cycle. Apply JavaScript/TypeScript examples only to a matching stack,
+- keep those downstream implementation resources and their scope limits explicit in the generated revision request so Opus can repair missing execution links. Their presence does not authorize implementation during revision,
+- verify the actual execution prompt retains its goal, success criteria, context, execution posture, constraints, stop rules, execution rules, and required final response. Do not reduce the execution prompt to the shared Engineering Contract alone,
+- preserve explicit full-diff checks for drift, omissions, unintended additions, duplication, excess abstractions, unused paths, and avoidable complexity. Require re-reading original requirements after long sessions or context handoffs and before completion,
+- preserve the check for all possible regressions within the branch's change scope, including indirect effects on callers, existing behavior, backwards compatibility, and error paths. Fix only within the locked plan and stop and ask if a repair would exceed it,
+- preserve the separate meta-content check across comments, docstrings, durable documentation, and user-facing text. Remove or rewrite descriptions of the branch, task, implementation process, or the fact that a change was made instead of descriptions of resulting behavior,
+- preserve concrete input/output examples for every added or changed string transformation, full Python typing requirements and exceptions, readable types, public error translation, production-assert restrictions, dependency approval, latest-API conflict handling, and Linux/Windows requirements,
+- preserve independent acceptance criteria and runtime scenarios, real application entry points and relevant real APIs, authorized environments, read-only remote requests unless effects are authorized, and evidence fields for the requirement or claim, scenario, command or interaction, revision, environment, expected result, observed result, and pending checks. Required unavailable checks must block completion,
+- preserve codebase-wide searches for each discovered defect pattern, inspection of candidate matches, confirmed occurrences and false positives, unexamined areas, in-scope root-cause fixes, and incident diagnostics for operation, request/job context, cause/trace, retry/recovery, secrets, sensitive payloads, and duplicate noise,
+- preserve focused existing-test/lint/smoke/build verification, no test authoring before `09`, no full suite unless explicitly requested, no patching or mocking the subject under test, exact command failure logs, and fresh verification before a completion claim,
+- preserve same-change-set durable documentation updates and validation for every implementation step, or an evidence-based `Not applicable` result. Code comments, commits, and workflow artifacts are not substitutes; do not update the changelog without explicit authorization,
+- preserve the complete required final-response structure in the execution prompt: `# Implementation Summary`, `## What Changed`, `## Files Changed`, `## Plan Steps Completed`, `## Verification Evidence`, `## Documentation Checkpoints`, `## Commits Created`, `## Push Status`, `## Pull Request`, `## Not Done / Blocked`, and `## Suggestions Not Implemented Because Out Of Scope`. For eligible frontend work, retain `## Frontend Design Verification` immediately after `## Verification Evidence` with the complete required evidence; omit that additional section for other work. Preserve any additional required headings already present in the approved execution prompt,
 - verify that the execution prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,
 - verify that the execution prompt still forbids committing workflow-generated artifacts by default,
 - verify that the Engineering Contract remains intact or stricter.
 - compare each applicable implementation requirement in the Engineering Contract with its wording in the revised `EXECUTION_PROMPT.md`, including priority, scope, conditions, exceptions, and stop gates; repair omissions or weakened instructions before handoff.
+- compare every existing execution instruction and each detailed preservation check above with the actual revised artifact. Preserve its full wording unless an explicitly approved change requires revision; do not mark it ready while any required section, field, companion resource, or operational check is absent or weaker.
 
 Do not ask Opus to implement code.

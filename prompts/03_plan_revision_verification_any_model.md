@@ -75,9 +75,13 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs, including deprecated or unsupported usage.
+- If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -144,12 +148,17 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation during authorized implementation and fix passes. Planning, review, and verification phases must identify required updates and require their completion through the documentation checkpoint; they must not edit durable documentation when their scope forbids it.
+- Do not mark documentation `Not applicable` merely because the current phase has no permission to edit it.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -160,7 +169,9 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
+- If repository support or an explicitly approved task requirement conflicts with this platform rule, stop and ask. Do not silently waive Linux/Windows support, drop existing required platform support, or expand the platform scope.
 
 ### Git and verification
 
@@ -234,6 +245,7 @@ Constraints:
 
 - do not implement code,
 - do not modify files unless explicitly asked,
+- create or update only `PLAN_REVISION_VERIFICATION.md`. Do not edit planning artifacts, generated prompts, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - if evidence is missing, say so explicitly instead of guessing.
 
 Context to review:
@@ -251,6 +263,10 @@ Working method:
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to where each concern was addressed,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues and do not mark it ready for implementation,
+- also compare every instruction in the previous approved execution prompt and the requested revisions with the actual revised prompt. Check the complete goal, success criteria, context, execution posture, constraints, stop rules, execution rules, and final-response structure; do not accept the shared Engineering Contract as a substitute for those sections,
+- explicitly verify full-diff drift and unnecessary-code checks, all possible regressions and indirect caller/compatibility/error effects, meta-content checks across comments/docstrings/documentation/user-facing text, concrete string-transformation examples, every Python typing field and exception, latest-API conflict handling, Linux/Windows requirements, and public-API exception/assert restrictions,
+- verify focused existing-test/lint/smoke/build checks, no test authoring before `09`, no mocking the subject under test, exact command failure output, fresh runtime evidence with requirement/scenario/command/revision/environment/expected/observed/pending fields, documentation completion in the same change set, explicit intended staging, commit, push, PR existence checks with the `gh` fallback, no duplicate PR, uncommitted workflow artifacts including `WALKTHROUGH.html`, root paths, and metadata,
+- verify every applicable explicit skill, evaluator, required companion, and complete archive-only handling rule in the actual revised execution prompt. Preserve additional existing execution skills; missing links or a reference to an earlier prompt are blocking gaps,
 - check that the revised plan and `EXECUTION_PROMPT.md` retain original requirements, approved changes, independent acceptance criteria and their requirement sources, unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for affected failure paths,
 - verify that material component or API interactions have planned focused integration proof, with missing test authoring deferred to `09`; expected results must come from product requirements or public contracts rather than the implementation or its tests,
 - verify that execution instructions require independent scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and read-only remote requests unless side effects are authorized. Missing runtime access must leave required checks pending; tests alone must not imply runtime completion. Check these instructions without implementing or authoring tests here,

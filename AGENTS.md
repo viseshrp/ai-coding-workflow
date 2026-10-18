@@ -100,8 +100,8 @@ These are the main design constraints that define this repo:
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
 - The workflow uses explicit model-role boundaries:
-  - Any capable repo-aware model or agent for exploration, critique, verification, execution, review fixes, the human walkthrough, follow-up implementation, test writing, and the independent test audit.
-  - Claude Opus for planning, plan revision, and implemented-branch review.
+  - Any capable repo-aware model or agent for exploration, critique, plan-revision verification, execution, review fixes, the human walkthrough, follow-up implementation, test writing, and the independent test audit.
+  - Claude Opus for planning, plan revision, implemented-branch review, review-fix verification, and final review/walkthrough refresh.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
 - The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
@@ -207,6 +207,14 @@ When editing a prompt:
 - keep artifact names exact,
 - avoid hidden dependencies on other files beyond what the prompt explicitly names.
 
+### Lossless prompt maintenance
+
+Wording cleanup must preserve every original requirement and all later authorized additions. Do not compress explicit checklists, evidence fields, examples, exceptions, conditions, priorities, stop rules, skill links and companions, output structures, or phase permissions into a summary. Preserve intentionally repeated, self-contained contracts; removing repetition is not a reason to remove detail from a standalone prompt or its generated downstream prompt.
+
+Before changing a repeated rule, compare all applicable copies and generated-prompt instructions with the pre-change version. Resolve a conflict explicitly within the existing scope instead of silently relaxing a requirement, model role, platform obligation, verification gate, or write boundary. Writing-style guidance cannot shorten contractual detail or change meaning.
+
+For a multi-commit cleanup or restoration, audit every affected commit against the session's starting version as well as the final diff. Trace removed requirements to their complete retained or restored wording, or to an explicit user-authorized change. Inspect complete generated planning, revision, execution, and review-fix prompts separately; a producer's claim that its output is complete is insufficient. Keep verification fixtures outside the prompt-pack repository and do not add runtime workflow artifacts to the canonical source set.
+
 ## Synchronization Map
 
 Several sections are intentionally repeated across prompts. If you edit one, search for all copies and decide whether all copies must change in the same patch.
@@ -264,7 +272,9 @@ Expectation:
 - Changes here are high-impact and must be propagated deliberately.
 - If you change policy semantics, review every copy before finishing.
 - Keep implementation requirements aligned with review criteria: compatibility priority, justified dependencies, idiomatic code, readable types, string-transformation examples, and scope-limited regression and meta-content checks. Embed applicable requirements in generated execution/fix prompts and phase `08`; preserve the existing exceptions and test-authoring boundaries. Verify the actual generated contracts before handoff rather than relying on the producer instructions alone.
-- Ground library usage in documentation for the installed or explicitly approved version; flag deprecated APIs without authorizing upgrades. Preserve existing and approved platform support, using Linux and Windows only as an unspecified-scope default. Consolidate overlapping comment guidance, and keep durable documentation edits within each phase's permissions.
+- Preserve the full documentation-grounding and latest-API requirements. Identify the installed or explicitly approved version, ground 100% of usage in its documentation without assumptions, flag outdated APIs, and stop and ask if latest-API usage needs an unapproved upgrade or conflicts with compatibility. Do not silently relax either requirement.
+- Preserve strict Linux and Windows support and the original statement that Mac is not a concern. If existing or approved platform requirements conflict, stop and ask; do not silently waive Linux/Windows support, drop required platform support, or expand scope.
+- Preserve each explicit comment and documentation requirement, including string-transformation examples, explanatory comments for every non-obvious change, junior-reader context, no task meta commentary, stale-comment cleanup, docs-location discovery, append/create behavior, and no changelog. Complete applicable durable documentation during authorized implementation and fixes; review-only phases identify and route gaps without editing it, and cannot use their write restrictions as a `Not applicable` justification.
 - `01` includes the downstream Engineering Contract for the generated planning prompt to embed in `EXECUTION_PROMPT.md`; keep that complete contract synchronized too.
 - `09` uses a test-focused Engineering Contract; keep its shared scope, verification, artifact, and Git rules aligned while preserving its explicit authorization to write tests.
 - `10` uses a read-only audit contract; preserve its prohibition on code, test, documentation, configuration, dependency, Git, and pull-request mutations.
@@ -278,7 +288,7 @@ The `### Tests` subsection is deliberately phase-specific:
 - phase `10` owns the independent test-value audit and finding-routing contract,
 - do not copy phase `09`'s detailed test-framework or language-specific rules back into every Engineering Contract.
 
-Phases `04` through `06` assign test-only findings, including missing integration tests and final coverage proof, to `09` with status `Deferred to 09`. Keep their identifiers, severity, evidence, and required scenarios in existing review artifacts. They do not block the earlier handoff once all `Review fix` findings, required current-phase checks, and documentation checkpoints pass. Production defects, failed acceptance behavior, and missing required runtime verification cannot use that deferral. Phase `09` reports each disposition in chat without editing review artifacts; phase `10` independently verifies all deferred items and the final 85% coverage gate. Generated fix prompts must embed this routing rule directly, without a dangling reference to review-only sections.
+Phases `04` through `06` assign test-only findings, including missing integration tests and final coverage proof, to `09` with status `Deferred to 09`. Keep their identifiers, severity, evidence, and required scenarios in existing review artifacts. They do not block the earlier handoff once all `Review fix` findings, required current-phase checks, and documentation checkpoints pass. Keep the overall result for whether all valid blocking and non-blocking findings are resolved at `No` while any valid finding is deferred or unresolved, and report current-stage readiness separately. Production defects, failed acceptance behavior, and missing required runtime verification cannot use that deferral. Phase `09` reports each disposition in chat without editing review artifacts; phase `10` independently verifies all deferred items and the final 85% coverage gate. Generated fix prompts must embed this routing rule directly, without a dangling reference to review-only sections.
 
 ### Documentation checkpoint
 

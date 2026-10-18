@@ -77,6 +77,7 @@ Do not use a skill to expand scope, change production architecture, add unrelate
 - Test files, test-local fixtures, and test-local helpers are the only repository files this phase may create or modify.
 - Compare the current branch with the head of `main` and test only changed behavior and material regression risks.
 - Treat product requirements, approved changes, and public contracts as the acceptance baseline. Inspect actual code to identify paths and implementation behavior, not to redefine expected results.
+- Use planning and follow-up artifacts as requirement context, not as substitutes for inspecting actual code, callers, and observable contracts. Treat code and observed behavior as implementation evidence to verify against the acceptance baseline; stop on an unresolved conflict rather than choosing whichever makes a test pass.
 - Do not change production code, public APIs, documentation, dependency files, build files, test configuration, or coverage configuration.
 - Do not create or update a test plan, review, walkthrough, summary file, generated prompt, or any other workflow artifact. Coverage tools may create temporary output while running, but do not retain, stage, or commit that output.
 - Do not generate a downstream prompt or define another workflow phase. Phase `10` uses its checked-in prompt for an independent test audit.
@@ -178,12 +179,12 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Do not assert exact error wording unless that wording is an intentional user-facing contract.
 - Do not encode packaging or filesystem-layout assumptions that are not part of the public contract.
 - Do not mirror production logic inside the expected-value calculation.
-- Do not use real time, sleeps, uncontrolled randomness, or machine-specific state. Keep tests independent of live external networks; use only the repository's existing isolated facilities for integration boundaries.
+- Do not use real time, sleeps, network access, uncontrolled randomness, or machine-specific state. The only network exception is an existing isolated integration facility already authorized for this task. Do not call live external services, add a service, or change dependencies or configuration to enable it.
 - When an existing relevant test has one of these problems, do not refactor unrelated test code. Report it as a flake risk, acceptable contract test, or maintainability concern and suggest a behavior-level alternative.
 
 ### Coverage and verification
 
-Keep automated tests deterministic and independent of live external services. They do not replace running-application and real-API verification. Check the available evidence and its source revision; a test-only commit does not invalidate runtime evidence when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged. Record why reused evidence still applies. Use relevant existing incident diagnostics as evidence and report production gaps without editing production code. Missing or stale required proof returns to authorized implementation or review; do not add production instrumentation or workflow artifacts to supply it.
+Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its source revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add tests that depend on live external services. Do not add production instrumentation or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase. A test-only commit does not invalidate earlier runtime evidence when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged; explicitly record that comparison and why reuse is valid.
 
 When tests pass but a real API check fails, investigate the disagreement against the independent acceptance criteria. Do not change expected results to match the implementation or dismiss the API failure because tests pass. Correct test-only gaps here; route production or environment changes to an authorized earlier phase and keep completion pending until required verification passes.
 
@@ -271,6 +272,7 @@ Success criteria:
 - fresh evidence shows the focused tests pass,
 - fresh evidence shows at least 85% coverage for new or changed lines,
 - every material changed behavior has a verified prior documentation-checkpoint result,
+- every supported test-only finding deferred to `09` has an evidence-backed disposition: corrected and verified, already proved by sufficient existing coverage, or invalidated by current approved requirements with a concrete explanation. An unresolved supported test-only finding prevents the ready-for-audit completion claim,
 - no production or configuration files are changed,
 - no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
 - any intended test changes are committed and pushed, and a pull request is created only if missing,
@@ -278,7 +280,7 @@ Success criteria:
 
 Working method:
 
-1. Inspect the branch diff, repository instructions, relevant durable documentation, source, existing tests and support, runner/framework and coverage configuration, installed extensions, and available review/audit artifacts. Verify the prior documentation checkpoint and identify test-only deferrals before editing tests.
+1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source and callers, existing tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, installed test extensions, and `TEST_AUDIT.md` when present. Read available review artifacts and identify every test-only deferral. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
 2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
 3. Build a compact behavior-to-test matrix containing:
    - changed behavior or regression risk,

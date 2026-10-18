@@ -1,4 +1,4 @@
-# 06 - Refresh Final Review and Walkthrough, Then Generate Interactive HTML - Any Model
+# 06 - Opus Refreshes Final Review and Walkthrough, Then Generates Interactive HTML
 
 ## Skills
 
@@ -77,9 +77,13 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs, including deprecated or unsupported usage.
+- If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -146,12 +150,17 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation during authorized implementation and fix passes. Planning, review, and verification phases must identify required updates and require their completion through the documentation checkpoint; they must not edit durable documentation when their scope forbids it.
+- Do not mark documentation `Not applicable` merely because the current phase has no permission to edit it.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -162,7 +171,9 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
+- If repository support or an explicitly approved task requirement conflicts with this platform rule, stop and ask. Do not silently waive Linux/Windows support, drop existing required platform support, or expand the platform scope.
 
 ### Git and verification
 
@@ -178,8 +189,9 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests while refreshing review artifacts.
 - Run only focused existing tests or checks needed to support the refreshed review; do not manually run the entire suite.
-- Refresh prior test-review evidence against independent requirements; recheck only changed or affected tests for distinct behavior coverage, readable functions and helpers, native framework APIs, limited boundary mocking, and deterministic isolation.
+- Refresh prior test-review evidence against independent requirements; recheck only changed or affected tests for the smallest nonduplicative behavior-focused set, one clear behavior per test, small readable test functions, fixtures, and helpers, existing test-framework fixtures and native APIs instead of hand-rolled test infrastructure, limited boundary mocking, deterministic isolation, and at least 85% coverage for new or changed lines using existing tooling.
 - Flag implementation coupling, patching or mocking the subject under test itself, unscoped global-state mutation, fragile message or layout assertions, mirrored production logic, and coverage-only tests.
+- Defer all new test authoring and the complete test-design/test-framework-specific contract to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase. Do not waive the 85% coverage requirement or present missing measurement as a passed gate.
 - Preserve test-only findings as `Deferred to 09`, including missing integration tests and final 85% changed-line coverage proof. Phase `09` owns test authoring and that coverage gate; phase `10` audits completion. These deferrals permit the earlier handoff only when production correctness and required runtime verification have passed.
 
 #### Python / pytest
@@ -228,7 +240,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are a capable repository-aware model refreshing the final review artifacts after the AI review/fix loop is complete.
+- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -257,6 +269,7 @@ Context to review:
 Success criteria:
 
 - `REVIEW.md` matches the final code and distinguishes resolved findings, test-only findings deferred to `09`, and optional suggestions,
+- `REVIEW.md` explicitly reports whether all valid blocking and non-blocking findings are resolved. Keep that overall result `No` while any valid finding, including a test-only deferral, remains unresolved; readiness for the current handoff does not mean final completion,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
 - the refreshed artifacts are detailed, grounded, and internally consistent,
@@ -277,7 +290,7 @@ Working method:
 - Revisit the available original requirements and compare them with the final branch before refreshing.
 - Refresh the review loop's risk assessment for architecture and high-impact changes, acceptance criteria and requirement references, independent scenarios, focused integration proof, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Preserve the acceptance baseline and check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
 - Use the running application and relevant real APIs for required runtime checks, through existing tools in an authorized environment. Keep remote requests read-only unless side effects are authorized, and distinguish observed behavior from code-only conclusions and missing access.
-- Keep required current-phase checks pending and withhold the handoff if they cannot run. Preserve test-only deferrals for `09` without claiming final test completion. Preserve the severe-issue stop rule and do not restart a full review.
+- Keep required unavailable checks pending and withhold a passing verdict or handoff when current-phase runtime, documentation, or HTML verification cannot run. Preserve test-only deferrals for `09` without claiming those findings are resolved or the final coverage gate has passed. Preserve the severe-issue stop rule and do not restart a full review.
 
 ## Required output 1: refreshed `REVIEW.md`
 

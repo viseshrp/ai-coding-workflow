@@ -103,6 +103,7 @@ Constraints:
 - do not implement code,
 - do not write tests,
 - do not create unrelated files,
+- create or update only `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md` in this exploration phase. Do not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - create workflow-generated Markdown artifacts only in the target repo root using the exact required filenames,
 - every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` fields,
 - use only the linked skills as supporting procedures.
@@ -188,6 +189,7 @@ The generated Opus prompt must have a clear title and these top-level sections:
 - `## Skills`
 - `## Skill Handling Rule`
 - `## Default Planning Artifact Reduction`
+- `## Engineering Contract`
 - `## UI work only`
 - `## Prompt`
 
@@ -279,16 +281,21 @@ Constraints:
 - do not implement code,
 - do not write tests,
 - do not make unrelated files or unrelated changes,
+- create or update only `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md` during the generated planning pass. Do not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state; execution instructions in the downstream contract do not authorize executing them during planning,
 - ignore DevOps/packaging/building and test-related work unless otherwise specified in the plan,
 - prefer the minimum necessary design surface and do not overengineer or add speculative abstractions.
 
 Working method:
 
 - analyze the code one more time,
-- read and critique `DRAFT_PLAN.md` and the exploration output,
+- take the draft plan file and interviewing output we have,
+- read and critique that material,
 - ask all remaining design questions together in one batch,
 - independently specify every remaining detail after gathering my design decisions,
-- expand that material into a complete implementation plan within the requested scope; add grounded detail without treating the draft's level of detail as a limit,
+- expand the initial interviewing plan into a more detailed implementation plan,
+- work independently within the existing plan/change scope; the plan file does not limit the detail you can add,
+- use the existing plan file only as an initial source,
+- use the existing plan as a seed artifact, not the ceiling for detail,
 - preserve all valid task-specific detail from `DRAFT_PLAN.md` and the exploration output,
 - if exploration notes conflict materially with repo reality or with each other, keep the more scope-conservative interpretation and surface the conflict to the user instead of silently choosing,
 - ground file/class/function details in actual repository context and never speculate about code you have not read,
@@ -453,6 +460,8 @@ The generated `EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that
 
 The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `EXECUTION_PROMPT.md`.
 
+Preserve every requirement in both generated prompts at its full level of detail. Copy complete skill links, companion resources, checklists, enumerated fields, conditions, exceptions, priorities, approval gates, and stop rules. Do not replace them with a summary, a reference to this producer, or a general instruction to follow best practices. The generated planning prompt must contain the complete downstream execution instructions below so Opus can produce `EXECUTION_PROMPT.md` without retrieving this producer prompt. Apply `no-ai-slop` after preserving those requirements; its editing rules do not authorize shortening or removing contractual detail.
+
 The generated execution prompt must require the following Engineering Contract verbatim or stricter:
 
 Inside `## Prompt`, the generated `EXECUTION_PROMPT.md` must use clear sections for:
@@ -524,7 +533,9 @@ Stop rules:
 Execution rules:
 
 - before completion, check the full diff of this implementation pass against the Engineering Contract and approved scope,
-- derive verification scenarios from the locked acceptance criteria and their requirement sources; keep expected results independent of the implementation and its tests. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the revision, environment, expected and observed results, and any blocked checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
+- re-read the original requirements and approved clarifications after long sessions or context handoffs and before completion. Check the final behavior for drift, omissions, unintended additions, duplicated logic, excess abstractions, unused paths, and avoidable complexity within the locked scope,
+- derive verification scenarios from the locked acceptance criteria and their requirement sources; keep expected results independent of the implementation and its tests. For runtime changes, exercise the running application and relevant real APIs in an authorized environment using existing tools, with remote requests read-only unless their side effects are authorized. Record the requirement or claim, scenario, exact command or interaction, revision, environment, expected and observed results, and any blocked or pending checks. Author-written tests alone do not establish runtime completion; explain `Not applicable` when there is no runnable behavior,
+- when a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record search scope, confirmed occurrences, false positives, and unexamined areas. Fix only within the locked plan, report broader occurrences without changing them, and verify incident diagnostics for the affected failure paths,
 - read likely relevant files in parallel before editing when practical,
 - prefer dedicated repo/file/edit/search tools over raw shell when available,
 - carry through context gathering, implementation, focused verification, and refinement without waiting for step-by-step approval unless blocked,
@@ -724,9 +735,13 @@ Apply this contract during planning, execution, review, and review fixes.
 ### Dependencies, frameworks, and documentation grounding
 
 - No third-party libraries without explicit approval.
-- Verify all library/framework usage against documentation for the installed or explicitly approved version; ground 100% of usage in those docs without assumptions.
+- If a third-party library is approved, verify library/framework usage against the correct documentation; ground 100% of usage in those docs.
+- Always ground development work involving libraries 100% in documentation with zero assumptions.
+- Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
-- Use supported APIs for that version and flag deprecated APIs. Dependency upgrades require explicit approval.
+- Ensure usage follows the latest APIs.
+- Flag outdated APIs, including deprecated or unsupported usage.
+- If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
 - Check that library/framework usage is necessary and justified.
 
 ### Public APIs and exceptions
@@ -793,12 +808,17 @@ The following typing coverage is a hard requirement:
 ### Comments and documentation
 
 - Document every added or changed string transformation with concrete examples showing representative input and expected output.
-- Add concise explanatory comments for non-obvious code, with enough context for a junior engineer. Avoid bloated comment blocks.
+- Always add brief, detailed comments where they help readers understand the code with little effort.
+- Comments must help readers understand the code with little effort.
 - Comments must address the code itself, not be meta commentary about the task.
 - Cleaning up stale comments is encouraged.
-- Complete documentation work within this phase's permissions; review-only phases identify and route gaps instead of editing durable documentation.
+- Ensure every non-obvious change has an explanatory comment.
+- Avoid bloated comment blocks. Include enough detail for junior engineers to understand easily.
+- Always update related documentation during authorized implementation and fix passes. Planning, review, and verification phases must identify required updates and require their completion through the documentation checkpoint; they must not edit durable documentation when their scope forbids it.
+- Do not mark documentation `Not applicable` merely because the current phase has no permission to edit it.
 - Find the correct docs folder by tracing GitHub Actions workflows, Makefiles, or other docs-build configuration.
 - Append to the appropriate sections, or create new ones if required.
+- Do not write the changelog.
 
 ### Documentation checkpoint
 
@@ -809,7 +829,9 @@ The following typing coverage is a hard requirement:
 
 ### Cross-platform behavior
 
-- Preserve existing and explicitly approved platform support; use Linux and Windows as the default only when no platform scope is established. Verify relevant platform behavior without expanding the task.
+- All changes must be strictly cross-platform and must work on both Linux and Windows.
+- Mac is not a concern.
+- If repository support or an explicitly approved task requirement conflicts with this platform rule, stop and ask. Do not silently waive Linux/Windows support, drop existing required platform support, or expand the platform scope.
 
 ### Git and verification
 
@@ -825,7 +847,7 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this phase.
 - Run only focused existing tests or checks when needed for verification; do not manually run the entire suite.
-- The generated planning and execution prompts must defer test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase.
+- Defer all test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase. This is a direct restriction on the current planning or execution agent, not permission to write tests through a companion skill.
 - Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in generated prompts for earlier phases.
 
 Before finishing, the generated prompt must instruct Opus to verify that:
@@ -833,6 +855,7 @@ Before finishing, the generated prompt must instruct Opus to verify that:
 - `FEATURE_SPEC_AND_PLAN.md` is sufficient for implementation,
 - `EXECUTION_PROMPT.md` contains every implementation rule above,
 - each Engineering Contract requirement and execution instruction is present in the generated execution prompt with its priority, scope, conditions, exceptions, and stop gates intact; repair any omission or weakening before handing it off,
+- compare the actual generated planning prompt and execution prompt against every required section, checklist item, field, skill link, companion link, and task-specific detail in this producer. Verify both prompts independently; a complete producer or planning prompt does not prove that `EXECUTION_PROMPT.md` retained its requirements,
 - no details from the draft plan were dropped.
 
 If the task is still ambiguous, keep interviewing; do not claim the plan is ready.
