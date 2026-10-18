@@ -272,7 +272,8 @@ Task:
 
 - critique the plan, not execute it,
 - decide whether the artifacts are good enough to lock for implementation,
-- produce `PLAN_CRITIQUE.md` and, if needed, `OPUS_PLAN_REVISION_REQUEST.md`.
+- produce `PLAN_CRITIQUE.md`,
+- produce `OPUS_PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No`, or when it is `Yes` and I ask to address non-blocking issues.
 
 ## Review dimensions
 
@@ -343,6 +344,17 @@ Use this structure:
 
 ## Final Recommendation
 ```
+
+Set `Ready to execute: Yes` only when no blocking issue and no missing user decision remains and, on a later pass, every carried-forward item is resolved or recorded with evidence as invalid. Otherwise set it to `No`.
+
+When `Ready to execute` is `Yes` and I have not asked to address non-blocking issues:
+
+- do not create `OPUS_PLAN_REVISION_REQUEST.md`,
+- state in `## Final Recommendation` that the plan is locked and the next step is execution with `EXECUTION_PROMPT.md`,
+- state that any existing `OPUS_PLAN_REVISION_REQUEST.md` from a prior pass is superseded and must not be used,
+- state that phase `03` does not run because no revision pass ran.
+
+When `Ready to execute` is `No`, create `OPUS_PLAN_REVISION_REQUEST.md` as required output 2.
 
 ## UI section in the generated revision prompt
 
@@ -455,6 +467,8 @@ Verify both generated sections before handoff, including the explicit design-ski
 
 ## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
 
+Create this output only when `PLAN_CRITIQUE.md` sets `Ready to execute: No`, or when it sets `Yes` and I ask to address non-blocking issues.
+
 Only this phase may author `OPUS_PLAN_REVISION_REQUEST.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`. There is no separate checked-in Opus revision prompt file after this critique step.
 
 If a later verification pass says another revision is needed, return to this phase and regenerate `OPUS_PLAN_REVISION_REQUEST.md` here. Do not create an alternate revision prompt in the verification phase.
@@ -494,6 +508,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
 
 - use only the prompt's explicitly linked skills,
+- fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
 - fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution,
@@ -643,6 +658,8 @@ The generated revision prompt must require `PLAN_REVISION_SUMMARY.md` to use thi
 ## Ready For Implementation?
 ```
 
+The generated revision prompt must require `## Changes Made To EXECUTION_PROMPT.md` to record, for every changed or removed `EXECUTION_PROMPT.md` instruction, its previous wording, its revised wording or `Removed`, and the critique item or approved decision that required the change. Copy the previous wording before editing `EXECUTION_PROMPT.md`, because the revision overwrites that file in place.
+
 Final checks:
 
 - verify that the updated plan is still within original scope,
@@ -651,7 +668,7 @@ Final checks:
 - verify that every implementation step still has a documentation checkpoint with durable documentation validation or an evidence-based `Not applicable` decision,
 - verify that no test-writing is introduced unless explicitly asked,
 - verify that all skill links relevant to the generated execution prompt remain present,
-- embed the following execution skill links in the revision request and require them in the revised `EXECUTION_PROMPT.md`, preserving any additional existing execution skills and its full skill-handling rules:
+- embed the following execution skill links in the revision request and require them in the revised `EXECUTION_PROMPT.md`, preserving any additional existing execution skills and its full skill-handling rules. Require the revised `EXECUTION_PROMPT.md` `## Skill Handling Rule` to retain or add this archive-only bullet: fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive. Embed these execution skill links:
   - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md),
   - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md),
   - [verification-before-completion](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/obra__Superpowers/snapshot/skills/verification-before-completion/SKILL.md),
@@ -674,6 +691,6 @@ Final checks:
 - verify that the execution prompt still forbids committing workflow-generated artifacts by default,
 - verify that the Engineering Contract remains intact or stricter.
 - compare each applicable implementation requirement in the Engineering Contract with its wording in the revised `EXECUTION_PROMPT.md`, including priority, scope, conditions, exceptions, and stop gates; repair omissions or weakened instructions before handoff.
-- compare every existing execution instruction and each detailed preservation check above with the actual revised artifact. Preserve its full wording unless an explicitly approved change requires revision; do not mark it ready while any required section, field, companion resource, or operational check is absent or weaker.
+- compare every existing execution instruction and each detailed preservation check above with the actual revised artifact. Preserve its full wording unless an explicitly approved change requires revision, and record the previous and revised wording of each changed or removed instruction in `PLAN_REVISION_SUMMARY.md`; do not mark it ready while any required section, field, companion resource, or operational check is absent or weaker.
 
 Do not ask Opus to implement code.

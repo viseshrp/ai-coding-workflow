@@ -67,7 +67,7 @@ If a conflict is material, stop and ask instead of silently choosing.
 - Do not edit tests, production code, documentation, dependencies, build files, test configuration, coverage configuration, or other workflow artifacts.
 - Do not stage, commit, push, create or update a pull request, resolve review threads, or merge.
 - Temporary test or coverage output may exist while commands run, but remove only output created by this phase and do not retain it.
-- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, configuration, or environment work returns to phase `07`. There, the human decides whether to record it in `FOLLOWUP.md` with `AGREE` for phase `08`. This audit does not create follow-up items.
+- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, configuration, or environment work returns to phase `07`. A test-only finding that phase `09` reported as unsupported with evidence, and that this audit still holds, also returns to phase `07` for my decision instead of to `09`. There, the human decides whether to record it in `FOLLOWUP.md` with `AGREE` for phase `08`. This audit does not create follow-up items.
 - Human review of the audited test diff remains the terminal workflow gate.
 
 ### Simplicity and reuse
@@ -120,13 +120,14 @@ Do not report style preferences, speculative edge cases, or deletion ideas witho
 - On a later pass, read the existing `TEST_AUDIT.md` before judging. Record its audited revision and the current revision in `Audit scope`. Audit the full final test diff again, and re-check every `Open` and `Declined by human` finding against the current revision.
 - Never repost an existing finding. Match it by failure mechanism and affected contract, even when wording or line numbers change. Keep its identifier and original evidence, and update its status and evidence in place. Create a new identifier only for a distinct finding.
 - Mark a finding `Resolved` only with fresh evidence from the current revision. Move it to `Finding History` with that evidence, outside the active issue lists.
-- Mark a finding `Declined by human` only when I supply that decision from phase `07` with the finding's identifier and my reason. Keep it in its issue list with the reason. A declined finding still prevents the pass statement; report it in the handoff so I can decide whether to end the workflow.
+- Mark a finding `Declined by human` only when the `## Declined Audit Findings` section of `FOLLOWUP.md` records my explicit decline from phase `07` with the finding's identifier and my reason. Accept nothing weaker, such as a chat remark or the finding's absence from `FOLLOWUP.md` items. Keep it in its issue list with the reason. A declined finding still prevents the pass statement; report it in the handoff so I can decide whether to end the workflow.
+- When phase `09`'s handoff reported, with evidence, that a finding routed to `09` is unsupported and this pass still holds it, keep it `Open`, record phase `09`'s evidence and your reason for holding it, and change its destination to phase `07` for my decision instead of routing it back to `09`.
 
 ### Verification
 
 For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to phase `07`, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
 
-Reuse prior runtime evidence across test-only commits only when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged, and record that comparison and why reuse is valid. Independently check the disposition of every finding deferred to `09` against current requirements and actual coverage; an unsupported or incomplete disposition blocks a pass. Preserve its identifier in `TEST_AUDIT.md` rather than opening a duplicate finding.
+Reuse prior runtime evidence across test-only commits only when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged, and record that comparison and why reuse is valid. Read the evidence phase `08` recorded under completed `FOLLOWUP.md` items and judge it fresh only when its revision matches the current production code and the relevant contracts, dependencies, configuration, and environment are unchanged, and record that comparison. Independently check the disposition of every finding deferred to `09` against current requirements and actual coverage; an unsupported or incomplete disposition blocks a pass. Preserve its identifier in `TEST_AUDIT.md` rather than opening a duplicate finding. Independently check the disposition phase `09` reported for every unchecked `FOLLOWUP.md` test-authoring item against current requirements and actual coverage, and record each item and its disposition in `Contract map`; an unsupported or incomplete disposition blocks a pass. Record each unsupported or incomplete disposition as a Blocking Issue that cites the `FOLLOWUP.md` item, with destination `09` for test-only work or `07` when production, documentation, dependency, build, configuration, or environment work is required. When the item cites a `TEST_AUDIT.md` finding identifier, update that finding in place instead of opening a new one.
 
 Investigate any disagreement between passing tests and failed real API checks against the independent acceptance criteria. Record an unresolved acceptance failure or missing integration proof as blocking; route test-only corrections to `09` and production or environment corrections to phase `07`. Do not change expectations or infer correctness from a green test run.
 
@@ -192,7 +193,7 @@ Context to read before judging:
 - overlapping tests at other boundaries;
 - test-runner, framework, coverage, CI, and changed-file routing configuration;
 - relevant history for suspicious tests or production seams;
-- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present, including the finding identifiers and scenarios deferred to `09`;
+- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present, including the finding identifiers and scenarios deferred to `09`, unchecked `FOLLOWUP.md` test-authoring items, the evidence phase `08` recorded under completed items, and the `## Declined Audit Findings` section;
 - `TEST_AUDIT.md`, if present from an earlier pass, for the audited revision, finding identifiers, statuses, and evidence;
 - phase `09`'s final chat evidence or equivalent recorded commands and results;
 - durable documentation and its earlier checkpoint result.
@@ -206,6 +207,7 @@ Success criteria:
 - no test-only production seam remains without a production caller or independently justified contract;
 - tests are deterministic, isolated, readable, and consistent with the established framework;
 - fresh evidence supports the focused test and changed-line coverage claims;
+- every unchecked `FOLLOWUP.md` test-authoring item has a verified disposition;
 - the documentation checkpoint is accurate for every material changed behavior;
 - `TEST_AUDIT.md` contains complete evidence, exact findings, and the correct disposition;
 - the repository remains unchanged except for the uncommitted `TEST_AUDIT.md` workflow artifact.
@@ -262,7 +264,7 @@ For each actionable finding, include:
 - stronger existing proof or missing owner-boundary proof;
 - any production or test-support seam involved;
 - smallest justified correction;
-- destination phase: `09` for test-only changes, or `07` for production, documentation, dependency, build, configuration, or environment changes;
+- destination phase: `09` for test-only changes, or `07` for production, documentation, dependency, build, configuration, or environment changes and for test-only findings that phase `09` disputed with evidence and this audit still holds;
 - focused command that should verify the correction.
 
 Use `None.` under both issue headings when no actionable findings exist, and under `Finding History` when no earlier finding has been resolved. Do not omit the headings.

@@ -245,6 +245,7 @@ Constraints:
 
 - do not implement code,
 - do not modify files unless explicitly asked,
+- run this phase only after an Opus revision pass. If `PLAN_REVISION_SUMMARY.md` is missing, stop and report that no revision pass ran; do not create `PLAN_REVISION_VERIFICATION.md`,
 - create or update only `PLAN_REVISION_VERIFICATION.md`. Do not edit planning artifacts, generated prompts, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - if evidence is missing, say so explicitly instead of guessing.
 
@@ -263,7 +264,7 @@ Working method:
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to where each concern was addressed,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues and do not mark it ready for implementation,
-- also compare every instruction in the previous approved execution prompt and the requested revisions with the actual revised prompt. Check the complete goal, success criteria, context, execution posture, constraints, stop rules, execution rules, and final-response structure; do not accept the shared Engineering Contract as a substitute for those sections,
+- also compare the actual revised execution prompt with the previous and revised wording recorded in `PLAN_REVISION_SUMMARY.md` under `## Changes Made To EXECUTION_PROMPT.md`, and with the critique items and requested revisions. Treat a changed or removed instruction without recorded previous wording as a blocking gap. Check the complete goal, success criteria, context, execution posture, constraints, stop rules, execution rules, and final-response structure; do not accept the shared Engineering Contract as a substitute for those sections,
 - explicitly verify full-diff drift and unnecessary-code checks, all possible regressions and indirect caller/compatibility/error effects, meta-content checks across comments/docstrings/documentation/user-facing text, concrete string-transformation examples, every Python typing field and exception, latest-API conflict handling, Linux/Windows requirements, and public-API exception/assert restrictions,
 - verify focused existing-test/lint/smoke/build checks, no test authoring before `09`, no mocking the subject under test, exact command failure output, fresh runtime evidence with requirement/scenario/command/revision/environment/expected/observed/pending fields, documentation completion in the same change set, explicit intended staging, commit, push, PR existence checks with the `gh` fallback, no duplicate PR, uncommitted workflow artifacts including `WALKTHROUGH.html`, root paths, and metadata,
 - verify every applicable explicit skill, evaluator, required companion, and complete archive-only handling rule in the actual revised execution prompt. Preserve additional existing execution skills; missing links or a reference to an earlier prompt are blocking gaps,

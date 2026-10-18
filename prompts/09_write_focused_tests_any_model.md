@@ -107,6 +107,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Before test work, verify that every material changed behavior already has a documentation-checkpoint result from an earlier phase: exact durable documentation updated and validated, or an evidence-based `Not applicable` decision.
 - Inspect the changed behavior and the relevant durable documentation closely enough to validate that result; do not treat code comments, commit messages, or workflow artifacts as substitutes.
 - This phase may not edit documentation. If a required durable documentation update is missing, inaccurate, unvalidated, or lacks an evidence-based `Not applicable` decision, stop and ask for it to be resolved in an authorized implementation or follow-up stage before continuing.
+- Exception: when the `## Declined Audit Findings` section of `FOLLOWUP.md` records my explicit decline of the `TEST_AUDIT.md` finding that identifies that documentation gap, do not stop for it. Report the gap and the declined finding identifier in the handoff.
 - State the documentation-checkpoint status in the final human-review handoff.
 
 ### Minimum test set
@@ -184,7 +185,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Coverage and verification
 
-Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its source revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add tests that depend on live external services. Do not add production instrumentation or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase. A test-only commit does not invalidate earlier runtime evidence when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged; explicitly record that comparison and why reuse is valid.
+Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its source revision, including the evidence phase `08` recorded under completed `FOLLOWUP.md` items; treat that evidence as fresh only when its revision matches the current production code and the relevant contracts, dependencies, configuration, and environment are unchanged, and record that comparison. If required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add tests that depend on live external services. Do not add production instrumentation or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase. A test-only commit does not invalidate earlier runtime evidence when the relevant production behavior, contracts, dependencies, configuration, and environment are unchanged; explicitly record that comparison and why reuse is valid.
 
 When tests pass but a real API check fails, investigate the disagreement against the independent acceptance criteria. Do not change expected results to match the implementation or dismiss the API failure because tests pass. Correct test-only gaps here; route production or environment changes to an authorized earlier phase and keep completion pending until required verification passes.
 
@@ -257,7 +258,7 @@ Context to read before acting:
 - changed production code and its callers,
 - existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `FOLLOWUP.md`, if present,
+- `FOLLOWUP.md`, if present: treat each unchecked test-authoring item as required test work and validate it against requirements under the minimum-test rules; read the evidence phase `08` recorded under completed items and the `## Declined Audit Findings` section; do not edit the artifact,
 - `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for test-only findings marked `Deferred to 09`; validate them against current requirements and code rather than blindly adopting their suggested tests,
 - `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported `Open` findings with destination `09` as correction input without editing or staging the artifact,
 - durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
@@ -271,8 +272,9 @@ Success criteria:
 - existing test-framework native APIs or installed extensions replace hand-rolled test infrastructure where available,
 - fresh evidence shows the focused tests pass,
 - fresh evidence shows at least 85% coverage for new or changed lines,
-- every material changed behavior has a verified prior documentation-checkpoint result,
+- every material changed behavior has a verified prior documentation-checkpoint result, or a documentation gap whose audit finding I declined in `FOLLOWUP.md` and that the handoff reports,
 - every supported test-only finding deferred to `09` has an evidence-backed disposition: corrected and verified, already proved by sufficient existing coverage, or invalidated by current approved requirements with a concrete explanation. An unresolved supported test-only finding prevents the ready-for-audit completion claim,
+- every unchecked `FOLLOWUP.md` test-authoring item has an evidence-backed disposition: covered by a new or changed test that passes, or already proved by sufficient existing coverage. An item without such a disposition prevents the ready-for-audit completion claim,
 - no production or configuration files are changed,
 - no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
 - any intended test changes are committed and pushed, and a pull request is created only if missing,
@@ -280,13 +282,13 @@ Success criteria:
 
 Working method:
 
-1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source and callers, existing tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, installed test extensions, and `TEST_AUDIT.md` when present. Read available review artifacts and identify every test-only deferral. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
+1. Inspect the branch diff, repository instructions, relevant durable documentation, test layout, relevant source and callers, existing tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, installed test extensions, and `TEST_AUDIT.md` when present. Read available review artifacts and identify every test-only deferral and every unchecked `FOLLOWUP.md` test-authoring item. Verify the prior documentation checkpoint for each material changed behavior before editing tests.
 2. Trace each changed observable behavior through its public entry point and important failure or boundary paths.
 3. Build a compact behavior-to-test matrix containing:
    - changed behavior or regression risk,
    - existing test coverage,
    - proposed test, if still needed,
-   - why that test is necessary and any deferred finding identifier it addresses.
+   - why that test is necessary and any deferred finding identifier or `FOLLOWUP.md` test-authoring item it addresses.
 4. Reduce the proposal to the minimum set. Prefer zero or one high-value test over several overlapping tests when the same confidence is preserved.
 5. Implement the tests using existing conventions and the applicable native test-framework APIs.
 6. Run the smallest relevant tests and focused coverage measurement.
@@ -299,7 +301,7 @@ Working method:
 Stop rules:
 
 - Stop and ask if expected behavior is ambiguous or conflicts with code, plans, or follow-up decisions.
-- Stop and ask if any material changed behavior lacks a complete documentation checkpoint; do not edit documentation in this test-only phase or silently waive the requirement.
+- Stop and ask if any material changed behavior lacks a complete documentation checkpoint, unless the `## Declined Audit Findings` section of `FOLLOWUP.md` records my explicit decline of the audit finding for that gap; report a declined gap in the handoff. Do not edit documentation in this test-only phase or silently waive the requirement.
 - Stop and ask if meaningful testing requires a production-code, dependency, plugin, build, or configuration change.
 - Stop and ask if the repository has no established test runner or framework that can exercise the changed behavior without adding dependencies.
 - Stop and ask if unrelated baseline failures prevent reliable focused verification.
@@ -316,8 +318,8 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - why this is the minimum test set,
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
-- the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here,
-- the disposition and evidence for each deferred finding identifier and each `TEST_AUDIT.md` finding identifier routed to `09`, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
+- the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here and any gap whose audit finding I declined, with that finding identifier,
+- the disposition and evidence for each deferred finding identifier, each `TEST_AUDIT.md` finding identifier routed to `09`, and each unchecked `FOLLOWUP.md` test-authoring item, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
 
 End with `Tests are ready for agent audit.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 

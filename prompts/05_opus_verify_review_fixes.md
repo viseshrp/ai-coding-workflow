@@ -227,7 +227,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 - Use the design skill only to verify accepted findings about eligible surfaces in `REVIEW.md`. Check the actual fixes against those findings and any locked `Frontend Design Contract`, repeat the affected rendered desktop/mobile checks, and record evidence or pending checks in `REVIEW_FIX_VERIFICATION.md`. Do not reopen the design direction or add taste preferences.
 - Verify accepted UI findings against the actual fix and repeat the smallest relevant existing interaction or visual check. Check that the fix preserved nearby behavior, applicable keyboard and touch access, and reduced motion.
-- Record observed results, code-only conclusions, pending device checks, and documentation status in `REVIEW_FIX_VERIFICATION.md`. A required unverified check remains unresolved. Return unresolved findings to `04`; do not implement fixes or create another report.
+- Record observed results, code-only conclusions, pending device checks, and documentation status in `REVIEW_FIX_VERIFICATION.md`. A required unverified check remains unresolved. Return unresolved findings to `04`. When a required check cannot run only because a browser, device, environment, credential, or access precondition is unavailable, keep it pending and report the missing precondition instead of returning to `04`. Do not implement fixes or create another report.
 
 ## Prompt
 
@@ -281,9 +281,20 @@ For each prior review finding:
 
 - identify the original finding by its existing identifier; reference earlier evidence and statuses rather than reposting the finding,
 - inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
-- classify as `Resolved`, `Partially Resolved`, `Not Resolved`, `Invalid Finding`, or `Deferred to 09`,
+- classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, or `Deferred to 09`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, and `Deferred to 09` is test-only work assigned to phase `09`,
 - cite fresh verification evidence or reference the unchanged prior evidence,
 - identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
+
+Record each distinct new issue under `New Issues Introduced` with the same fields `REVIEW.md` findings use:
+
+- a stable identifier that continues the identifier sequence in `REVIEW.md` and does not reuse an identifier already assigned in `REVIEW_FIX_VERIFICATION.md`,
+- status `Open`, or `Deferred to 09` for test-only work, destination (`Review fix` or `09`), severity, and a concise description of the defect category or root cause,
+- the exact inspected file path and a narrow line range,
+- the affected requirement or existing contract and the concrete impact,
+- minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code; label unexecuted scenarios `Not run`,
+- the smallest justified correction or the acceptance check needed to demonstrate resolution.
+
+Give a new issue that requires only test changes the destination `09`. Production defects, failed acceptance behavior, missing required runtime verification, and documentation gaps take the destination `Review fix`. Phase `04` adopts these entries into `REVIEW.md` under the same identifiers on its next pass; do not edit `REVIEW.md` here.
 
 Focused verification:
 
@@ -330,11 +341,18 @@ Use this structure:
 
 The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`. Deferral schedules work; it does not resolve or waive it. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
 
-If a finding assigned to `Review fix`, a required current-phase check, or a documentation checkpoint remains unresolved:
+If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed or needs a code, documentation, or fix-prompt change:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_opus_review_branch.md`,
 - state that `04` is the only phase that should author `REVIEW_FIX_PROMPT.md`,
 - if `REVIEW_FIX_PROMPT.md` was missing, weak, or failed to retain needed fix instructions, report the upstream review/request failure; do not compensate here.
+
+If the only unresolved items are required current-phase checks that cannot run because an environment, credential, or access precondition is unavailable:
+
+- do not return the workflow to `04` and do not create `REVIEW_FIX_PROMPT.md`,
+- keep each such check pending and keep `Ready to finalize review/walkthrough docs` at `No`,
+- report to me, in `Required Next Action` and in chat, the exact missing precondition and the check it blocks,
+- stop. Rerun this phase when the precondition is available.
 
 If all valid findings assigned to `Review fix` are resolved, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved; final test completion still requires phases `09` and `10`.

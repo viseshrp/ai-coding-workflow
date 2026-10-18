@@ -253,7 +253,7 @@ Context to review:
 
 - the current branch diff against the head of `main`, plus the diff since the last reviewed state on later passes. Record exact base and head revisions and the comparison used; include newly affected integration paths if `main` changed since the earlier review,
 - affected code, callers, public interfaces, configuration, durable documentation, and existing tests,
-- existing `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for the last reviewed revision, finding identifiers, statuses, and pending checks,
+- existing `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for the last reviewed revision, finding identifiers, statuses, pending checks, and the new issues recorded under `New Issues Introduced`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
@@ -440,6 +440,8 @@ Report only actionable, evidence-backed findings under `Blocking Issues` or `Non
 - minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code,
 - the smallest justified correction or the acceptance check needed to demonstrate resolution.
 
+Use exactly one of these finding statuses: `Open` (confirmed and not yet fixed), `Partially Resolved` (fixed for some, but not all, confirmed occurrences or acceptance checks), `Resolved` (fixed and verified with fresh evidence), `Invalid Finding` (disproved by inspected evidence, which the entry records), or `Deferred to 09` (test-only work assigned to phase `09`). Do not use other status values.
+
 For static issues, provide repeatable inspection or call-trace steps that demonstrate the mismatch. Label unexecuted reproduction scenarios `Not run`; never invent observations. Keep unanswered intent questions and pending verification in the existing review-basis and evidence sections, separate from confirmed defects.
 
 Every valid review issue must remain categorized under either `Blocking Issues` or `Non-Blocking Issues`, including test-only findings assigned to `09`. Put each finding's corrective suggestion directly below its evidence and reproduction steps. Keep broader optional improvements in `Suggestions` and reference the related finding identifier without reposting the finding.
@@ -448,7 +450,7 @@ Mark test-only findings `Deferred to 09`, retaining their identifiers, severity,
 
 Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
-Never repost the same finding. Match against existing findings by failure pattern and affected contract, even if wording or line numbers change. Preserve its identifier and original evidence in `REVIEW.md`, update its status and remaining occurrences in place, and reference that identifier in later responses and handoffs. Add new evidence or newly found occurrences of the same defect category to that entry; create a new finding only for a distinct defect. Keep resolved entries as clearly marked review history outside active issue lists, without requiring unchanged fixes again.
+Never repost the same finding. Match against existing findings by failure pattern and affected contract, even if wording or line numbers change. Preserve its identifier and original evidence in `REVIEW.md`, update its status and remaining occurrences in place, and reference that identifier in later responses and handoffs. Add new evidence or newly found occurrences of the same defect category to that entry; create a new finding only for a distinct defect. On a later pass, adopt each new issue recorded in `REVIEW_FIX_VERIFICATION.md` under `New Issues Introduced` into `REVIEW.md` under its assigned identifier, with its status, destination, severity, evidence, reproduction steps, and correction; do not repost it under a new identifier. Treat findings that phase `06` recorded in `REVIEW.md` as existing findings. Keep resolved entries as clearly marked review history outside active issue lists, without requiring unchanged fixes again.
 
 In `## Review Basis`, record the initial comparison against `main`, exact base and head revisions, the previous and current reviewed revisions, any uncommitted changes included, and the scope of this pass. Record enough evidence to identify the reviewed working-tree state on a later pass; a commit SHA alone does not identify uncommitted content. List the repository evidence inspected and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
 
@@ -537,7 +539,7 @@ Verify that the actual generated fix prompt includes the complete UI activation 
 
 Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings assigned to `Review fix`, including both blocking and non-blocking issues. Carry test-only deferrals to `09` without authoring tests here. There is no separate checked-in review-fix prompt file after this review step.
 
-If a later verification pass says another fix iteration is needed, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
+If a later verification pass, or a severe missed issue recorded by phase `06`, requires another fix iteration, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
 
 It must be self-contained.
 
@@ -571,6 +573,7 @@ The generated review-fix prompt must include a `## Skill Handling Rule` that ins
 
 - use only the prompt's explicitly linked skills,
 - fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
+- fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution when they are present,
 - proceed from `REVIEW.md`, `WALKTHROUGH.md`, and the current branch diff when prior planning or execution artifacts are absent,

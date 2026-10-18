@@ -188,7 +188,7 @@ The following typing coverage is a hard requirement:
 
 - Do not create, modify, or delete tests in this follow-up implementation phase.
 - Run only focused existing tests or checks needed to verify approved production changes; do not manually run the entire suite.
-- If `FOLLOWUP.md` contains test-authoring work, leave that work for the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase and state the deferral in the handoff.
+- If `FOLLOWUP.md` contains test-authoring work, leave that item unchecked for the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase and state the deferral in the handoff.
 - Phase `09` exclusively owns the detailed test-authoring contract.
 
 ## UI work only
@@ -238,12 +238,12 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Goal:
 
-- execute the human-approved `FOLLOWUP.md` items end-to-end and stop only when you have a verified result or a concrete blocker.
+- execute the unchecked human-approved `FOLLOWUP.md` implementation items end-to-end and stop only when you have a verified result or a concrete blocker.
 
 Success criteria:
 
 - only approved `FOLLOWUP.md` items are implemented,
-- each completed item is checked off only after the change and its verification are done,
+- each completed item is checked off only after the change and its verification are done, and its verification evidence is recorded directly under that item in `FOLLOWUP.md`,
 - the smallest correct changes are made,
 - each completed `FOLLOWUP.md` item completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
 - focused verification is run and reported with fresh evidence,
@@ -254,7 +254,7 @@ Success criteria:
 - workflow-generated artifacts are not staged or committed unless I explicitly ask for that,
 - if committing is allowed, each commit strictly corresponds to one approved `FOLLOWUP.md` item and does not mix work from multiple follow-up items,
 - if committing is allowed, commits are small, focused, and split into sensible parts rather than one broad commit,
-- the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
+- when this pass completes at least one item, the final execution flow stages changes, commits them, pushes the branch, and creates a pull request only if the current branch does not already have one,
 - no AI review loop is restarted after this phase; the workflow proceeds to the final focused test-writing phase.
 
 Context to read before acting:
@@ -262,6 +262,7 @@ Context to read before acting:
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
 - `FOLLOWUP.md`,
+- `TEST_AUDIT.md`, when a `FOLLOWUP.md` item cites a finding identifier; use it to confirm that the fix addresses that finding's failure mechanism,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - current branch diff against `main`.
 
@@ -280,7 +281,10 @@ Constraints:
 - do not regenerate `WALKTHROUGH.html`; phase `06` owns it, and follow-up changes may make its recorded revision stale. Keep it uncommitted unless explicitly requested,
 - workflow-generated Markdown artifacts belong only in the target repo root using their exact required filenames,
 - workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first write and updating `Updated at` on every edit,
-- address all items in `FOLLOWUP.md` and check them off the list,
+- implement every unchecked implementation item in `FOLLOWUP.md` and check each one off after its change and verification are done,
+- leave checked items and the `## Declined Audit Findings` section unchanged; declined entries are not implementation work. Do not re-implement or re-commit finished work,
+- leave unchecked test-authoring items unchecked and report them as deferred to `09`,
+- if no unchecked implementation item remains, report that and make no commit,
 - only implement items that are explicitly present in `FOLLOWUP.md`,
 - before checking off an item, complete the documentation checkpoint specified by that item; if it is missing or ambiguous, stop and ask instead of silently treating documentation as `Not applicable`,
 - do not add new follow-up items,
@@ -319,9 +323,10 @@ Execution rules:
 - split large commits into sensible smaller focused parts,
 - use detailed commit messages and descriptions,
 - do not make unrelated refactors,
-- do not create, modify, or delete tests in this phase; defer test-authoring items in `FOLLOWUP.md` to `09_write_focused_tests_any_model.md` and report the deferral in the handoff,
+- do not create, modify, or delete tests in this phase; leave test-authoring items in `FOLLOWUP.md` unchecked for `09_write_focused_tests_any_model.md` and report the deferral in the handoff,
 - run focused verification relevant to the approved follow-up items, using scenarios and expected results from each item's acceptance criteria. For changed runtime behavior, exercise the running application and relevant real APIs with existing tools in an authorized environment; remote requests remain read-only unless their side effects are authorized,
 - record the approved item, requirement or claim, scenario, exact command or interaction, revision, environment, expected and observed behavior, and required pending checks. Author-written tests alone do not establish completion; explain `Not applicable` for changes without runnable behavior,
+- for each item you complete, record directly under that item in `FOLLOWUP.md`: the commit SHA, the verified revision, the environment, the exact command or interaction, expected and observed results, pending checks, and the `TEST_AUDIT.md` finding identifier when the item cites one,
 - verify incident diagnostics for affected failure paths and search the codebase for the same defect pattern, including sibling implementations and other callers. Inspect candidate matches and record search scope, confirmed occurrences, false positives, and unexamined areas. Fix only approved occurrences and report others for human agreement,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.

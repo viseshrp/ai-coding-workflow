@@ -12,7 +12,8 @@ flowchart TD
     B --> C["Opus planning via generated prompt"]
     C --> D["FEATURE_SPEC_AND_PLAN.md + EXECUTION_PROMPT.md"]
     D --> E["02 Critique plan"]
-    E --> F["OPUS_PLAN_REVISION_REQUEST.md"]
+    E -- "revision needed" --> F["OPUS_PLAN_REVISION_REQUEST.md"]
+    E -- "Ready to execute: Yes, plan locked" --> J
     F --> G["Opus revises plan"]
     G --> H["Updated plan + PLAN_REVISION_SUMMARY.md"]
     H --> I["03 Verify revision"]
@@ -23,7 +24,9 @@ flowchart TD
     L --> M["Review-fix model fixes assigned findings; test-only work goes to 09"]
     M --> N["05 Verify review fixes"]
     N -- "more fixes" --> K
+    N -- "check blocked by missing precondition" --> V["Report the missing precondition; rerun 05 when available"]
     N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md, then generate WALKTHROUGH.html"]
+    O -- "severe Review fix issue recorded" --> K
     O --> P["07 Human walkthrough"]
     P --> Q{"Approved FOLLOWUP.md items?"}
     Q -- "yes" --> R["08 Implementation model implements FOLLOWUP.md"]
@@ -31,7 +34,8 @@ flowchart TD
     R --> S
     S --> T["10 Independent test audit"]
     T -- "test-only changes" --> S
-    T -- "production or documentation changes" --> P
+    T -- "production or documentation changes, or disputed test-only findings" --> P
+    P -- "every routed audit finding declined" --> T
     T -- "audit passes" --> U["Human reviews the audited test diff; workflow ends"]
 ```
 
@@ -49,13 +53,13 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 | Step | Prompt | Model / role | Result |
 |---|---|---|---|
 | 01 | [Initial exploration](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
-| 02 | [Plan critique](prompts/02_plan_critique_any_model.md) | Any capable repo-aware model | `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md` |
+| 02 | [Plan critique](prompts/02_plan_critique_any_model.md) | Any capable repo-aware model | `PLAN_CRITIQUE.md`; `OPUS_PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No` or the human asks to address non-blocking issues |
 | 03 | [Plan-revision verification](prompts/03_plan_revision_verification_any_model.md) | Any capable repo-aware model | `PLAN_REVISION_VERIFICATION.md` |
 | 04 | [Implemented-branch review](prompts/04_opus_review_branch.md) | Claude Opus | `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md` |
 | 05 | [Review-fix verification](prompts/05_opus_verify_review_fixes.md) | Claude Opus | `REVIEW_FIX_VERIFICATION.md` |
 | 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md`, then interactive `WALKTHROUGH.html` |
-| 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed |
-| 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Approved follow-up changes |
+| 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed, including declined audit findings |
+| 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Unchecked approved follow-up changes, with per-item evidence in `FOLLOWUP.md` |
 | 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by phase-10 audit |
 | 10 | [Independent test audit](prompts/10_test_audit_any_model.md) | Any capable repo-aware agent | `TEST_AUDIT.md`, followed by human review after approval |
 
@@ -79,14 +83,14 @@ Use `12` when choosing between UI directions before locking a plan. It uses `pro
 1. Open the target code repository in a repo-aware agent UI. Keep this prompt pack available only as the instruction source.
 2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
 3. Paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
-4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If revision is required, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus.
-5. Run [prompt 03](prompts/03_plan_revision_verification_any_model.md). Repeat `02 -> Opus revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
+4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If it sets `Ready to execute: No`, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus. If it sets `Ready to execute: Yes`, the plan is locked: skip `03` and go to step 6.
+5. After an Opus revision pass, run [prompt 03](prompts/03_plan_revision_verification_any_model.md). It stops without a verdict when no revision pass ran. Repeat `02 -> Opus revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
-7. Run [prompt 04](prompts/04_opus_review_branch.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all findings assigned to `Review fix` are resolved. Carry test-only findings marked `Deferred to 09` to phase 09.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
-9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md).
-10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state.
-11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes back to [prompt 07](prompts/07_human_code_walkthrough.md), where only `AGREE`d corrections enter `FOLLOWUP.md` for `08`, before repeating `09` and `10`. Audit findings keep stable identifiers and statuses across passes.
+7. Run [prompt 04](prompts/04_opus_review_branch.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all findings assigned to `Review fix` are resolved. Carry test-only findings marked `Deferred to 09` to phase 09. When `05` reports that a required check cannot run only because an environment, credential, or access precondition is unavailable, supply that precondition and rerun `05` instead of returning to `04`.
+8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. If `06` records a severe missed issue assigned to `Review fix` in `REVIEW.md`, it skips `WALKTHROUGH.html` and the workflow returns to `04` for the next `REVIEW_FIX_PROMPT.md`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
+9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md). It implements only unchecked implementation items, records evidence under each completed item, leaves test-authoring items for `09`, and makes no commit when nothing remains.
+10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state. It treats unchecked `FOLLOWUP.md` test-authoring items as required test work.
+11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes back to [prompt 07](prompts/07_human_code_walkthrough.md), where only `AGREE`d corrections enter `FOLLOWUP.md` for `08`, before repeating `09` and `10`. Test-only findings that `09` reported as unsupported with evidence and that `10` still holds also go to `07` for a human decision. `07` records findings the human explicitly declines under `## Declined Audit Findings` in `FOLLOWUP.md`; when every routed finding is declined, skip `08` and `09` and run the next `10` pass. Audit findings keep stable identifiers and statuses across passes.
 12. Human-review the audited test diff after phase `10` passes.
 
 You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
@@ -114,16 +118,16 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `FEATURE_SPEC_AND_PLAN.md` | Opus planning/revision | Critique, execution, and review phases |
 | `EXECUTION_PROMPT.md` | Opus planning/revision | Locked implementation |
 | `PLAN_CRITIQUE.md` | 02 | Opus revision and 03 |
-| `OPUS_PLAN_REVISION_REQUEST.md` | 02 | Opus revision |
-| `PLAN_REVISION_SUMMARY.md` | Opus revision | 03; 02 and the next Opus revision on another pass |
-| `PLAN_REVISION_VERIFICATION.md` | 03 | Execution gate; 02 and the next Opus revision when issues remain |
-| `REVIEW.md` | 04, refreshed by 06 | Review-fix context and later workflow context |
+| `OPUS_PLAN_REVISION_REQUEST.md` | 02, only when revision is needed | Opus revision |
+| `PLAN_REVISION_SUMMARY.md` | Opus revision, including the previous and revised wording of changed `EXECUTION_PROMPT.md` instructions | 03; 02 and the next Opus revision on another pass |
+| `PLAN_REVISION_VERIFICATION.md` | 03, only after a revision pass | Execution gate; 02 and the next Opus revision when issues remain |
+| `REVIEW.md` | 04, refreshed by 06; 06 also records severe missed issues | Review-fix context, 05, 04 on its next pass, and later workflow context |
 | `WALKTHROUGH.md` | 04, refreshed by 06 | Review-fix and human walkthrough context |
 | `WALKTHROUGH.html` | 06, after refreshing both Markdown files | Interactive mental model for the human reviewer; supplemental context only |
 | `REVIEW_FIX_PROMPT.md` | 04 | Review-fix pass |
-| `REVIEW_FIX_VERIFICATION.md` | 05 | 06 |
-| `FOLLOWUP.md` | 07 | 08 |
-| `TEST_AUDIT.md` | 10 | Human reviewer; 09 for test-only findings; 07 for production or documentation findings; 10 on the next audit pass |
+| `REVIEW_FIX_VERIFICATION.md` | 05 | 06; 04 on its next pass, which adopts recorded new issues |
+| `FOLLOWUP.md` | 07; 08 adds per-item evidence | 08; 09 and 10 |
+| `TEST_AUDIT.md` | 10 | Human reviewer; 09 for test-only findings; 07 for production or documentation findings and disputed test-only findings; 08 for items that cite a finding; 10 on the next audit pass |
 | `UI_PROTOTYPE.md` | Optional 12 | Human selection; 01 when planning is requested |
 
 Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Prompt 10 then performs a read-only audit, writes only `TEST_AUDIT.md`, and routes supported findings to the correct earlier phase. Human review of the audited test diff ends the workflow after phase 10 passes.
@@ -166,9 +170,9 @@ Planning establishes acceptance criteria and expected outcomes from product requ
 
 Review judges both the implementation and its tests against those independent criteria. If tests pass while real API checks fail, investigate the disagreement and keep completion pending until the required behavior is verified. Do not rewrite expectations to preserve a passing result. Missing access or an unavailable environment leaves required verification pending and prevents a passing verdict.
 
-Report only actionable findings, ordered by severity, with a stable identifier, status, destination phase, exact file/line evidence, affected requirement or contract, concrete impact, reproduction steps, and a correction or acceptance check. Static issues use repeatable inspection or call-trace steps; unexecuted scenarios are labeled `Not run`. Keep unanswered questions and pending checks separate from confirmed defects, and optional improvements in `Suggestions`. Empty issue or suggestion sections say `None.`
+Report only actionable findings, ordered by severity, with a stable identifier, status (`Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, or `Deferred to 09`), destination phase, exact file/line evidence, affected requirement or contract, concrete impact, reproduction steps, and a correction or acceptance check. Static issues use repeatable inspection or call-trace steps; unexecuted scenarios are labeled `Not run`. Keep unanswered questions and pending checks separate from confirmed defects, and optional improvements in `Suggestions`. Empty issue or suggestion sections say `None.`
 
-The first review covers the full branch; later passes review only changes since the recorded review or verification state and their affected paths. Carry unresolved findings and pending checks forward. Reuse evidence only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged; a test-only commit need not invalidate runtime evidence. Group occurrences with the same failure mechanism and corrective rule under one finding. Fix all confirmed occurrences within the approved scope, then verify the category is resolved. Never repost a finding: update its existing status and evidence, reference its identifier in handoffs, and preserve its history during phase 06 refresh.
+The first review covers the full branch; later passes review only changes since the recorded review or verification state and their affected paths. Carry unresolved findings and pending checks forward. Reuse evidence only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged; a test-only commit need not invalidate runtime evidence. Group occurrences with the same failure mechanism and corrective rule under one finding. Fix all confirmed occurrences within the approved scope, then verify the category is resolved. Never repost a finding: update its existing status and evidence, reference its identifier in handoffs, and preserve its history during phase 06 refresh. New issues recorded by phase 05 and severe missed issues recorded by phase 06 continue `REVIEW.md`'s identifier sequence, and phase 04 adopts them without reposting them; phase 06 adopts `Deferred to 09` new issues from phase 05 the same way.
 
 Test-only findings, including missing integration tests or final coverage proof, are marked `Deferred to 09`. They do not block the earlier review handoff once all findings assigned to `Review fix`, required runtime checks, and documentation checkpoints pass. The overall result for whether all valid blocking and non-blocking findings are resolved remains `No` while any valid finding is deferred or unresolved; current-stage readiness is a separate result. Phase 09 addresses those identifiers using the fewest meaningful tests and verifies at least 85% changed-line coverage; phase 10 independently audits every disposition. This deferral cannot waive a production defect or failed acceptance behavior, and final test approval still requires phases 09 and 10.
 
@@ -235,7 +239,7 @@ Documentation follows the same gate discipline as code and verification:
 - Planning phases identify the durable user-, operator-, API-, configuration-, and developer-facing documentation affected by every implementation step, or explain why none applies.
 - Implementation, review-fix, and human-follow-up phases update and validate the affected documentation in the same change set before they mark the step complete.
 - Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
-- Phases 09 and 10 must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation.
+- Phases 09 and 10 must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation. Phase 09 reports, without stopping on, a gap whose audit finding the human declined in `FOLLOWUP.md`.
 
 Optional phase `11` identifies the documentation impact of proposed changes in chat without editing files. Optional phase `12` records the selected design's documentation impact, planned validation, or evidence-based `Not applicable` decision in `UI_PROTOTYPE.md`; durable documentation changes wait for authorized implementation.
 
@@ -318,7 +322,7 @@ The explicit companion links include `eval.md`, the idea-refinement frameworks, 
 - Start with generated implementation when the plan is already locked.
 - Start at 04 when implementation exists and needs the AI review loop.
 - Start at 07 when the AI loop is complete and human review should begin.
-- Start at 08 when `FOLLOWUP.md` already contains only approved work.
+- Start at 08 when `FOLLOWUP.md` already contains only approved work; 08 implements only its unchecked implementation items.
 - Start at 09 when the final branch behavior is ready for focused tests.
 - Start at 10 when the final test diff is ready for an independent audit.
 - Run optional 11 only when a repository complexity audit is requested.

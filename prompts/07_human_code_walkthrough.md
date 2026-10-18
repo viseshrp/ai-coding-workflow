@@ -109,12 +109,13 @@ Use `show-me` only for focused diffs and pseudocode alongside the required code 
 
 ### Re-entry from the test audit
 
-Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase. When I start this walkthrough for those findings:
+Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase, plus test-only findings that phase `09` reported as unsupported with evidence and the audit still holds. When I start this walkthrough for those findings:
 
 - Read `TEST_AUDIT.md` and list each `Open` finding whose destination is phase `07` by its identifier. Unlike `REVIEW.md`, these findings are input for our discussion. Check each one against the actual code and PR changes, show the code it cites, and explain whether the evidence supports it. The audit's conclusion is not my decision.
-- Limit the checklist to the files those findings cite and the files whose `viewerViewedState` is not `VIEWED` because they changed after an earlier review. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.
+- Limit the checklist to the files those findings cite and the non-test files whose `viewerViewedState` is `DISMISSED` (changed since viewed) or `UNVIEWED` (added or not yet reviewed). Test files changed only by phase `09` stay with phase `10` and the final human review unless a routed finding cites them. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.
 - Record an agreed correction in `FOLLOWUP.md` only after `AGREE`, as a new item that cites the audit finding's identifier. Keep existing items and their checkboxes unchanged.
-- When I decline a finding, keep it out of `FOLLOWUP.md`. State its identifier and my reason in chat so I can supply that decision to the next phase-`10` pass.
+- When I explicitly decline a routed finding by its identifier, keep it out of the implementation items. Record an entry with its identifier and my reason in the `## Declined Audit Findings` section of `FOLLOWUP.md`.
+- If this re-entry adds no new `FOLLOWUP.md` item because I declined every routed finding, state that phases `08` and `09` are skipped and that the workflow goes to the next phase-`10` pass.
 - The existing block review, documentation checkpoint, `RESOLVE`, Viewed-state verification, and final go-ahead rules apply unchanged.
 
 ### Explain the code context first
@@ -143,7 +144,7 @@ For each material changed behavior, identify affected durable user-, operator-, 
 
 ### Approve follow-up work and finish a file
 
-- Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file.
+- Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file. The only other `FOLLOWUP.md` write is a `## Declined Audit Findings` entry, recorded when I explicitly decline a routed `TEST_AUDIT.md` finding by its identifier.
 - Ask for `RESOLVE` only after every changed block in the current file is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
 - Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, review the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
 - For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the review or `RESOLVE` gate.
@@ -152,7 +153,7 @@ For each material changed behavior, identify affected durable user-, operator-, 
 
 Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
-Keep every workflow-generated Markdown artifact in the target repo root under its exact required filename. Include `Created by`, `Created at`, and `Updated at` metadata; preserve the creation fields and refresh `Updated at` on each edit. Create or update `FOLLOWUP.md` only in that root and only for explicitly agreed changes.
+Keep every workflow-generated Markdown artifact in the target repo root under its exact required filename. Include `Created by`, `Created at`, and `Updated at` metadata; preserve the creation fields and refresh `Updated at` on each edit. Create or update `FOLLOWUP.md` only in that root and only for explicitly agreed changes and explicitly declined audit findings.
 
 ## FOLLOWUP.md rules
 
@@ -161,6 +162,7 @@ Track approved implementation work in `FOLLOWUP.md`. Keep the primary PR review 
 Each item must include:
 
 - checkbox,
+- item type: `implementation` for phase `08` or `test-authoring` for phase `09`; record production and test work as separate items,
 - exact file(s),
 - exact symbol(s)/location(s),
 - exact change to make,
@@ -179,4 +181,6 @@ Do not include an item from `REVIEW.md`. Discard the AI review completely in thi
 
 Do not add placeholder, draft, or "to discuss" items to `FOLLOWUP.md`.
 
-Hand the human-approved `FOLLOWUP.md` to the next implementation phase. Do not implement its changes during this walkthrough.
+Keep a `## Declined Audit Findings` section in `FOLLOWUP.md` only for routed `TEST_AUDIT.md` findings that I explicitly decline by identifier. Each entry records the finding identifier and my reason. These entries are not implementation work: give them no checkbox, and do not convert them into items. Keep earlier entries unchanged.
+
+Hand the human-approved `FOLLOWUP.md` to the next implementation phase, or to the next phase-`10` pass when a test-audit re-entry added no new item. Do not implement its changes during this walkthrough.

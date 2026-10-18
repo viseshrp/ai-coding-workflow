@@ -217,6 +217,7 @@ In `## Skills`, it must explicitly include these skill links:
 In `## Skill Handling Rule`, it must instruct the target agent to:
 
 - use only the prompt's explicitly linked skills,
+- fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
 - fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution,
@@ -457,6 +458,7 @@ The generated Opus prompt must require these explicit skill links in `EXECUTION_
 The generated `EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that instructs the implementation model to:
 
 - use only the prompt's explicitly linked skills,
+- fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
 - fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution,
