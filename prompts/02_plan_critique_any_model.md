@@ -43,10 +43,10 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
-- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -466,8 +466,6 @@ It must state that:
 
 The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
 
-Require the revised plan and actual `EXECUTION_PROMPT.md` to preserve original requirements and approved clarifications, explicit unnecessary-code checks, repository-wide searches for repeated defects, and incident diagnostics for changed failure paths. Preserve independent verification scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and evidence reporting with required unavailable checks pending. Keep remote requests read-only unless side effects are authorized, test authoring deferred to `09`, and changes within approved scope. These requirements do not authorize implementation during critique or revision.
-
 Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
 
 - role,
@@ -540,6 +538,8 @@ Also:
 - ask if a critique item requires a design decision from me,
 - do not silently drop any critique item,
 - ground plan detail in the code and context you inspected,
+- preserve original requirements and approved clarifications, explicit unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for changed failure paths in the revised plan and actual `EXECUTION_PROMPT.md`,
+- preserve independent scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and evidence reporting with required unavailable checks pending. Keep remote requests read-only unless side effects are authorized, changes within approved scope, and test authoring deferred to `09`; do not implement during revision,
 - preserve or strengthen the `EXECUTION_PROMPT.md` instructions to stage intended files with `git add`, create focused commits, push the current branch, check whether the current branch already has a pull request, and create a pull request only if none exists,
 - preserve or strengthen the per-implementation-step documentation checkpoint: update and validate the exact durable documentation in the same change set, or record an evidence-based `Not applicable` decision,
 - preserve or strengthen the artifact-location rule that all workflow-generated Markdown artifacts stay in the target repo root using their exact required filenames and are never created in subdirectories or alternate paths,

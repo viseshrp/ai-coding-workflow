@@ -45,10 +45,10 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
-- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -246,13 +246,10 @@ Task:
 
 Artifact location rule:
 
-- `REVIEW.md`, `WALKTHROUGH.md`, and any other workflow-generated Markdown artifacts must stay in the target repo root using their exact required filenames,
+- `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html` must stay in the target repo root using their exact required filenames,
 - every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields and refreshing `Updated at` whenever the artifact is updated,
+- give `WALKTHROUGH.html` visible `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on each edit; record the reviewed branch and revision so readers can identify stale content,
 - do not move or recreate them in subdirectories or alternate paths.
-
-`WALKTHROUGH.html` must also live in the target repo root. Give it visible `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields on refresh. Record the reviewed branch and revision so later readers can identify stale content. Do not stage, commit, push, or change pull-request state in this phase.
-
-The required HTML is this phase's sole visual-artifact exception. UI skills may not create other artifacts or expand these write permissions.
 
 Context to review:
 
@@ -278,9 +275,15 @@ Constraints:
 - do not make new review findings unless you discover something severe that was missed,
 - treat missing, inaccurate, or unvalidated required durable documentation as a severe missed issue; stop and ask rather than finalizing the review artifacts,
 - if you discover a severe missed issue, stop and ask before proceeding,
-- write only `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html`; do not create application code, tests, dependencies, configuration, or other visual artifacts.
+- write only `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html`; do not create application code, tests, dependencies, configuration, or other visual artifacts,
+- do not stage, commit, push, or change pull-request state. The required HTML is this phase's sole visual-artifact exception; UI skills may not create other artifacts or expand write permissions.
 
-Revisit the available original requirements and compare them with the final branch before refreshing. Preserve the independent scenarios, repeated-defect search results, incident diagnostic findings, and runtime/API evidence from the review loop. Check that evidence still applies to the final revision; repeat only relevant checks made stale by later changes. Required runtime checks must use the running application and relevant real APIs through existing tools in an authorized environment, with remote requests read-only unless side effects are authorized. Keep unobserved behavior and missing access explicit. Do not finalize a passing review while required checks remain pending, and do not turn the refresh into a new full review.
+Working method:
+
+- Revisit the available original requirements and compare them with the final branch before refreshing.
+- Refresh the review loop's independent scenarios, repeated-defect search results, incident diagnostic findings, and runtime/API evidence. Check that the evidence applies to the final revision; repeat only relevant checks made stale by later changes.
+- Use the running application and relevant real APIs for required runtime checks, through existing tools in an authorized environment. Keep remote requests read-only unless side effects are authorized, and distinguish observed behavior from code-only conclusions and missing access.
+- Keep required unavailable checks pending and withhold a passing verdict. Preserve the severe-issue stop rule and do not restart a full review.
 
 ## Required output 1: refreshed `REVIEW.md`
 

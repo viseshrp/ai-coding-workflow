@@ -121,8 +121,6 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Test design
 
-Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add live-network tests, production instrumentation, or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
-
 - Keep test code in test files or test directories, separate from production code.
 - Test observable architecture and behavior, not implementation details.
 - Each test must cover one behavior and have one clear reason to fail.
@@ -182,6 +180,8 @@ Keep automated tests deterministic. They do not replace verification against the
 - When an existing relevant test has one of these problems, do not refactor unrelated test code. Report it as a flake risk, acceptable contract test, or maintainability concern and suggest a behavior-level alternative.
 
 ### Coverage and verification
+
+Keep automated tests deterministic. They do not replace verification against the running application and relevant real APIs for changed runtime behavior. Check the available runtime evidence and its revision; if required proof is absent or stale, report the exact gap and route it to authorized implementation or review before claiming completion. Do not add live-network tests, production instrumentation, or a new workflow artifact to supply that proof. Inspect relevant incident diagnostics and repeated-defect occurrences, but production fixes remain outside this phase.
 
 - Use the repository's existing test and coverage commands and configuration.
 - Reach at least 85% coverage for new or changed lines.

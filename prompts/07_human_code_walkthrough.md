@@ -99,12 +99,11 @@ Use ISO-style plain language and ASD-STE100-inspired technical writing as guidan
 
 - For each review turn, pull the current PR changed-file list and per-file changes from GitHub CLI (`gh`). Use them as the source of truth for the review checklist and changed blocks. If `gh` cannot provide either, stop and ask; do not substitute the manual diff against `main`.
 - Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
+- Re-read available original requirements and approved scope changes at the start, after long sessions or handoffs, and before completion to check for drift.
 - Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 - If `WALKTHROUGH.html` exists, use it only as supplemental explanatory context after checking its revision and claims against current code. Do not import review verdicts or findings from it, regenerate it here, or let it replace independent review or any approval gate.
-
-Re-read available original requirements and approved scope changes at the start, after long sessions or handoffs, and before completion. Independently derive scenarios that could disprove the claimed behavior, and check duplication, excess abstractions, unused paths, complexity, and incident diagnostics in the changed code. For runtime changes, use available running applications and real APIs through existing tools in an authorized environment; remote requests remain read-only unless their side effects are authorized. Keep observed behavior and required pending checks distinct. Required runtime verification gaps keep the relevant checklist item pending. Search the codebase for the same failure pattern when a defect is found, and discuss supported occurrences without broadening implementation authority. Record evidence and gaps in the primary checklist; only explicit `AGREE` can add an exact change to `FOLLOWUP.md`.
 
 Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
 
@@ -125,6 +124,10 @@ Show the block as a focused source diff with file/line locations and a few relev
 For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
 
 Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
+
+Independently derive scenarios that could disprove the block's claimed behavior. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; discuss confirmed occurrences without expanding implementation authority.
+
+For runtime changes, use available running applications and real APIs through existing tools in an authorized environment. Remote requests remain read-only unless their side effects are authorized. Record observed behavior, code-only conclusions, and required pending checks in the primary checklist; required runtime verification gaps keep the relevant item pending.
 
 For each material changed behavior, identify affected durable user-, operator-, API-, configuration-, or developer-facing documentation. Record the exact documentation update and validation evidence, or an evidence-based `Not applicable` decision, in the primary checklist. Discuss a missing or inaccurate documentation result alongside the relevant code; do not implement the documentation change here.
 

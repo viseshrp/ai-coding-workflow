@@ -43,10 +43,10 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
-- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -283,8 +283,6 @@ Working method:
 - after checking 100% compliance with any available plan, or completing the full evidence-based review when no plan is available, provide suggestions,
 - do not make any changes you propose until I give the go-ahead.
 
-Independently challenge the author's completion claims using the procedure below. A passing author-written test is supporting evidence; it does not by itself establish that the running behavior meets the requirements.
-
 This branch will be merged into main.
 
 ## Review dimensions
@@ -343,6 +341,8 @@ Ensure every non-obvious change has an explanatory comment. Avoid bloated commen
 All changes must be strictly cross-platform and must work on both Linux and Windows. Mac is not a concern.
 
 ## Independent verification and incident diagnostics
+
+Independently challenge the author's completion claims using the procedure below. A passing author-written test is supporting evidence; it does not by itself establish that the running behavior meets the requirements.
 
 1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
 2. Independently derive test scenarios from those requirements, public contracts, and inspected code before adopting the author's test cases or expected results. Try to disprove completion claims with relevant boundary, failure, recovery, and regression cases. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.

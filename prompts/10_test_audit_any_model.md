@@ -103,8 +103,6 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - The measured coverage claim must match the command and scope actually reported. Broader file or package coverage is not changed-line coverage.
 - At least 85% coverage for new or changed lines remains required. Do not weaken configuration or add coverage-only proof.
 
-For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
-
 ### Finding classes
 
 - **Blocking Issues:** false confidence, missing material behavior, invalid controls, unsafe flakiness, an unverified coverage gate, a test-only production seam, or a documentation gap that prevents approval.
@@ -115,6 +113,8 @@ For changed runtime behavior, check that the claimed proof includes the running 
 Do not report style preferences, speculative edge cases, or deletion ideas without the evidence required by `test-audit`.
 
 ### Verification
+
+For changed runtime behavior, check that the claimed proof includes the running application and relevant real APIs rather than only agent-written tests or mocks. Reproduce relevant checks with existing tools when the read-only audit permits them, in an authorized environment and without mutating remote state. Record expected and observed results, revision, environment, and required pending checks in `TEST_AUDIT.md`; explain `Not applicable` when no runnable behavior exists. Missing required runtime proof blocks a pass. Assess incident diagnostics only for the changed failure paths needed to judge the claimed behavior; route production logging gaps and confirmed repeated defects to an authorized earlier phase, and test-only gaps to `09`. Do not author tests, scripts, fixtures, or instrumentation during this audit.
 
 - Review phase `09`'s exact commands and outputs. Re-run the smallest relevant test or coverage command needed to verify a material claim.
 - Do not run the entire suite unless repository policy or the scope of the claim requires it.

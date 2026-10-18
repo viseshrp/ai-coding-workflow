@@ -44,10 +44,10 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
-- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -268,10 +268,6 @@ Constraints:
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
-Independently derive scenarios from each prior finding and the available original requirements, then try to disprove the fix model's completion claims. Re-run the reviewer's relevant scenarios and focused existing checks. For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools; remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation. Record the revision, environment, expected and observed results, and exact evidence; passing author-written tests alone is insufficient. Keep required unavailable checks pending and withhold a ready verdict. Explain `Not applicable` when there is no runnable behavior to verify.
-
-Verify that the fix pass searched the codebase for the same defect pattern and checked incident diagnostics for affected failure paths. Recheck relevant occurrences and diagnostic gaps; distinguish unresolved prior findings from new supported issues. Report broader occurrences without expanding the fix scope.
-
 For each prior review finding:
 
 - identify the original finding,
@@ -279,6 +275,13 @@ For each prior review finding:
 - classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
 - explain evidence from code,
 - identify any new issues introduced by the fix.
+
+Focused verification:
+
+- Independently derive scenarios from each prior finding and the available original requirements. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing checks.
+- For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
+- Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Keep required unavailable checks pending and withhold a ready verdict; explain `Not applicable` when no runnable behavior exists.
+- Verify the fix pass's repeated-defect search and incident diagnostics for affected failure paths. Recheck relevant occurrences and diagnostic gaps; distinguish unresolved prior findings from new supported issues. Report broader occurrences without expanding the fix scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
 

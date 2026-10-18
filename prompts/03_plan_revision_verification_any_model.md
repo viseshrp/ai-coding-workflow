@@ -43,10 +43,10 @@ Apply this contract during planning, execution, review, and review fixes.
 
 - If there is a plan, and only when a plan is provided by me explicitly, follow the plan exactly.
 - No divergence.
-- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - No creativity.
 - No architecture changes.
 - Just execute what is written.
+- Re-read the original requirements and approved changes after long sessions or context handoffs and before sign-off. Compare them with the current plan or implementation to identify drift, omitted behavior, and unintended additions. Use the original artifacts when available; do not infer missing intent from an author's completion summary.
 - If the plan, code reality, or user request conflicts with another instruction, stop and ask.
 - If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
@@ -257,9 +257,10 @@ Working method:
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to where each concern was addressed,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues and do not mark it ready for implementation,
+- check that the revised plan and `EXECUTION_PROMPT.md` retain original requirements and approved changes, unnecessary-code checks, searches across the codebase for repeated defects, and incident diagnostics for affected failure paths,
+- verify that execution instructions require independent scenarios and expected results, authorized running-application and relevant real-API checks for runtime changes, and read-only remote requests unless side effects are authorized. Missing runtime access must leave required checks pending; tests alone must not imply runtime completion. Check these instructions without implementing or authoring tests here,
 - distinguish resolved issues, partial fixes, missing fixes, and invalid original concerns,
 - verify that every implementation step still maps to exact durable documentation and validation, or to an evidence-based `Not applicable` decision,
-- verify that the revised plan and actual `EXECUTION_PROMPT.md` preserve original requirements and approved changes, unnecessary-code checks, codebase-wide searches for repeated defects, and incident diagnostics for affected failure paths. Require independent scenarios and expected results plus authorized running-application and relevant real-API checks for runtime changes, with remote requests read-only unless side effects are authorized. Missing runtime access must leave required verification pending; tests alone must not imply runtime completion. Verify these instructions without implementing or authoring tests here,
 - if the revision introduced a new problem, call it out explicitly instead of forcing a pass verdict.
 
 Task:
