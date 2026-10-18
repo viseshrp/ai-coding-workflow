@@ -251,14 +251,15 @@ Context to review:
 
 - original `REVIEW.md`,
 - original `WALKTHROUGH.md`,
+- existing `REVIEW_FIX_VERIFICATION.md`, if present, for prior verification evidence and finding statuses,
 - `REVIEW_FIX_PROMPT.md`, if present,
 - the review-fix model's summary, if present,
-- current branch diff against `main`,
+- changes since the last reviewed or verified revision; use the branch comparison against `main` only to establish overall scope,
 - `FEATURE_SPEC_AND_PLAN.md`, if present.
 
 Success criteria:
 
-- each prior finding is checked against the actual changed code,
+- each prior finding's status is supported by the actual fix or still-valid verification of unchanged behavior,
 - the status of each finding is explicit and evidence-based,
 - each documentation-checkpoint result is checked against the actual branch, including the durable documentation and validation evidence or the `Not applicable` rationale,
 - any newly introduced issue is surfaced instead of hidden inside a pass verdict.
@@ -269,26 +270,28 @@ Constraints:
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
+Use the last reviewed or verified state recorded in the existing artifacts as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect; do not repeat the full branch review. Reuse completed verification for unchanged behavior, carry unresolved findings and pending checks forward, and record the previous and current revisions and any included uncommitted changes in the verification evidence. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
+
 For each prior review finding:
 
-- identify the original finding,
-- inspect the actual changed code,
+- identify the original finding by its existing identifier; reference earlier evidence and statuses rather than reposting the finding,
+- inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
 - classify as `Resolved`, `Partially Resolved`, `Not Resolved`, or `Invalid Finding`,
-- explain evidence from code,
-- identify any new issues introduced by the fix.
+- cite fresh verification evidence or reference the unchanged prior evidence,
+- identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
 
 Focused verification:
 
-- Independently derive scenarios and expected outcomes from each prior finding and the acceptance criteria grounded in original requirements or public contracts. Give architecture and high-impact fixes deeper scrutiny by tracing affected consumers and the relevant compatibility, migration, security, concurrency, and recovery risks identified in `REVIEW.md`. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
+- For new or affected findings, independently derive scenarios and expected outcomes from the finding and the acceptance criteria grounded in original requirements or public contracts. Give architecture and high-impact fixes deeper scrutiny by tracing affected consumers and the relevant compatibility, migration, security, concurrency, and recovery risks identified in `REVIEW.md`. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
 - For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
 - Record the revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
-- Verify the fix pass's repeated-defect search and incident diagnostics for affected failure paths. Recheck relevant occurrences and diagnostic gaps; distinguish unresolved prior findings from new supported issues. Report broader occurrences without expanding the fix scope.
+- Verify that each accepted defect category is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
 
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
 
 ## Required output: `REVIEW_FIX_VERIFICATION.md`
 
-Create `REVIEW_FIX_VERIFICATION.md` in the target repo root.
+Create or update `REVIEW_FIX_VERIFICATION.md` in the target repo root, retaining prior evidence referenced by unchanged statuses.
 
 Use this structure:
 

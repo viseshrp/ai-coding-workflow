@@ -236,17 +236,18 @@ Role:
 
 Task:
 
-- Independently review the current branch against `main`, available requirements and public contracts, the existing architecture, and any available locked planning artifacts.
-- Gather all changes introduced by the current branch and review them thoroughly.
+- Independently review the changes selected for this pass against available requirements and public contracts, the existing architecture, and any available locked planning artifacts.
+- On the first pass, review all changes introduced by the current branch. On later passes, review only changes since the last reviewed revision and the paths they affect; carry forward earlier conclusions unless those changes invalidate them.
 - Identify real defects, plan divergence when a plan is available, and high-value follow-up suggestions without expanding scope.
-- Identify all possible regressions within the scope of the current branch's changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
-- Identify meta content introduced or changed by the branch, such as comments, docstrings, documentation, or user-facing text that describes the branch, task, implementation process, or the fact that a change was made instead of describing the resulting code or behavior.
+- Identify all possible regressions caused by the selected changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
+- Identify meta content in the selected changes, such as comments, docstrings, documentation, or user-facing text that describes the branch, task, implementation process, or the fact that a change was made instead of describing the resulting code or behavior.
 - Complete the review even when no prior planning or execution artifacts exist. The current branch diff and repository evidence are sufficient to start this workflow at phase `04`.
 
 Context to review:
 
-- the current branch diff against the head of `main`,
+- the initial branch comparison against `main` and, on later passes, the diff since the last reviewed revision,
 - affected code, callers, public interfaces, configuration, durable documentation, and existing tests,
+- existing `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for the last reviewed revision, finding identifiers, statuses, and pending checks,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
@@ -273,7 +274,7 @@ Constraints:
 
 Working method:
 
-- compare the current branch against the head of `main`,
+- use the branch comparison against `main` for the first pass. For later passes, establish the last reviewed state from existing review artifacts or Git/PR evidence and compare it with the current state. Account for previously reviewed uncommitted changes as well as commits; do not treat an unchanged working-tree diff as new. If the prior baseline cannot be recovered, review only identifiable new changes and keep the remaining scope pending; do not silently restart a full review,
 - establish the review basis from the diff and repository evidence before judging,
 - inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
 - trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
@@ -282,7 +283,7 @@ Working method:
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
 - separate confirmed issues from preferences, open questions, and optional suggestions,
 - do not recreate missing prior-phase artifacts or treat their absence as a review defect,
-- complete the evidence-based review and assess every requirement in any available plan before reporting optional suggestions,
+- complete the review of the selected changes and the requirements they affect before reporting optional suggestions. Reuse completed checks for unchanged behavior; continue unresolved findings and pending checks by reference,
 - do not make any changes you propose until I give the go-ahead.
 
 This branch will be merged into main.
@@ -346,10 +347,10 @@ All changes must be strictly cross-platform and must work on both Linux and Wind
 
 Independently challenge the author's completion claims using the procedure below. Tests can reinforce the same unsupported assumptions as the implementation. Judge both against acceptance criteria grounded in product requirements and public contracts; passing author-written tests alone do not establish correct running behavior.
 
-1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
+1. Re-read the original requirements and approved scope changes, when available. Map each material requirement and completion claim affected by the selected changes to the current code and evidence. Look for omitted behavior, unintended additions, and drift after long coding sessions. If intent is unavailable, identify that limit rather than inventing requirements.
 2. Establish independent acceptance criteria and expected outcomes from the available requirements, approved clarifications, and public contracts before adopting the author's test cases or expected results. Use inspected code to identify paths to exercise, and try to disprove completion claims with relevant boundary, failure, recovery, and regression scenarios. Describe and exercise the scenarios with existing tools; do not author test files, scripts, or fixtures in this phase.
 3. For changed runtime behavior, exercise the running application through its real entry points and call the relevant real APIs. Use an authorized local or test environment and existing tools. Remote requests must be read-only unless the user has authorized their side effects. Do not install dependencies or change configuration to enable a review. Record the revision, environment, scenario, expected result, observed result, command or interaction, and evidence. Keep observed behavior, code-only conclusions, and pending checks distinct. Missing access or an unavailable environment leaves the required check pending and prevents a passing verdict; explain `Not applicable` for changes with no runnable behavior.
-4. When one defect is found, search throughout the codebase for the same failure pattern, including sibling implementations and other callers. Inspect candidate matches and distinguish confirmed occurrences from false positives. Record search scope and unexamined areas. Report occurrences outside the branch's scope separately; discovery does not authorize broader fixes.
+4. When one defect is found, identify its root cause or defect category and search throughout the codebase for the same failure pattern, including sibling implementations and other callers. Inspect candidate matches and distinguish confirmed occurrences from false positives. Group confirmed occurrences under one finding with evidence for each location and a correction that addresses the category. Record search scope and unexamined areas. On later passes, reuse that inventory and inspect new or affected occurrences rather than repeating an unchanged scan. Report occurrences outside the approved scope separately; discovery does not authorize broader fixes.
 5. Inspect logs and error handling for the changed failure paths as if diagnosing an incident. Check whether an engineer could identify the failing operation, correlate a request or job, understand the cause and trace, and determine retry or recovery outcomes where applicable. Use captured runtime evidence when available and identify gaps in existing logging, while checking for secrets, sensitive payloads, or excessive noise. Do not add instrumentation during review.
 
 ## Test review rules
@@ -375,7 +376,7 @@ Classify each concern as a real flake risk, an acceptable contract test, or a ma
 
 ## Required output 1: `REVIEW.md`
 
-Create a detailed `REVIEW.md` document in the target repo root with:
+Create or update a detailed `REVIEW.md` document in the target repo root with:
 
 ```markdown
 # Review
@@ -425,7 +426,7 @@ Create a detailed `REVIEW.md` document in the target repo root with:
 
 Report only actionable, evidence-backed findings under `Blocking Issues` or `Non-Blocking Issues`, ordered by severity within each section. For each finding, include:
 
-- severity and a concise description of the defect,
+- a stable finding identifier, severity, and a concise description of the defect category or root cause,
 - the exact inspected file path and a narrow line range,
 - the affected requirement or existing contract and the concrete impact,
 - minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code,
@@ -435,9 +436,11 @@ For static issues, provide repeatable inspection or call-trace steps that demons
 
 Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
-In `## Review Basis`, list the branch comparison used, the repository evidence inspected, and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
+Never repost the same finding. Match against existing findings by failure pattern and affected contract, even if wording or line numbers change. Preserve its identifier and original evidence in `REVIEW.md`, update its status and remaining occurrences in place, and reference that identifier in later responses and handoffs. Add new evidence or newly found occurrences of the same defect category to that entry; create a new finding only for a distinct defect. Keep resolved entries as clearly marked review history outside active issue lists, without requiring unchanged fixes again.
 
-In `## Plan Compliance`, assess each available planning artifact. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
+In `## Review Basis`, record the initial comparison against `main`, the previous and current reviewed revisions, any uncommitted changes included, and the scope of this pass. List the repository evidence inspected and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
+
+In `## Plan Compliance`, assess requirements affected by the selected changes against the available planning artifacts and retain prior conclusions for unchanged requirements. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
 In `## Code Quality / Readability` and `## Reuse / DRY / Duplication`, explain how the new code fits the existing architecture. Cite the relevant components, callers, and established paths it reuses or bypasses. Distinguish justified additions within the approved design from unapproved parallel architecture; for each supported mismatch, identify the existing path the code should use and the concrete compatibility or maintenance impact.
 
@@ -448,6 +451,8 @@ In `## Documentation Review`, record the documentation-checkpoint result for eve
 ## Required output 2: `WALKTHROUGH.md`
 
 Create a detailed `WALKTHROUGH.md` in the target repo root documenting each change with context, line by line, helping a beginner programmer review the code from scratch without prior context.
+
+On later passes, update only coverage affected by new changes and retain accurate unchanged explanations. Do not restart a review of untouched code to regenerate the walkthrough.
 
 Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts or line-by-line coverage.
 
@@ -603,6 +608,7 @@ Context to read before acting:
 
 - `REVIEW.md`,
 - `WALKTHROUGH.md`,
+- `REVIEW_FIX_VERIFICATION.md`, if present, for finding statuses and remaining occurrences,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `EXECUTION_PROMPT.md`, if present,
 - current branch diff against `main`.
@@ -638,7 +644,7 @@ Per-review-item process:
 
 1. Verify the review item against the actual code.
 2. Determine whether it is valid.
-3. Implement every valid fix from `Blocking Issues` and `Non-Blocking Issues`, including minor nits that are still valid issues.
+3. Fix each unresolved valid defect category from `Blocking Issues` and `Non-Blocking Issues`, including minor valid issues. Confirm its root cause, inspect the existing occurrence inventory, and correct every confirmed occurrence within the approved scope. Use the smallest coherent correction; avoid broad mechanical replacements, unrelated refactors, or abstractions without a current need. Preserve finding identifiers in the fix summary, and do not redo resolved fixes whose behavior is unchanged.
 4. Complete the documentation checkpoint for the changed behavior before treating the review item as fixed.
 5. Do not implement items from `Suggestions` unless explicitly approved.
 6. If a review item is wrong, stale, or conflicts with an available plan or code reality, stop and ask.
@@ -653,7 +659,7 @@ Focused verification:
 - run focused verification relevant to the fixes,
 - judge test and runtime results against the independent acceptance criteria. Investigate any disagreement between passing tests and failed real API checks; do not weaken expectations or claim completion until the required behavior is verified,
 - derive verification scenarios from the accepted finding and independent acceptance criteria grounded in the available original requirements or public contracts, then replay the reviewer's independent scenarios against the changed behavior. Give fixes in architecture or other high-impact areas deeper verification of the affected consumers and risks recorded in `REVIEW.md`. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
-- recheck the same defect pattern throughout the codebase and assess incident diagnostics for affected failure paths. Fix only accepted in-scope occurrences; report other supported occurrences and gaps for the appropriate approval path,
+- verify that the accepted defect category is resolved across every confirmed in-scope occurrence, not only the originally reported example. Update the existing search evidence for new or affected matches and assess incident diagnostics for changed failure paths. Report other supported occurrences and gaps by the existing finding identifier for the appropriate approval path; preserve the test-authoring boundary,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, and `TEST_AUDIT.md`, unless I explicitly ask for them to be committed,

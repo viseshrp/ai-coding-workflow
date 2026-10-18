@@ -311,7 +311,7 @@ It must include:
 - documentation review with every material changed behavior's update-and-validation evidence or evidence-based `Not applicable` rationale,
 - any remaining suggestions.
 
-Clearly mark review findings that were fixed during the review loop.
+Preserve each finding's identifier, original evidence, and occurrence history, and update its final status in place. Clearly mark findings fixed during the review loop. Do not repost an existing finding as new; reference it when recording remaining occurrences or pending evidence.
 
 ## Required output 2: refreshed `WALKTHROUGH.md`
 
