@@ -258,7 +258,7 @@ Context to read before acting:
 - changed production code and its callers,
 - existing relevant tests, fixtures, helpers, test-runner and framework configuration, coverage configuration, and installed test extensions,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
-- `FOLLOWUP.md`, if present: treat each unchecked test-authoring item as required test work and validate it against requirements under the minimum-test rules; read the evidence phase `08` recorded under completed items and the `## Declined Audit Findings` section; do not edit the artifact,
+- `FOLLOWUP.md`, if present: treat each unchecked test-authoring item as required test work and validate it against requirements under the minimum-test rules; read the evidence phase `08` recorded under completed items and the `## Declined Audit Findings` section; treat an existing test that phase `08` recorded as failing because of an intended behavior change as required test work; do not edit the artifact,
 - `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for test-only findings marked `Deferred to 09`; validate them against current requirements and code rather than blindly adopting their suggested tests,
 - `TEST_AUDIT.md`, if present from an earlier phase-`10` pass; treat its supported `Open` findings with destination `09` as correction input without editing or staging the artifact,
 - durable documentation affected by the changed behavior and any applicable documentation build, link-check, or rendering configuration,
@@ -275,6 +275,7 @@ Success criteria:
 - every material changed behavior has a verified prior documentation-checkpoint result, or a documentation gap whose audit finding I declined in `FOLLOWUP.md` and that the handoff reports,
 - every supported test-only finding deferred to `09` has an evidence-backed disposition: corrected and verified, already proved by sufficient existing coverage, or invalidated by current approved requirements with a concrete explanation. An unresolved supported test-only finding prevents the ready-for-audit completion claim,
 - every unchecked `FOLLOWUP.md` test-authoring item has an evidence-backed disposition: covered by a new or changed test that passes, or already proved by sufficient existing coverage. An item without such a disposition prevents the ready-for-audit completion claim,
+- every existing test that phase `08` recorded as failing because of an intended behavior change is updated and passes; otherwise it prevents the ready-for-audit completion claim,
 - no production or configuration files are changed,
 - no prompt, plan, review, walkthrough, summary, or workflow artifact is created or updated, and no generated coverage output remains in the repository,
 - any intended test changes are committed and pushed, and a pull request is created only if missing,
@@ -319,7 +320,7 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - the exact focused test and coverage commands with their results,
 - the commit, push, and pull-request status,
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here and any gap whose audit finding I declined, with that finding identifier,
-- the disposition and evidence for each deferred finding identifier, each `TEST_AUDIT.md` finding identifier routed to `09`, and each unchecked `FOLLOWUP.md` test-authoring item, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
+- the disposition and evidence for each deferred finding identifier, each `TEST_AUDIT.md` finding identifier routed to `09`, each unchecked `FOLLOWUP.md` test-authoring item, and each existing test that phase `08` recorded as failing because of an intended behavior change, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.
 
 End with `Tests are ready for agent audit.` only when all success criteria are met. If blocked, end with the blocker and what is needed to continue.
 

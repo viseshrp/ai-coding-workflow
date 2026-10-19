@@ -275,7 +275,7 @@ Constraints:
 - do not assume a finding is fixed because the review-fix model said it was fixed,
 - check actual code and actual diff.
 
-Use the last independently reviewed or verified state for this branch as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect, including newly affected integration paths when `main`, requirements, or repository contracts changed; do not repeat the full branch review. Reuse completed verification only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged. Carry unresolved findings and pending checks forward, and record exact base and head revisions, the comparison, and enough evidence to identify included uncommitted content. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
+Use the last independently reviewed or verified state for this branch as the comparison baseline, including previously reviewed uncommitted changes. Review only subsequent changes and the paths they affect, including newly affected integration paths when `main`, requirements, or repository contracts changed; do not repeat the full branch review. Reuse completed verification only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged. Carry unresolved findings and pending checks forward, and record in `## Verification Basis` the baseline state and where it was recorded, exact base and head revisions, the comparison, and enough evidence to identify included uncommitted content. If the baseline cannot be recovered, verify identifiable new changes and keep the remaining scope pending.
 
 For each prior review finding:
 
@@ -283,6 +283,7 @@ For each prior review finding:
 - inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
 - classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, or `Deferred to 09`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, and `Deferred to 09` is test-only work assigned to phase `09`,
 - cite fresh verification evidence or reference the unchanged prior evidence,
+- when the fix pass reports an existing test that fails because of an intended behavior change, verify, citing the finding or approved requirement that requires the changed behavior, that the failure comes only from that change, and record it as a new issue with status `Deferred to 09` and destination `09`; otherwise record it as an `Open` regression assigned to `Review fix`,
 - identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
 
 Record each distinct new issue under `New Issues Introduced` with the same fields `REVIEW.md` findings use:
@@ -321,6 +322,8 @@ Use this structure:
 - Documentation checkpoints complete: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
+## Verification Basis
+
 ## Finding-by-Finding Verification
 
 | Original Finding | Status | Evidence | Remaining Action |
@@ -341,7 +344,7 @@ Use this structure:
 
 The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`. Deferral schedules work; it does not resolve or waive it. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
 
-If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed or needs a code, documentation, or fix-prompt change:
+If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_opus_review_branch.md`,

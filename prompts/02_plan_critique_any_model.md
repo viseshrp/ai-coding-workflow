@@ -244,7 +244,7 @@ Success criteria:
 Constraints:
 
 - do not implement code,
-- do not modify files unless I explicitly ask,
+- do not modify any file other than `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`,
 - this phase's only permitted repository writes are `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`. Do not edit the locked plan, execution prompt, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state during critique,
 - critique the plan, not alternative future architectures,
 - if evidence is missing, say so explicitly instead of guessing.
@@ -261,7 +261,8 @@ Context to review:
 Working method:
 
 - inspect the planning artifacts and any necessary repository files before finalizing; inspect independent files in parallel when your available tools make that efficient,
-- on a later pass, update `PLAN_CRITIQUE.md` instead of starting over. Carry every concern that `PLAN_REVISION_VERIFICATION.md` marks `Partially Resolved` or `Not Resolved`, every remaining issue, and every new issue introduced by the revision into the matching section, and cite the verification entry for each. Carry user decisions that `PLAN_REVISION_SUMMARY.md` still lists as pending into `Missing Questions For User`. Do not reopen a concern marked `Resolved` or `Invalid Concern` unless the revised artifacts changed it again; then cite the new evidence. Preserve the `Created by` and `Created at` fields and refresh `Updated at`,
+- on a later pass, update `PLAN_CRITIQUE.md` instead of starting over. Carry every concern that `PLAN_REVISION_VERIFICATION.md` marks `Partially Resolved` or `Not Resolved`, every remaining issue, and every new issue introduced by the revision into the matching section under its identifier, and cite the verification entry for each. Carry user decisions that `PLAN_REVISION_SUMMARY.md` still lists as pending into `Missing Questions For User`. Do not reopen a concern marked `Resolved` or `Invalid Concern` unless the revised artifacts changed it again; then cite the new evidence. Preserve the `Created by` and `Created at` fields and refresh `Updated at`,
+- give each critique item a stable identifier, such as `PC-1`, and use it wherever the item appears in `PLAN_CRITIQUE.md`. On a later pass, keep existing identifiers, update each item in place, and create a new identifier only for a distinct item, including each new issue `PLAN_REVISION_VERIFICATION.md` reports,
 - stay grounded in the supplied artifacts and any repository context you inspect,
 - quote or clearly point to the exact passage that triggered each blocking issue,
 - check the actual `EXECUTION_PROMPT.md` against every applicable implementation requirement in the Engineering Contract, including its priority, scope, conditions, exceptions, and stop gates; report omissions or weaker instructions as blocking issues before declaring it ready for implementation,
@@ -309,7 +310,7 @@ Review for:
 
 ## Required output 1: `PLAN_CRITIQUE.md`
 
-Create or output `PLAN_CRITIQUE.md` in the target repo root.
+Create or update `PLAN_CRITIQUE.md` in the target repo root. Do not deliver the critique only in chat; later phases read this file.
 
 Use this structure:
 
@@ -577,7 +578,7 @@ Context to read before answering:
 
 Success criteria:
 
-- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision,
+- every critique item is explicitly addressed, rejected with reasoning, or escalated for a user decision, and `PLAN_REVISION_SUMMARY.md` refers to each item by its `PLAN_CRITIQUE.md` identifier,
 - on a later pass, every concern that `PLAN_REVISION_VERIFICATION.md` reports as `Partially Resolved` or `Not Resolved`, every remaining issue, and every new issue introduced by the revision is addressed, rejected with reasoning, or escalated for a user decision, and the updated `PLAN_REVISION_SUMMARY.md` records the result for each one,
 - the revised plan stays within original scope,
 - the revised execution prompt remains strict enough to prevent divergence during execution,
@@ -684,7 +685,7 @@ Final checks:
 - preserve concrete input/output examples for every added or changed string transformation, full Python typing requirements and exceptions, readable types, public error translation, production-assert restrictions, dependency approval, latest-API conflict handling, and Linux/Windows requirements,
 - preserve independent acceptance criteria and runtime scenarios, real application entry points and relevant real APIs, authorized environments, read-only remote requests unless effects are authorized, and evidence fields for the requirement or claim, scenario, command or interaction, revision, environment, expected result, observed result, and pending checks. Required unavailable checks must block completion,
 - preserve codebase-wide searches for each discovered defect pattern, inspection of candidate matches, confirmed occurrences and false positives, unexamined areas, in-scope root-cause fixes, and incident diagnostics for operation, request/job context, cause/trace, retry/recovery, secrets, sensitive payloads, and duplicate noise,
-- preserve focused existing-test/lint/smoke/build verification, no test authoring before `09`, no full suite unless explicitly requested, no patching or mocking the subject under test, exact command failure logs, and fresh verification before a completion claim,
+- preserve focused existing-test/lint/smoke/build verification, no test authoring before `09`, no full suite unless explicitly requested, no patching or mocking the subject under test, existing tests broken only by a change that a locked requirement explicitly requires left unmodified and reported as test-only work for `09`, exact command failure logs, and fresh verification before a completion claim,
 - preserve same-change-set durable documentation updates and validation for every implementation step, or an evidence-based `Not applicable` result. Code comments, commits, and workflow artifacts are not substitutes; do not update the changelog without explicit authorization,
 - preserve the complete required final-response structure in the execution prompt: `# Implementation Summary`, `## What Changed`, `## Files Changed`, `## Plan Steps Completed`, `## Verification Evidence`, `## Documentation Checkpoints`, `## Commits Created`, `## Push Status`, `## Pull Request`, `## Not Done / Blocked`, and `## Suggestions Not Implemented Because Out Of Scope`. For eligible frontend work, retain `## Frontend Design Verification` immediately after `## Verification Evidence` with the complete required evidence; omit that additional section for other work. Preserve any additional required headings already present in the approved execution prompt,
 - verify that the execution prompt still requires `git add`, commit, push, and create-PR-only-if-missing behavior,

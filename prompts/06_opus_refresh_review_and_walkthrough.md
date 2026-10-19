@@ -248,7 +248,7 @@ Task:
 - update the review and walkthrough documents to reflect the final code state accurately,
 - confirm that every material changed behavior has a completed documentation checkpoint before final human review,
 - preserve the existing review trail while clearly marking what was fixed during the review loop,
-- after refreshing and verifying both Markdown files, generate `WALKTHROUGH.html` to help the human reviewer build a mental model of the final changes.
+- after refreshing and verifying both Markdown files, generate `WALKTHROUGH.html` to help the human reviewer build a mental model of the final changes, unless this pass records a severe missed issue assigned to `Review fix`.
 
 Artifact location rule:
 
@@ -273,7 +273,7 @@ Success criteria:
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
 - the refreshed artifacts are detailed, grounded, and internally consistent,
-- `WALKTHROUGH.html` reflects those refreshed files and the inspected final code, provides working interactions for exploring relationships and flows, and records browser verification or an explicit pending result.
+- when generated, `WALKTHROUGH.html` reflects those refreshed files and the inspected final code, provides working interactions for exploring relationships and flows, and records browser verification or an explicit pending result.
 
 Constraints:
 
@@ -283,7 +283,7 @@ Constraints:
 - treat missing, inaccurate, or unvalidated required durable documentation as a severe missed issue; do not finalize the review artifacts,
 - if you discover a severe missed issue, record it in `REVIEW.md` as a new finding with a stable identifier that continues the existing identifier sequence, status and destination set by `04`'s rules (status `Open` with destination `Review fix` for production defects, failed acceptance behavior, missing required runtime verification, and documentation gaps; status `Deferred to 09` with destination `09` only for test-only work), severity, exact file path and narrow line range, the affected requirement or contract and concrete impact, minimal reproduction steps (label unexecuted scenarios `Not run`), and the smallest justified correction or acceptance check. When the finding is assigned to `Review fix`, do not generate or refresh `WALKTHROUGH.html`; state that the workflow returns to `04_opus_review_branch.md` for an incremental pass that produces the next `REVIEW_FIX_PROMPT.md`, and that only `04` may author that prompt. In either case, stop and ask before proceeding,
 - write only `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html`; do not create application code, tests, dependencies, configuration, or other visual artifacts,
-- do not stage, commit, push, or change pull-request state. The required HTML is this phase's sole visual-artifact exception; UI skills may not create other artifacts or expand write permissions.
+- do not stage, commit, push, or change pull-request state. The conditional HTML is this phase's sole visual-artifact exception; UI skills may not create other artifacts or expand write permissions.
 
 Working method:
 
@@ -299,6 +299,8 @@ Update `REVIEW.md` in the target repo root so it reflects the final code.
 It must include:
 
 - final verdict,
+- review basis, including the compared base and final head revisions, the previous reviewed or verified state, any included uncommitted changes, and the final revision the refreshed artifacts describe,
+- blocking issues and non-blocking issues, each finding with its identifier, final status, destination, severity, and evidence; keep resolved findings as clearly marked review history outside the active issue lists, and write `None.` under an empty heading,
 - plan compliance,
 - backwards compatibility review,
 - public API review,
@@ -331,7 +333,7 @@ Begin with a prose overview of the code under review: entry points, affected fil
 
 Describe every reachable control-flow branch and data/state transition through that code in prose. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
 
-Keep presentation diffs and pseudocode out of `WALKTHROUGH.md`; phase `07` presents them in chat from freshly inspected code and PR changes. Preserve source excerpts and prose coverage of relationships and flows here. Do not create diagrams in `WALKTHROUGH.md` or phase `07`. Put the interactive mental model only in the required `WALKTHROUGH.html` after refreshing both Markdown files.
+Keep presentation diffs and pseudocode out of `WALKTHROUGH.md`; phase `07` presents them in chat from freshly inspected code and PR changes. Preserve source excerpts and prose coverage of relationships and flows here. Do not create diagrams in `WALKTHROUGH.md` or phase `07`. Put the interactive mental model only in `WALKTHROUGH.html`, when this pass generates it, after refreshing both Markdown files.
 
 Group the code into small semantic blocks, each covering one coherent operation or decision. Include relevant surrounding lines and file/line locations. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 

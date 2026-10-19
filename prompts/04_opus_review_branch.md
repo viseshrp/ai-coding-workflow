@@ -243,7 +243,7 @@ Role:
 Task:
 
 - Independently review the changes selected for this pass against available requirements and public contracts, the existing architecture, and any available locked planning artifacts.
-- On the first pass, review all changes introduced by the current branch. On later passes, review only changes since the last reviewed revision and the paths they affect; carry forward earlier conclusions unless those changes invalidate them.
+- On the first pass, review all changes introduced by the current branch. On later passes, review only changes since the last independently reviewed or verified state recorded in `REVIEW.md` or `REVIEW_FIX_VERIFICATION.md`, whichever is later, and the paths they affect; carry forward earlier conclusions unless those changes invalidate them.
 - Identify real defects, plan divergence when a plan is available, and high-value follow-up suggestions without expanding scope.
 - Identify all possible regressions caused by the selected changes, including indirect effects on existing callers, behavior, compatibility, and error paths.
 - Identify meta content in the selected changes, such as comments, docstrings, documentation, or user-facing text that describes the branch, task, implementation process, or the fact that a change was made instead of describing the resulting code or behavior.
@@ -251,14 +251,15 @@ Task:
 
 Context to review:
 
-- the current branch diff against the head of `main`, plus the diff since the last reviewed state on later passes. Record exact base and head revisions and the comparison used; include newly affected integration paths if `main` changed since the earlier review,
+- the current branch diff against the head of `main`, plus the diff since the last independently reviewed or verified state on later passes. Record exact base and head revisions and the comparison used; include newly affected integration paths if `main` changed since the earlier review,
 - affected code, callers, public interfaces, configuration, durable documentation, and existing tests,
-- existing `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for the last reviewed revision, finding identifiers, statuses, pending checks, and the new issues recorded under `New Issues Introduced`,
+- existing `REVIEW.md` and `REVIEW_FIX_VERIFICATION.md`, if present, for the last independently reviewed or verified state, finding identifiers, statuses, pending checks, and the new issues recorded under `New Issues Introduced`,
 - `FEATURE_SPEC_AND_PLAN.md`, if present,
 - `SPEC.md`, if present,
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
-- `EXECUTION_PROMPT.md`, if present.
+- `EXECUTION_PROMPT.md`, if present,
+- the implementation or review-fix pass's final response or pull-request description, if available, for existing-test failures it reported as caused by an intended behavior change.
 
 The named planning and execution artifacts are optional. Do not require, recreate, or ask for them merely because they are absent.
 
@@ -274,6 +275,7 @@ Constraints:
 
 - do not modify code during this phase,
 - create or update only `REVIEW.md`, `WALKTHROUGH.md`, and `REVIEW_FIX_PROMPT.md`. Do not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
+- give `REVIEW.md`, `WALKTHROUGH.md`, and `REVIEW_FIX_PROMPT.md` `Created by`, `Created at`, and `Updated at` metadata. On later passes, preserve the creation fields and refresh `Updated at`,
 - backwards compatibility is top priority,
 - do not stop or ask for input solely because prior-phase artifacts are absent,
 - do not invent undocumented intent; evaluate objective correctness and repository compatibility, and label genuinely intent-dependent conclusions as open questions,
@@ -281,7 +283,7 @@ Constraints:
 
 Working method:
 
-- compare the current branch against the current head of `main` to establish scope. Review that full branch change on the first pass. For later passes, establish the last reviewed base, head, and working-tree state from existing review artifacts or Git/PR evidence; review only new changes and paths newly affected by changes to the branch, `main`, requirements, or repository contracts. Account for previously reviewed uncommitted changes as well as commits; do not treat an unchanged working-tree diff as new. If the prior baseline cannot be recovered, review only identifiable new changes and keep the remaining scope pending; do not silently restart a full review,
+- compare the current branch against the current head of `main` to establish scope. Review that full branch change on the first pass. For later passes, establish the last independently reviewed or verified base, head, and working-tree state from `REVIEW.md` `## Review Basis` or `REVIEW_FIX_VERIFICATION.md` `## Verification Basis`, whichever is later, or from Git/PR evidence; review only new changes and paths newly affected by changes to the branch, `main`, requirements, or repository contracts. Account for previously reviewed uncommitted changes as well as commits; do not treat an unchanged working-tree diff as new. If the prior baseline cannot be recovered, review only identifiable new changes and keep the remaining scope pending; do not silently restart a full review,
 - establish the review basis from the diff and repository evidence before judging. Confirm that prior evidence belongs to this branch and change; ignore unrelated review artifacts and treat a branch with no prior review as an initial pass. Reuse evidence only when the relevant behavior, contracts, dependencies, configuration, and environment are unchanged,
 - inspect actual code, affected callers, existing contracts, durable documentation, and actual diff before judging,
 - trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
@@ -371,8 +373,9 @@ Review existing or changed tests; do not author tests in this phase.
 - Check that tests follow the existing test framework's configuration and conventions and prefer existing fixtures, native APIs, and installed extensions over hand-rolled test infrastructure.
 - Flag any test that patches or mocks the function, method, or callable under test. Replacing the behavior being tested defeats the purpose of the test; only collaborators outside the subject may be patched.
 - Limit mocks to impractical external boundaries; flag internal call choreography and implementation-detail mocks.
+- Treat an existing test that fails only because it asserts behavior that a cited locked requirement or approved scope change explicitly replaces as a test-only finding with status `Deferred to 09`. Treat a failure caused by unintended behavior as a regression assigned to `Review fix`.
 - Flag flakes and brittleness from global state, private helpers or constants, incidental error wording, layout assumptions, real time or uncontrolled network access, and expected values that mirror production logic.
-- Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only. Record the measured coverage and its scope when available; missing test authoring or final coverage proof remains explicitly `Deferred to 09`, never passed or waived. The complete coverage gate must pass in `09` and be independently verified in `10`.
+- Require deterministic isolation and at least 85% coverage for new or changed lines using existing tooling. Run focused tests only, including every existing test that a reported intended behavior change affects. Record the measured coverage and its scope when available; missing test authoring or final coverage proof remains explicitly `Deferred to 09`, never passed or waived. The complete coverage gate must pass in `09` and be independently verified in `10`.
 
 ### Language-specific test review guidance
 
@@ -452,7 +455,7 @@ Use `None.` under either issue heading when no actionable findings exist. Keep o
 
 Never repost the same finding. Match against existing findings by failure pattern and affected contract, even if wording or line numbers change. Preserve its identifier and original evidence in `REVIEW.md`, update its status and remaining occurrences in place, and reference that identifier in later responses and handoffs. Add new evidence or newly found occurrences of the same defect category to that entry; create a new finding only for a distinct defect. On a later pass, adopt each new issue recorded in `REVIEW_FIX_VERIFICATION.md` under `New Issues Introduced` into `REVIEW.md` under its assigned identifier, with its status, destination, severity, evidence, reproduction steps, and correction; do not repost it under a new identifier. Treat findings that phase `06` recorded in `REVIEW.md` as existing findings. Keep resolved entries as clearly marked review history outside active issue lists, without requiring unchanged fixes again.
 
-In `## Review Basis`, record the initial comparison against `main`, exact base and head revisions, the previous and current reviewed revisions, any uncommitted changes included, and the scope of this pass. Record enough evidence to identify the reviewed working-tree state on a later pass; a commit SHA alone does not identify uncommitted content. List the repository evidence inspected and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
+In `## Review Basis`, record the initial comparison against `main`, exact base and head revisions, the previous reviewed or verified state and the current reviewed revision, any uncommitted changes included, and the scope of this pass. Record enough evidence to identify the reviewed working-tree state on a later pass; a commit SHA alone does not identify uncommitted content. List the repository evidence inspected and every optional planning or execution artifact that was available. If none was available, state that the review was performed standalone from the branch diff and repository evidence. Identify architecture and high-impact changes that warranted deeper scrutiny, their affected consumers and failure consequences, and the additional evidence gathered or still required.
 
 In `## Plan Compliance`, assess requirements affected by the selected changes against the available planning artifacts and retain prior conclusions for unchanged requirements. If none exists, write `Not assessed - no planning artifacts were provided.` Do not treat that absence as an issue or blocker.
 
@@ -572,7 +575,7 @@ The generated review-fix prompt must include these skill links explicitly:
 The generated review-fix prompt must include a `## Skill Handling Rule` that instructs the review-fix model to:
 
 - use only the prompt's explicitly linked skills,
-- fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
+- fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution when they are present,
@@ -646,6 +649,7 @@ Constraints:
 
 - do not blindly implement every review comment,
 - address all valid findings assigned to `Review fix`; do not implement findings marked `Deferred to 09`,
+- if a valid fix makes an existing test fail only because the test asserts the behavior the finding requires changing, do not modify the test. Keep the fix, report the test name, exact failure output, and cause in the final response as test-only work for phase `09`, and do not claim the suite passes. If the failure shows a regression or an incorrect fix, correct the fix instead,
 - if no unresolved finding is assigned to this pass, report that no review-fix changes are needed; do not create an empty commit or change branch or pull-request state,
 - do not implement optional suggestions unless explicitly approved,
 - keep all fixes within the scope established by `REVIEW.md` and the current branch diff; when the original implementation scope can be established from available planning artifacts, preserve it too,
@@ -713,6 +717,8 @@ The generated `REVIEW_FIX_PROMPT.md` must require the response structure below. 
 ## Push Status
 
 ## Pull Request
+
+## Suggestions Not Implemented Because Out Of Scope
 
 ## Remaining Questions / Blockers
 ```

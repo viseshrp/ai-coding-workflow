@@ -459,7 +459,7 @@ The generated `EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that
 
 - use only the prompt's explicitly linked skills,
 - fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
-- fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; embed full links and these handling rules in the generated prompt; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
+- fetch and read every required skill and companion completely from its GitHub URL before use, subject to the generated prompt's isolated UI activation rules; skip UI-only links for backend-only work; do not depend on local skill repositories, installed slash commands, or earlier prompt text,
 - treat the prompt as the contract,
 - treat locked task artifacts as the contract for execution,
 - use skills as supporting procedures only,
@@ -563,6 +563,7 @@ Execution rules:
 - document every added or changed string transformation with concrete examples showing representative input and expected output,
 - never patch or mock the function, method, or callable under test; only collaborators outside the subject may be patched, and this rule does not authorize creating or modifying tests in this phase,
 - do not write tests unless explicitly asked,
+- if a planned change makes an existing test fail only because the test asserts behavior that a cited locked acceptance criterion explicitly replaces, do not modify the test. If no locked requirement replaces that behavior, treat the failure as a backwards-compatibility problem and stop and ask. Keep the change, report the test name, exact failure output, and cause in the final response as test-only work for phase `09`, and do not claim the suite passes. If the failure shows a regression or an incorrect change, correct the change instead,
 - run focused linter/smoke/build checks described by the plan,
 - run linter and smoke test if any on every commit, unless command execution is unavailable or explicitly disallowed,
 - if a command fails, paste the exact error/log back. Never paraphrase logs.
