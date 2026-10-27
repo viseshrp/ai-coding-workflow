@@ -155,6 +155,7 @@ Handoff order:
 5. The planning model uses the draft plan and repo context to create:
    - `FEATURE_SPEC_AND_PLAN.md`
    - `EXECUTION_PROMPT.md`
+6. I run `02_plan_critique_any_model.md` on those artifacts. Execution waits for its `Ready to execute: Yes` verdict.
 
 Use the linked skills as supporting procedures:
 
@@ -613,6 +614,8 @@ In `## Documentation Checkpoints`, require the implementation model to list each
 
 It must explicitly instruct the implementation model not to claim completion without fresh verification evidence.
 
+It must instruct the implementation model to end its final response by stating that the next step is `04_review_branch_any_model.md`, run in a fresh session or agent without the implementation context.
+
 ## UI sections in generated planning and execution prompts
 
 Always include a separate `## UI work only` section in both generated downstream prompts, even when inactive. Preserve its activation gate so backend-only tasks perform no UI skill loading or UI work. Embed the complete text, applicable explicit skill links and companions, and limits below in each generated artifact; never replace them with a reference to this producer prompt. Include the general Simplicity and reuse procedure from the Engineering Contract in the generated planning prompt and its downstream execution contract for all tasks.
@@ -873,5 +876,7 @@ Before finishing, the generated prompt must instruct the planning model to verif
 - each Engineering Contract requirement and execution instruction is present in the generated execution prompt with its priority, scope, conditions, exceptions, and stop gates intact; repair any omission or weakening before handing it off,
 - compare the actual generated planning prompt and execution prompt against every required section, checklist item, field, skill link, companion link, and task-specific detail in this producer. Verify both prompts independently; a complete producer or planning prompt does not prove that `EXECUTION_PROMPT.md` retained its requirements,
 - no details from the draft plan were dropped.
+
+The generated prompt must also instruct the planning model to end its final response by stating that the next step is `02_plan_critique_any_model.md`, and that execution waits for a `Ready to execute: Yes` verdict.
 
 If the task is still ambiguous, keep interviewing; do not claim the plan is ready.

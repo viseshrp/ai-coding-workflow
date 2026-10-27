@@ -451,7 +451,7 @@ For static issues, provide repeatable inspection or call-trace steps that demons
 
 Every valid review issue must remain categorized under either `Blocking Issues` or `Non-Blocking Issues`, including test-only findings assigned to `09`. Put each finding's corrective suggestion directly below its evidence and reproduction steps. Keep broader optional improvements in `Suggestions` and reference the related finding identifier without reposting the finding.
 
-Mark test-only findings `Deferred to 09`, retaining their identifiers, severity, evidence, and required scenarios in the issue list and `Test Review`. In `Verdict`, explicitly report whether all valid blocking and non-blocking findings are resolved, and keep that overall result `No` while any valid finding is deferred or unresolved. Separately report readiness for phase `06` and human code review, without implying completion of phases `09` and `10`. Deferral applies only to test work; it cannot excuse a production defect, failed acceptance behavior, or a required runtime check that has not passed.
+Mark test-only findings `Deferred to 09`, retaining their identifiers, severity, evidence, and required scenarios in the issue list and `Test Review`. In `Verdict`, explicitly report whether all valid blocking and non-blocking findings are resolved, and keep that overall result `No` while any valid finding is deferred or unresolved. Separately report readiness for phase `06` and human code review, without implying completion of phases `09` and `10`. State the next step: when a finding assigned to `Review fix` is unresolved, paste `REVIEW_FIX_PROMPT.md` into a capable repository-aware coding model and then run `05_verify_review_fixes_any_model.md`; otherwise, run `06_refresh_review_and_walkthrough_any_model.md`. Deferral applies only to test work; it cannot excuse a production defect, failed acceptance behavior, or a required runtime check that has not passed.
 
 Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
@@ -729,6 +729,8 @@ The generated `REVIEW_FIX_PROMPT.md` must require the response structure below. 
 In `## Documentation Checkpoints`, require the review-fix model to list each review item's documentation status, the exact durable documentation and validation evidence when applicable, or the evidence-based `Not applicable` rationale.
 
 It must explicitly instruct the review-fix model not to claim completion without fresh verification evidence.
+
+It must instruct the review-fix model to end its final response by stating that the next step is `05_verify_review_fixes_any_model.md`, run in a fresh session or agent without the implementation or review-fix context.
 
 Before handing off `REVIEW_FIX_PROMPT.md`, check that it embeds every Engineering Contract requirement and review-fix instruction above with its priority, scope, conditions, exceptions, and stop gates intact. Verify its explicit design-skill link, complete frontend design gate, accepted-finding boundary, and rendered-verification instructions. Repair omissions or weakened instructions before handoff.
 

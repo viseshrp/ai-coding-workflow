@@ -194,9 +194,9 @@ Context to read before judging:
 - overlapping tests at other boundaries;
 - test-runner, framework, coverage, CI, and changed-file routing configuration;
 - relevant history for suspicious tests or production seams;
-- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, and prior review artifacts when present, including the finding identifiers and scenarios deferred to `09`, unchecked `FOLLOWUP.md` test-authoring items, the evidence phase `08` recorded under completed items, and the `## Declined Audit Findings` section;
+- `FEATURE_SPEC_AND_PLAN.md`, `FOLLOWUP.md`, `REVIEW.md`, and `REVIEW_FIX_VERIFICATION.md` when present, including the finding identifiers and scenarios deferred to `09`, unchecked `FOLLOWUP.md` test-authoring items, the evidence phase `08` recorded under completed items, and the `## Declined Audit Findings` section;
 - `TEST_AUDIT.md`, if present from an earlier pass, for the audited revision, finding identifiers, statuses, and evidence;
-- phase `09`'s final chat evidence or equivalent recorded commands and results;
+- phase `09`'s final chat evidence or equivalent recorded commands and results. If neither is supplied, ask me for phase `09`'s handoff before judging its dispositions; do not infer them;
 - durable documentation and its earlier checkpoint result.
 
 Success criteria:

@@ -156,7 +156,7 @@ The numbered prompt files define the workflow order and should stay in sequence.
 7. `07_human_code_walkthrough.md`
    - Starts human review with a brief prose overview of the code and explains success/error flows alongside semantic blocks.
    - Reviews small semantic blocks with excerpts for references defined outside the block.
-   - Creates `FOLLOWUP.md` only from explicitly agreed items and explicitly declined audit findings.
+   - Creates `FOLLOWUP.md` only from explicitly agreed items and explicitly declined audit findings. When the first walkthrough agrees no item, it creates no `FOLLOWUP.md`, skips `08`, and hands off to `09`.
    - On re-entry from `10`, discusses routed `TEST_AUDIT.md` findings against the code and records only `AGREE`d corrections, citing the finding identifier. It records a finding the human explicitly declines by identifier, with the human's reason, under `## Declined Audit Findings` in `FOLLOWUP.md`. If every routed finding is declined, `08` and `09` are skipped and the workflow goes to the next phase-`10` pass.
 8. `08_implement_human_followup_any_model.md`
    - Implements only unchecked human-approved `FOLLOWUP.md` implementation items. Leaves checked items and the `## Declined Audit Findings` section unchanged, leaves test-authoring items unchecked as deferred to `09`, and makes no commit when no unchecked implementation item remains.
@@ -197,6 +197,10 @@ These phases are optional entry points, not a continuation of the main workflow.
 Do not renumber these files casually.
 
 If a new phase is added, preserve the numbered sequence and update all places that enumerate the prompt list.
+
+### Handoffs
+
+Every phase and generated prompt ends by naming the next step, so the workflow can continue in a fresh session without chat history: `01` names the planning pass, and the planning pass names `02`. `02` names execution on `Yes`, or the revision pass and then `03` on `No`. The revision pass names `03`, and `03` names execution or `02`. Execution names a fresh-session `04`. `04` names the review-fix pass and `05`, or `06` when no `Review fix` finding is unresolved. The review-fix pass names a fresh-session `05`. `05` names `06` or `04`, and `06` names `07` or `04`. `07` names `08`, `09`, or the next `10` pass. `08` names `09`, `09` names `10`, and `10` names `09`, `07`, or human review. `10` reads `REVIEW.md`, `REVIEW_FIX_VERIFICATION.md`, and `FOLLOWUP.md` for deferred and follow-up items, and asks for phase `09`'s chat handoff when it is not supplied.
 
 ## Prompt Anatomy
 

@@ -184,4 +184,4 @@ Do not add placeholder, draft, or "to discuss" items to `FOLLOWUP.md`.
 
 Keep a `## Declined Audit Findings` section in `FOLLOWUP.md` only for routed `TEST_AUDIT.md` findings that I explicitly decline by identifier. Each entry records the finding identifier and my reason. These entries are not implementation work: give them no checkbox, and do not convert them into items. Keep earlier entries unchanged.
 
-Hand the human-approved `FOLLOWUP.md` to the next implementation phase, or to the next phase-`10` pass when a test-audit re-entry added no new item. Do not implement its changes during this walkthrough.
+Hand the human-approved `FOLLOWUP.md` to the next implementation phase, or to the next phase-`10` pass when a test-audit re-entry added no new item. When the first walkthrough agrees no item, create no `FOLLOWUP.md`, skip phase `08`, and state that the next step is `09_write_focused_tests_any_model.md`. Do not implement its changes during this walkthrough.

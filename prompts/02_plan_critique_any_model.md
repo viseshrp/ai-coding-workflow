@@ -356,7 +356,7 @@ When `Ready to execute` is `Yes` and I have not asked to address non-blocking is
 - state that any existing `PLAN_REVISION_REQUEST.md` from a prior pass is superseded and must not be used,
 - state that phase `03` does not run because no revision pass ran.
 
-When `Ready to execute` is `No`, create `PLAN_REVISION_REQUEST.md` as required output 2.
+When `Ready to execute` is `No`, create `PLAN_REVISION_REQUEST.md` as required output 2, and state in `## Final Recommendation` that the next step is to paste it into a capable repository-aware model or agent and then run `03_plan_revision_verification_any_model.md`.
 
 ## UI section in the generated revision prompt
 
@@ -694,5 +694,7 @@ Final checks:
 - verify that the Engineering Contract remains intact or stricter.
 - compare each applicable implementation requirement in the Engineering Contract with its wording in the revised `EXECUTION_PROMPT.md`, including priority, scope, conditions, exceptions, and stop gates; repair omissions or weakened instructions before handoff.
 - compare every existing execution instruction and each detailed preservation check above with the actual revised artifact. Preserve its full wording unless an explicitly approved change requires revision, and record the previous and revised wording of each changed or removed instruction in `PLAN_REVISION_SUMMARY.md`; do not mark it ready while any required section, field, companion resource, or operational check is absent or weaker.
+
+The generated revision prompt must instruct the revision model to end its final response by stating that the next step is `03_plan_revision_verification_any_model.md`.
 
 Do not ask the revision model to implement code.

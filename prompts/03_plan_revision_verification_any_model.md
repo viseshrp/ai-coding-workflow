@@ -333,4 +333,4 @@ If any issue remains:
 - state that `02` is the only phase that should author `PLAN_REVISION_REQUEST.md`,
 - if `PLAN_REVISION_REQUEST.md` was missing, weak, or failed to retain needed revision instructions, report the upstream critique/request failure; do not compensate here.
 
-If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for implementation.
+If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for implementation and that the next step is execution with `EXECUTION_PROMPT.md` and `FEATURE_SPEC_AND_PLAN.md`.
