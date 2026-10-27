@@ -1,4 +1,4 @@
-# 04 - Opus Reviews Implemented Branch
+# 04 - Review Implemented Branch - Any Model
 
 ## Skills
 
@@ -238,7 +238,8 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are Claude Opus performing post-implementation review in an existing codebase.
+- You are a capable repository-aware model or agent performing post-implementation review in an existing codebase.
+- Run this review in a fresh session or agent that does not carry the implementation or review-fix context. If you implemented or fixed these changes in this session, stop and ask for a fresh reviewer.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -688,7 +689,7 @@ Focused verification:
 - verify that the accepted defect category is resolved across every confirmed in-scope occurrence, not only the originally reported example. Update the existing search evidence for new or affected matches and assess incident diagnostics for changed failure paths. Report other supported occurrences and gaps by the existing finding identifier for the appropriate approval path; preserve the test-authoring boundary,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,
@@ -731,4 +732,4 @@ It must explicitly instruct the review-fix model not to claim completion without
 
 Before handing off `REVIEW_FIX_PROMPT.md`, check that it embeds every Engineering Contract requirement and review-fix instruction above with its priority, scope, conditions, exceptions, and stop gates intact. Verify its explicit design-skill link, complete frontend design gate, accepted-finding boundary, and rendered-verification instructions. Repair omissions or weakened instructions before handoff.
 
-Do not modify code during this Opus review phase.
+Do not modify code during this review phase.

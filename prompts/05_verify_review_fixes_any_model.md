@@ -1,4 +1,4 @@
-# 05 - Opus Verifies Review Fixes
+# 05 - Verify Review Fixes - Any Model
 
 ## Skills
 
@@ -234,7 +234,8 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are Claude Opus verifying review fixes after the review-fix model updated the branch.
+- You are a capable repository-aware model or agent verifying review fixes after the review-fix model updated the branch.
+- Run this verification in a fresh session or agent that does not carry the implementation or review-fix context. If you implemented or fixed these changes in this session, stop and ask for a fresh verifier.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -348,7 +349,7 @@ The all-findings verdict must be `No` while any valid finding is unresolved, inc
 If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
-- state explicitly that the workflow must return to `04_opus_review_branch.md`,
+- state explicitly that the workflow must return to `04_review_branch_any_model.md`,
 - state that `04` is the only phase that should author `REVIEW_FIX_PROMPT.md`,
 - if `REVIEW_FIX_PROMPT.md` was missing, weak, or failed to retain needed fix instructions, report the upstream review/request failure; do not compensate here.
 

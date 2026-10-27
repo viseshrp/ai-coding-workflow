@@ -8,18 +8,18 @@ Use this repository as the workflow source; make application changes in the targ
 
 ```mermaid
 flowchart TD
-    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_OPUS_PLANNING_PROMPT.md"]
-    B --> C["Opus planning via generated prompt"]
+    A["01 Explore and clarify"] --> B["DRAFT_PLAN.md + INITIAL_PLANNING_PROMPT.md"]
+    B --> C["Planning via generated prompt"]
     C --> D["FEATURE_SPEC_AND_PLAN.md + EXECUTION_PROMPT.md"]
     D --> E["02 Critique plan"]
-    E -- "revision needed" --> F["OPUS_PLAN_REVISION_REQUEST.md"]
+    E -- "revision needed" --> F["PLAN_REVISION_REQUEST.md"]
     E -- "Ready to execute: Yes, plan locked" --> J
-    F --> G["Opus revises plan"]
+    F --> G["Plan revision via generated prompt"]
     G --> H["Updated plan + PLAN_REVISION_SUMMARY.md"]
     H --> I["03 Verify revision"]
     I -- "more plan work" --> E
     I -- "plan locked" --> J["Implementation model executes generated prompt"]
-    J --> K["04 Opus reviews branch"]
+    J --> K["04 Review branch"]
     K --> L["REVIEW.md + WALKTHROUGH.md + REVIEW_FIX_PROMPT.md"]
     L --> M["Review-fix model fixes assigned findings; test-only work goes to 09"]
     M --> N["05 Verify review fixes"]
@@ -41,8 +41,8 @@ flowchart TD
 
 Generated prompt artifacts are the only prompt input for their handoff:
 
-- `INITIAL_OPUS_PLANNING_PROMPT.md` drives the main Opus planning pass.
-- `OPUS_PLAN_REVISION_REQUEST.md` drives an Opus plan-revision pass.
+- `INITIAL_PLANNING_PROMPT.md` drives the main planning pass.
+- `PLAN_REVISION_REQUEST.md` drives a plan-revision pass.
 - `EXECUTION_PROMPT.md` drives locked implementation.
 - `REVIEW_FIX_PROMPT.md` drives a review-fix pass.
 
@@ -52,18 +52,18 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 
 | Step | Prompt | Model / role | Result |
 |---|---|---|---|
-| 01 | [Initial exploration](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md` |
-| 02 | [Plan critique](prompts/02_plan_critique_any_model.md) | Any capable repo-aware model | `PLAN_CRITIQUE.md`; `OPUS_PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No` or the human asks to address non-blocking issues |
+| 01 | [Initial exploration](prompts/01_initial_exploration_any_model.md) | Any capable repo-aware model | `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md` |
+| 02 | [Plan critique](prompts/02_plan_critique_any_model.md) | Any capable repo-aware model | `PLAN_CRITIQUE.md`; `PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No` or the human asks to address non-blocking issues |
 | 03 | [Plan-revision verification](prompts/03_plan_revision_verification_any_model.md) | Any capable repo-aware model | `PLAN_REVISION_VERIFICATION.md` |
-| 04 | [Implemented-branch review](prompts/04_opus_review_branch.md) | Claude Opus | `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md` |
-| 05 | [Review-fix verification](prompts/05_opus_verify_review_fixes.md) | Claude Opus | `REVIEW_FIX_VERIFICATION.md` |
-| 06 | [Final review-artifact refresh](prompts/06_opus_refresh_review_and_walkthrough.md) | Claude Opus | Refreshed `REVIEW.md` and `WALKTHROUGH.md`, then interactive `WALKTHROUGH.html` |
+| 04 | [Implemented-branch review](prompts/04_review_branch_any_model.md) | Any capable repo-aware model | `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md` |
+| 05 | [Review-fix verification](prompts/05_verify_review_fixes_any_model.md) | Any capable repo-aware model | `REVIEW_FIX_VERIFICATION.md` |
+| 06 | [Final review-artifact refresh](prompts/06_refresh_review_and_walkthrough_any_model.md) | Any capable repo-aware model | Refreshed `REVIEW.md` and `WALKTHROUGH.md`, then interactive `WALKTHROUGH.html` |
 | 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed, including declined audit findings |
 | 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Unchecked approved follow-up changes, with per-item evidence in `FOLLOWUP.md` |
 | 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by phase-10 audit |
 | 10 | [Independent test audit](prompts/10_test_audit_any_model.md) | Any capable repo-aware agent | `TEST_AUDIT.md`, followed by human review after approval |
 
-The main Opus planning pass, Opus plan-revision pass, locked implementation pass, and review-fix pass use generated prompts, so they do not have separate checked-in phase files.
+The main planning pass, plan-revision pass, locked implementation pass, and review-fix pass use generated prompts, so they do not have separate checked-in phase files.
 
 ## Optional Independent Phases
 
@@ -81,19 +81,19 @@ Use `12` when choosing between UI directions before locking a plan. It uses `pro
 ## How to Run It
 
 1. Open the target code repository in a repo-aware agent UI. Keep this prompt pack available only as the instruction source.
-2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
-3. Paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
-4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If it sets `Ready to execute: No`, paste its generated `OPUS_PLAN_REVISION_REQUEST.md` into Opus. If it sets `Ready to execute: Yes`, the plan is locked: skip `03` and go to step 6.
-5. After an Opus revision pass, run [prompt 03](prompts/03_plan_revision_verification_any_model.md). It stops without a verdict when no revision pass ran. Repeat `02 -> Opus revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
+2. Run [prompt 01](prompts/01_initial_exploration_any_model.md) with the task. It creates `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md`.
+3. Paste `INITIAL_PLANNING_PROMPT.md` into any capable repository-aware model or agent. Save the resulting `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`.
+4. Run [prompt 02](prompts/02_plan_critique_any_model.md). If it sets `Ready to execute: No`, paste its generated `PLAN_REVISION_REQUEST.md` into any capable repository-aware model or agent. If it sets `Ready to execute: Yes`, the plan is locked: skip `03` and go to step 6.
+5. After a plan revision pass, run [prompt 03](prompts/03_plan_revision_verification_any_model.md). It stops without a verdict when no revision pass ran. Repeat `02 -> plan revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
-7. Run [prompt 04](prompts/04_opus_review_branch.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_opus_verify_review_fixes.md). Repeat until all findings assigned to `Review fix` are resolved. Carry test-only findings marked `Deferred to 09` to phase 09. When `05` reports that a required check cannot run only because an environment, credential, or access precondition is unavailable, supply that precondition and rerun `05` instead of returning to `04`.
-8. Run [prompt 06](prompts/06_opus_refresh_review_and_walkthrough.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. If `06` records a severe missed issue assigned to `Review fix` in `REVIEW.md`, it skips `WALKTHROUGH.html` and the workflow returns to `04` for the next `REVIEW_FIX_PROMPT.md`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
+7. Run [prompt 04](prompts/04_review_branch_any_model.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_verify_review_fixes_any_model.md). Repeat until all findings assigned to `Review fix` are resolved. Carry test-only findings marked `Deferred to 09` to phase 09. When `05` reports that a required check cannot run only because an environment, credential, or access precondition is unavailable, supply that precondition and rerun `05` instead of returning to `04`.
+8. Run [prompt 06](prompts/06_refresh_review_and_walkthrough_any_model.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. If `06` records a severe missed issue assigned to `Review fix` in `REVIEW.md`, it skips `WALKTHROUGH.html` and the workflow returns to `04` for the next `REVIEW_FIX_PROMPT.md`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md). It implements only unchecked implementation items, records evidence under each completed item, leaves test-authoring items for `09`, and makes no commit when nothing remains.
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state. It treats unchecked `FOLLOWUP.md` test-authoring items as required test work.
 11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes back to [prompt 07](prompts/07_human_code_walkthrough.md), where only `AGREE`d corrections enter `FOLLOWUP.md` for `08`, before repeating `09` and `10`. Test-only findings that `09` reported as unsupported with evidence and that `10` still holds also go to `07` for a human decision. `07` records findings the human explicitly declines under `## Declined Audit Findings` in `FOLLOWUP.md`; when every routed finding is declined, skip `08` and `09` and run the next `10` pass. Audit findings keep stable identifiers and statuses across passes.
 12. Human-review the audited test diff after phase `10` passes.
 
-You may also start directly at [prompt 04](prompts/04_opus_review_branch.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, Opus reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
+You may also start directly at [prompt 04](prompts/04_review_branch_any_model.md) for an existing implementation branch. Earlier planning and execution artifacts are optional: when absent, the reviewing model reviews the branch against `main` and repository evidence; when present, it also treats them as authoritative review context.
 
 Use a fresh chat for each major phase or model handoff. Use artifact files for handoffs; do not depend on hidden chat history.
 
@@ -113,14 +113,14 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 
 | Artifact | Producer | Main consumer |
 |---|---|---|
-| `DRAFT_PLAN.md` | 01 | Generated Opus planning prompt |
-| `INITIAL_OPUS_PLANNING_PROMPT.md` | 01 | Main Opus planning pass |
-| `FEATURE_SPEC_AND_PLAN.md` | Opus planning/revision | Critique, execution, and review phases |
-| `EXECUTION_PROMPT.md` | Opus planning/revision | Locked implementation |
-| `PLAN_CRITIQUE.md` | 02 | Opus revision and 03 |
-| `OPUS_PLAN_REVISION_REQUEST.md` | 02, only when revision is needed | Opus revision |
-| `PLAN_REVISION_SUMMARY.md` | Opus revision, including the previous and revised wording of changed `EXECUTION_PROMPT.md` instructions | 03; 02 and the next Opus revision on another pass |
-| `PLAN_REVISION_VERIFICATION.md` | 03, only after a revision pass | Execution gate; 02 and the next Opus revision when issues remain |
+| `DRAFT_PLAN.md` | 01 | Generated planning prompt |
+| `INITIAL_PLANNING_PROMPT.md` | 01 | Main planning pass |
+| `FEATURE_SPEC_AND_PLAN.md` | Planning/revision pass | Critique, execution, and review phases |
+| `EXECUTION_PROMPT.md` | Planning/revision pass | Locked implementation |
+| `PLAN_CRITIQUE.md` | 02 | Plan revision and 03 |
+| `PLAN_REVISION_REQUEST.md` | 02, only when revision is needed | Plan revision |
+| `PLAN_REVISION_SUMMARY.md` | Plan revision, including the previous and revised wording of changed `EXECUTION_PROMPT.md` instructions | 03; 02 and the next plan revision on another pass |
+| `PLAN_REVISION_VERIFICATION.md` | 03, only after a revision pass | Execution gate; 02 and the next plan revision when issues remain |
 | `REVIEW.md` | 04, refreshed by 06; 06 also records severe missed issues | Review-fix context, 05, 04 on its next pass, and later workflow context |
 | `WALKTHROUGH.md` | 04, refreshed by 06 | Review-fix and human walkthrough context |
 | `WALKTHROUGH.html` | 06, after refreshing both Markdown files | Interactive mental model for the human reviewer; supplemental context only |
@@ -139,7 +139,7 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - Main implementation, review fixes, and human follow-up receive the same applicable engineering requirements used in review. Generated execution and fix prompts are checked for complete contracts before handoff; planning critique and verification block incomplete execution prompts.
 - No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
 - The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
-- Claude Opus performs planning, plan revision, implemented-branch review, review-fix verification, and final review/walkthrough refresh. Exploration, critique, plan-revision verification, execution, review fixes, human walkthrough, follow-up implementation, test writing, and test audit accept any capable repository-aware model or agent.
+- Every phase, including generated-prompt passes, accepts any capable repository-aware model or agent. Phases 04 and 05 must run in a fresh session or agent without the implementation or review-fix context. Earlier pack versions named the planning artifacts `INITIAL_OPUS_PLANNING_PROMPT.md` and `OPUS_PLAN_REVISION_REQUEST.md`; rename or delete those files in a target repository before continuing a workflow that started under the old names.
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
 - Phase 09 adds the smallest meaningful focused test set. The final automated phase independently audits those tests before human review.
 
@@ -221,8 +221,8 @@ Its explicit link and gate live inside the existing `UI work only` sections of p
 
 | Stage | Frontend design responsibility |
 |---|---|
-| 01 and generated Opus planning | Clarify the brief in `DRAFT_PLAN.md`, then lock `## Frontend Design Contract` inside `FEATURE_SPEC_AND_PLAN.md`. |
-| 02, generated Opus revision, and 03 | Critique, repair, and verify the contract and its enforcement in the actual `EXECUTION_PROMPT.md`. |
+| 01 and generated planning | Clarify the brief in `DRAFT_PLAN.md`, then lock `## Frontend Design Contract` inside `FEATURE_SPEC_AND_PLAN.md`. |
+| 02, generated revision, and 03 | Critique, repair, and verify the contract and its enforcement in the actual `EXECUTION_PROMPT.md`. |
 | Generated execution and review fixes; 04 | Implement the approved contract or accepted finding; review rendered UI against that baseline. Direct-entry review may use repository evidence when planning artifacts are absent. |
 | 05 and 06 | Verify accepted fixes and refresh the final rendered evidence without reopening the design direction. |
 | 08 | Apply the skill only to explicitly human-approved eligible `FOLLOWUP.md` items. |
@@ -293,9 +293,9 @@ The explicit companion links include `eval.md`, the idea-refinement frameworks, 
 |   +-- 01_initial_exploration_any_model.md
 |   +-- 02_plan_critique_any_model.md
 |   +-- 03_plan_revision_verification_any_model.md
-|   +-- 04_opus_review_branch.md
-|   +-- 05_opus_verify_review_fixes.md
-|   +-- 06_opus_refresh_review_and_walkthrough.md
+|   +-- 04_review_branch_any_model.md
+|   +-- 05_verify_review_fixes_any_model.md
+|   +-- 06_refresh_review_and_walkthrough_any_model.md
 |   +-- 07_human_code_walkthrough.md
 |   +-- 08_implement_human_followup_any_model.md
 |   +-- 09_write_focused_tests_any_model.md

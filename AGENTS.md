@@ -30,7 +30,7 @@ Future agents should optimize for:
 
 ## Primary Rule For Agents
 
-Treat the prompt pack as a product. The prompt wording, artifact names, review gates, and model-role boundaries are the behavior.
+Treat the prompt pack as a product. The prompt wording, artifact names, review gates, and phase boundaries are the behavior.
 
 If you change wording that changes behavior, you are changing product logic.
 
@@ -97,15 +97,13 @@ These are the main design constraints that define this repo:
 - The prompt is the contract for the target model in that phase.
 - Each workflow phase should have exactly one prompt input. If the previous phase generates that prompt, the generated artifact is the only prompt for the next phase and should replace any separate checked-in prompt for that same step.
 - Repeated policy blocks are duplicated on purpose; do not replace them with references like "same as prompt 07".
-- The workflow uses explicit model-role boundaries:
-  - Any capable repo-aware model or agent for exploration, critique, plan-revision verification, execution, review fixes, the human walkthrough, follow-up implementation, test writing, and the independent test audit.
-  - Claude Opus for planning, plan revision, implemented-branch review, review-fix verification, and final review/walkthrough refresh.
+- The workflow is model-agnostic. Any capable repo-aware model or agent may run every phase, including generated-prompt passes. Do not name a specific model or vendor in prompts, generated prompts, filenames, or artifact names.
 - The default planning artifact is a combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`.
 - `SPEC.md` plus `IMPLEMENTATION_PLAN.md` is not the default in the current pack; it is only a fallback or special case.
-- The main Opus planning pass, Opus plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
+- The main planning pass, plan-revision pass, implementation pass, and review-fix pass are driven by generated artifact prompts, not by separate checked-in prompt files.
 - Execution phases must require the model to stage changes with `git add`, create commit(s), push the current branch, and create a pull request only if the current branch does not already have one.
 - If an execution prompt needs a fallback way to check whether a pull request already exists for the current branch, it should use GitHub CLI (`gh`) only for that fallback rather than inventing duplicate-prone behavior.
-- Execution phases must also require the model not to stage or commit workflow-generated artifacts such as `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/` unless the user explicitly asks for that. The execution lists in `01`, `04`, `08`, and `09` carry this full set; keep them synchronized.
+- Execution phases must also require the model not to stage or commit workflow-generated artifacts such as `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/` unless the user explicitly asks for that. The execution lists in `01`, `04`, `08`, and `09` carry this full set; keep them synchronized.
 - Documentation is a required checkpoint at every planning, implementation, review, verification, and handoff stage. Each checkpoint must explicitly record either the durable documentation files/sections updated and their validation evidence, or an evidence-based `Not applicable` decision. Implementation and fix phases must complete applicable documentation in the same change set; phases `09` and `10` may only verify and escalate a gap because their scopes forbid documentation edits. Phase `09` reports, without stopping on, a gap whose `TEST_AUDIT.md` finding the human declined in the `## Declined Audit Findings` section of `FOLLOWUP.md`.
 - The final test-writing phase must require the fewest meaningful tests, small readable test functions/helpers, the repository's native test-framework APIs where available, and at least 85% coverage for new or changed lines.
 - Before using its skills, phase `09` must fetch and completely read each shared and applicable language-specific `SKILL.md` and the required `no-ai-slop` evaluator from their GitHub links.
@@ -123,33 +121,35 @@ The numbered prompt files define the workflow order and should stay in sequence.
 1. `01_initial_exploration_any_model.md`
    - Clarifies a vague idea.
    - Reads `UI_PROTOTYPE.md` and the selected `.ui-prototypes/<slug>/` files as read-only design input when optional phase `12` ran, and carries the selection into both generated artifacts.
-   - Produces `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
-   - The Opus prompt produced here is the final paste-ready prompt for the main planning pass.
-   - The main Opus planning phase is driven by that generated artifact rather than by a separate checked-in prompt file.
+   - Produces `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md`.
+   - The planning prompt produced here is the final paste-ready prompt for the main planning pass.
+   - The main planning phase is driven by that generated artifact rather than by a separate checked-in prompt file.
 2. `02_plan_critique_any_model.md`
    - Critiques the locked planning artifacts.
-   - Produces `PLAN_CRITIQUE.md`. Produces `OPUS_PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No`, or when it is `Yes` and the human asks to address non-blocking issues.
-   - Sets `Ready to execute: Yes` only when no blocking issue and no missing user decision remains and, on a later pass, every carried-forward item is resolved or recorded with evidence as invalid. A `Yes` verdict locks the plan: the next step is execution with `EXECUTION_PROMPT.md`, any earlier `OPUS_PLAN_REVISION_REQUEST.md` is superseded, and phase `03` does not run.
-   - The generated `OPUS_PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the Opus revision pass.
+   - Produces `PLAN_CRITIQUE.md`. Produces `PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No`, or when it is `Yes` and the human asks to address non-blocking issues.
+   - Sets `Ready to execute: Yes` only when no blocking issue and no missing user decision remains and, on a later pass, every carried-forward item is resolved or recorded with evidence as invalid. A `Yes` verdict locks the plan: the next step is execution with `EXECUTION_PROMPT.md`, any earlier `PLAN_REVISION_REQUEST.md` is superseded, and phase `03` does not run.
+   - The generated `PLAN_REVISION_REQUEST.md` is the final paste-ready prompt for the plan revision pass.
    - That revision pass may update only `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md` and must produce `PLAN_REVISION_SUMMARY.md`, which records the previous and revised wording (or `Removed`) of every changed or removed `EXECUTION_PROMPT.md` instruction.
    - On re-entry from `03`, it and its generated revision prompt read `PLAN_REVISION_VERIFICATION.md`, the prior `PLAN_CRITIQUE.md`, and `PLAN_REVISION_SUMMARY.md`. It updates `PLAN_CRITIQUE.md` in place and carries forward every unresolved, remaining, or new issue and pending user decision.
    - Gives each critique item a stable identifier, such as `PC-1`, keeps it across passes, and writes `PLAN_CRITIQUE.md` to the target repository root rather than answering only in chat. `PLAN_REVISION_SUMMARY.md` and `PLAN_REVISION_VERIFICATION.md` refer to critique items by that identifier.
 3. `03_plan_revision_verification_any_model.md`
-   - Runs only after an Opus revision pass. If `PLAN_REVISION_SUMMARY.md` is missing, it stops, reports that no revision pass ran, and creates no `PLAN_REVISION_VERIFICATION.md`.
+   - Runs only after a plan revision pass. If `PLAN_REVISION_SUMMARY.md` is missing, it stops, reports that no revision pass ran, and creates no `PLAN_REVISION_VERIFICATION.md`.
    - Verifies that the revision addressed the critique, using `PLAN_CRITIQUE.md`, `PLAN_REVISION_SUMMARY.md`, and the revised planning artifacts. It compares the revised `EXECUTION_PROMPT.md` with the previous and revised wording recorded in `PLAN_REVISION_SUMMARY.md` and with the critique; a changed or removed instruction without recorded previous wording is a blocking gap.
    - Produces `PLAN_REVISION_VERIFICATION.md`.
-   - If issues remain, the workflow returns to `02`; this phase does not author an alternate `OPUS_PLAN_REVISION_REQUEST.md`.
+   - If issues remain, the workflow returns to `02`; this phase does not author an alternate `PLAN_REVISION_REQUEST.md`.
    - Locked execution is then driven by the generated `EXECUTION_PROMPT.md` plus `FEATURE_SPEC_AND_PLAN.md`; there is no separate checked-in execution prompt file. A `Ready to execute: Yes` verdict in `02` locks the plan directly, without `03`.
-4. `04_opus_review_branch.md`
+4. `04_review_branch_any_model.md`
    - Reviews implemented changes.
+   - Runs in a fresh session or agent without the implementation or review-fix context, and stops and asks for a fresh reviewer otherwise.
    - Produces `REVIEW.md`, `WALKTHROUGH.md`, and `REVIEW_FIX_PROMPT.md`.
    - Defines the finding statuses `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, and `Deferred to 09`; on a later pass, adopts new issues recorded by `05` into `REVIEW.md` under their assigned identifiers without reposting them.
    - The generated `REVIEW_FIX_PROMPT.md` is the final paste-ready prompt for the review-fix pass.
-5. `05_opus_verify_review_fixes.md`
+5. `05_verify_review_fixes_any_model.md`
    - Verifies the review-fix pass.
+   - Runs in a fresh session or agent without the implementation or review-fix context, and stops and asks for a fresh verifier otherwise.
    - Produces `REVIEW_FIX_VERIFICATION.md`, recording its baseline and compared revisions under `## Verification Basis`, using `04`'s finding statuses verbatim and recording each new issue introduced by a fix with `04`'s finding fields and an identifier that continues `REVIEW.md`'s sequence.
    - If review-fix findings or required current-phase checks remain unresolved and need a code, documentation, or fix-prompt change, the workflow returns to `04`; test-only findings deferred to `09` stay tracked for that phase. When the only unresolved items are required checks blocked by an unavailable environment, credential, or access precondition, it keeps them pending, reports the exact missing precondition to the human, and stops instead of returning to `04`; rerun `05` when the precondition is available. This phase does not author an alternate `REVIEW_FIX_PROMPT.md`.
-6. `06_opus_refresh_review_and_walkthrough.md`
+6. `06_refresh_review_and_walkthrough_any_model.md`
    - Refreshes final `REVIEW.md` and `WALKTHROUGH.md` after fixes.
    - Then generates and browser-verifies a self-contained interactive `WALKTHROUGH.html` to explain the final changes.
    - When it discovers a severe missed issue, including missing durable documentation, it records the issue in `REVIEW.md` as a new finding with `04`'s finding fields, status, and destination rules, and stops and asks. For a `Review fix` finding it also skips `WALKTHROUGH.html` and states that the workflow returns to `04` for an incremental pass that produces the next `REVIEW_FIX_PROMPT.md`; a test-only finding is recorded as `Deferred to 09`.
@@ -255,9 +255,9 @@ Keep dependency loading separate from permission to act: companions do not autho
 `no-ai-slop` is required in:
 
 - every checked-in phase prompt from `01` through `12`,
-- the generated Opus planning prompt specified by `01`,
+- the generated planning prompt specified by `01`,
 - the generated execution prompt specified by `01`,
-- the generated Opus revision prompt specified by `02`,
+- the generated revision prompt specified by `02`,
 - the generated review-fix prompt specified by `04`.
 
 Each phase must link both `SKILL.md` and `eval.md`. For every Markdown document the phase creates or revises, `no-ai-slop` is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Apply its editing principles while drafting, run its evaluator before saving each Markdown artifact or sending the final response, and stop before creating or revising Markdown if either file cannot be read and applied. Let it win over conflicting writing-style guidance, but preserve the prompt's control over scope, meaning, required structure, artifact names, constraints, and evidence. Ignore the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -269,9 +269,9 @@ Present in:
 - `prompts/01_initial_exploration_any_model.md` (downstream contract to embed)
 - `prompts/02_plan_critique_any_model.md`
 - `prompts/03_plan_revision_verification_any_model.md`
-- `prompts/04_opus_review_branch.md`
-- `prompts/05_opus_verify_review_fixes.md`
-- `prompts/06_opus_refresh_review_and_walkthrough.md`
+- `prompts/04_review_branch_any_model.md`
+- `prompts/05_verify_review_fixes_any_model.md`
+- `prompts/06_refresh_review_and_walkthrough_any_model.md`
 - `prompts/08_implement_human_followup_any_model.md`
 - `prompts/09_write_focused_tests_any_model.md`
 - `prompts/10_test_audit_any_model.md`
@@ -420,7 +420,7 @@ Rules:
 - Keep prompts self-contained.
 - Preserve explicit GitHub skill links and require every phase to fetch its skills and required companions from them without a local skill repository prerequisite.
 - Preserve explicit artifact filenames.
-- Preserve the intended target model for each phase.
+- Keep every phase and generated prompt model-agnostic.
 - Avoid style-only rewrites that create diff noise without workflow benefit.
 
 ### `README.md`

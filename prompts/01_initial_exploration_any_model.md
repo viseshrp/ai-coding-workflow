@@ -1,4 +1,4 @@
-# 01 — Initial Exploration / Grilling / Interviewing + Opus Planning Prompt Generation — Any Model
+# 01 — Initial Exploration / Grilling / Interviewing + Planning Prompt Generation — Any Model
 
 ## Skills
 
@@ -75,35 +75,35 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 ### Phase requirements
 
-- For an eligible surface, record the page kind, audience, visual direction and references, existing brand/assets, preserve-versus-overhaul mode, required design decisions, asset policy, protected behavior, approved dependencies, and desktop/mobile validation viewports in `DRAFT_PLAN.md`. Carry them into `INITIAL_OPUS_PLANNING_PROMPT.md` so planning locks a dedicated `## Frontend Design Contract` in `FEATURE_SPEC_AND_PLAN.md` before execution.
+- For an eligible surface, record the page kind, audience, visual direction and references, existing brand/assets, preserve-versus-overhaul mode, required design decisions, asset policy, protected behavior, approved dependencies, and desktop/mobile validation viewports in `DRAFT_PLAN.md`. Carry them into `INITIAL_PLANNING_PROMPT.md` so planning locks a dedicated `## Frontend Design Contract` in `FEATURE_SPEC_AND_PLAN.md` before execution.
 - For each affected UI surface, specify applicable loading, error, empty, partial-data, and permission states; realistic or schema-backed long or missing values, Unicode, and zero, one, or many items; container widths, zoom, and supported locales. Resolve choices such as wrapping versus truncation before locking implementation. Do not require every catalog case for every component.
 - Specify keyboard, focus, and touch behavior, existing components and tokens to reuse, and applicable mobile viewport, safe-area, scrolling, and input behavior. For motion, record its purpose, frequency, interruption and exit behavior, reduced-motion alternative, and acceptance checks. Preserve feedback and access without requiring animation.
 - Put these decisions, verification steps, and documentation impact in the existing planning artifacts. Keep unresolved design decisions explicit. Do not build prototypes, change UI code, or author tests during planning.
-- Carry the resolved UI decisions into `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`.
+- Carry the resolved UI decisions into `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md`.
 
 ## Prompt
 
 Goal:
 
-- turn a vague or partially formed idea into a concrete draft plan and an actionable Opus planning prompt,
+- turn a vague or partially formed idea into a concrete draft plan and an actionable planning prompt,
 - surface scope, constraints, non-goals, risks, and definition of done before planning is locked.
 
 Success criteria:
 
-- the intended outcome is concrete enough that Opus will not need to guess,
+- the intended outcome is concrete enough that the planning model will not need to guess,
 - the important constraints, risks, and non-goals are explicit,
 - every material question is either answered from repo/context exploration or explicitly resolved with me before artifacts are finalized,
-- `DRAFT_PLAN.md` preserves anything Opus must not lose,
-- `INITIAL_OPUS_PLANNING_PROMPT.md` is the final paste-ready Opus planning prompt for the main planning phase,
+- `DRAFT_PLAN.md` preserves anything the planning model must not lose,
+- `INITIAL_PLANNING_PROMPT.md` is the final paste-ready planning prompt for the main planning phase,
 - both generated artifacts are created in the target repo root using the exact required filenames and nowhere else,
-- this phase stops at `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`; it does not perform the Opus planning phase itself.
+- this phase stops at `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md`; it does not perform the planning phase itself.
 
 Constraints:
 
 - do not implement code,
 - do not write tests,
 - do not create unrelated files,
-- create or update only `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md` in this exploration phase. Do not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
+- create or update only `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md` in this exploration phase. Do not edit production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - create workflow-generated Markdown artifacts only in the target repo root using the exact required filenames,
 - every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` fields,
 - use only the linked skills as supporting procedures.
@@ -126,15 +126,15 @@ Working method:
   6. the reasoning behind that recommendation,
   7. your current best guess, if useful,
 - after I answer, briefly confirm the decision, note any important consequences for the plan, and then ask the next most consequential unresolved question,
-- do not accept vague answers that leave important ambiguity; follow up until Opus can proceed without guessing,
-- keep going until the goal, constraints, non-goals, likely implementation surface, and definition of done are clear enough to seed Opus.
+- do not accept vague answers that leave important ambiguity; follow up until the planning model can proceed without guessing,
+- keep going until the goal, constraints, non-goals, likely implementation surface, and definition of done are clear enough to seed the planning phase.
 
 Optional UI prototype input:
 
 - if `UI_PROTOTYPE.md` exists in the target repo root or I provide it, read it and the selected prototype files it names under `.ui-prototypes/<slug>/` before asking UI questions. Optional phase `12` produces these files,
 - confirm that the artifact covers the requested UI surface. If it covers a different surface or its ownership is unclear, ask me before using it,
 - treat `Human Selection` as an approved design direction only when it records my explicit choice. If it is `Pending`, resolve the selection with me before locking UI decisions,
-- carry the selected variant, prototype path, recorded constraints, simulated behavior, material simplification limits and revisit triggers, pending checks, and documentation impact into `DRAFT_PLAN.md` and `INITIAL_OPUS_PLANNING_PROMPT.md`,
+- carry the selected variant, prototype path, recorded constraints, simulated behavior, material simplification limits and revisit triggers, pending checks, and documentation impact into `DRAFT_PLAN.md` and `INITIAL_PLANNING_PROMPT.md`,
 - treat the prototype as design evidence, not production code or proof of production readiness. Production integration and any cleanup of the prototype files must be planned explicitly,
 - do not edit, move, or delete `UI_PROTOTYPE.md` or the prototype files.
 
@@ -150,9 +150,9 @@ Handoff order:
 
 1. Explore, interview, grill, and clarify the idea.
 2. Create `DRAFT_PLAN.md`.
-3. Create `INITIAL_OPUS_PLANNING_PROMPT.md`.
-4. I paste `INITIAL_OPUS_PLANNING_PROMPT.md` into Opus.
-5. Opus uses the draft plan and repo context to create:
+3. Create `INITIAL_PLANNING_PROMPT.md`.
+4. I paste `INITIAL_PLANNING_PROMPT.md` into a capable repository-aware model or agent.
+5. The planning model uses the draft plan and repo context to create:
    - `FEATURE_SPEC_AND_PLAN.md`
    - `EXECUTION_PROMPT.md`
 
@@ -181,11 +181,11 @@ Create `DRAFT_PLAN.md` in the target repo root with:
 - documentation impact for each likely implementation step, including the exact durable documentation to update or an evidence-based `Not applicable` rationale,
 - risks,
 - definition of done,
-- anything that Opus must not lose.
+- anything that the planning model must not lose.
 
-## Output artifact 2: `INITIAL_OPUS_PLANNING_PROMPT.md`
+## Output artifact 2: `INITIAL_PLANNING_PROMPT.md`
 
-Create `INITIAL_OPUS_PLANNING_PROMPT.md` in the target repo root as the self-contained, final direct-use, paste-ready prompt for Claude Opus planning. It is the only prompt for the main planning phase; there is no separate checked-in planning prompt file after this exploration step.
+Create `INITIAL_PLANNING_PROMPT.md` in the target repo root as the self-contained, final direct-use, paste-ready prompt for the planning model. It is the only prompt for the main planning phase; there is no separate checked-in planning prompt file after this exploration step.
 
 Do not generate:
 
@@ -194,7 +194,7 @@ Do not generate:
 - a meta prompt for another model,
 - planning artifacts such as `FEATURE_SPEC_AND_PLAN.md` or `EXECUTION_PROMPT.md` in this exploration phase.
 
-The generated Opus prompt must have a clear title and these top-level sections:
+The generated planning prompt must have a clear title and these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
@@ -230,11 +230,11 @@ In `## Skill Handling Rule`, it must instruct the target agent to:
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-In `## Default Planning Artifact Reduction`, it must instruct Opus to default to one combined planning artifact instead of separate spec and implementation plan files.
+In `## Default Planning Artifact Reduction`, it must instruct the planning model to default to one combined planning artifact instead of separate spec and implementation plan files.
 
-It must also instruct Opus that every workflow-generated Markdown artifact belongs in the target repo root using the exact required filename and must never be created in a subdirectory or alternate path.
+It must also instruct the planning model that every workflow-generated Markdown artifact belongs in the target repo root using the exact required filename and must never be created in a subdirectory or alternate path.
 
-It must also instruct Opus that every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving `Created by` and `Created at` after first creation and refreshing `Updated at` whenever the artifact is edited.
+It must also instruct the planning model that every workflow-generated Markdown artifact must include `Created by`, `Created at`, and `Updated at` metadata, preserving `Created by` and `Created at` after first creation and refreshing `Updated at` whenever the artifact is edited.
 
 It must require:
 
@@ -249,7 +249,7 @@ It must state that:
 4. The spec/reference section remains the background reference.
 5. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` are only a fallback if I explicitly ask or if the file becomes too large to review comfortably.
 
-Inside `## Prompt`, the generated Opus prompt must use clear sections for:
+Inside `## Prompt`, the generated planning prompt must use clear sections for:
 
 - role,
 - task,
@@ -259,11 +259,11 @@ Inside `## Prompt`, the generated Opus prompt must use clear sections for:
 - working method,
 - final self-check.
 
-The generated Opus prompt must instruct Opus as follows.
+The generated planning prompt must instruct the planning model as follows.
 
 Role:
 
-- You are Claude Opus performing the planning phase for an agentic coding workflow.
+- You are a capable repository-aware model or agent performing the planning phase for an agentic coding workflow.
 - Be explicit, source-grounded, and conservative about assumptions.
 - Read before answering. Do not speculate about code or files you have not inspected.
 
@@ -281,12 +281,12 @@ Context to read before answering:
 
 Success criteria:
 
-- the generated Opus prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
+- the generated planning prompt is explicit about task, scope, success criteria, stop rules, and required artifacts,
 - `FEATURE_SPEC_AND_PLAN.md` is concrete enough for a capable implementation model to execute without inventing missing detail,
 - `EXECUTION_PROMPT.md` preserves the Engineering Contract and leaves the implementation model no ambiguity about scope, stop rules, or verification,
 - no important detail from the draft plan is dropped,
 - scope stays within the requested change,
-- the prompt preserves the current scope while letting Opus deepen detail inside that scope.
+- the prompt preserves the current scope while letting the planning model deepen detail inside that scope.
 
 Constraints:
 
@@ -322,7 +322,7 @@ Final self-check:
 - verify that every implementation step has a documentation checkpoint with an update-and-validation action or an evidence-based `Not applicable` decision,
 - verify that the prompt and plan remain within the original requested scope.
 
-Inside `## Prompt`, after the core sections above, the generated Opus prompt must also include these requirement blocks in substance.
+Inside `## Prompt`, after the core sections above, the generated planning prompt must also include these requirement blocks in substance.
 
 Required planning depth:
 
@@ -445,7 +445,7 @@ The generated `EXECUTION_PROMPT.md` must have a clear title and these top-level 
 - `## UI work only`
 - `## Prompt`
 
-The generated Opus prompt must require these explicit skill links in `EXECUTION_PROMPT.md`:
+The generated planning prompt must require these explicit skill links in `EXECUTION_PROMPT.md`:
 
 - [incremental-implementation](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/incremental-implementation/SKILL.md)
 - [source-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/source-driven-development/SKILL.md)
@@ -471,9 +471,9 @@ The generated `EXECUTION_PROMPT.md` must include a `## Skill Handling Rule` that
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-The generated Opus prompt must include the full Engineering Contract below and instruct Opus to embed that contract into `EXECUTION_PROMPT.md`.
+The generated planning prompt must include the full Engineering Contract below and instruct the planning model to embed that contract into `EXECUTION_PROMPT.md`.
 
-Preserve every requirement in both generated prompts at its full level of detail. Copy complete skill links, companion resources, checklists, enumerated fields, conditions, exceptions, priorities, approval gates, and stop rules. Do not replace them with a summary, a reference to this producer, or a general instruction to follow best practices. The generated planning prompt must contain the complete downstream execution instructions below so Opus can produce `EXECUTION_PROMPT.md` without retrieving this producer prompt. Apply `no-ai-slop` after preserving those requirements; its editing rules do not authorize shortening or removing contractual detail.
+Preserve every requirement in both generated prompts at its full level of detail. Copy complete skill links, companion resources, checklists, enumerated fields, conditions, exceptions, priorities, approval gates, and stop rules. Do not replace them with a summary, a reference to this producer, or a general instruction to follow best practices. The generated planning prompt must contain the complete downstream execution instructions below so the planning model can produce `EXECUTION_PROMPT.md` without retrieving this producer prompt. Apply `no-ai-slop` after preserving those requirements; its editing rules do not authorize shortening or removing contractual detail.
 
 The generated execution prompt must require the following Engineering Contract verbatim or stricter:
 
@@ -488,7 +488,7 @@ Inside `## Prompt`, the generated `EXECUTION_PROMPT.md` must use clear sections 
 - execution rules,
 - required final response.
 
-Inside those sections, the generated Opus prompt must require `EXECUTION_PROMPT.md` to instruct the implementation model as follows.
+Inside those sections, the generated planning prompt must require `EXECUTION_PROMPT.md` to instruct the implementation model as follows.
 
 Goal:
 
@@ -572,7 +572,7 @@ Execution rules:
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
 - after verification, stage the intended files with `git add`,
-- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_OPUS_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `OPUS_PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless I explicitly ask for them to be committed,
+- do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `WALKTHROUGH.html`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
 - push the current branch after committing,
 - check whether the current branch already has a pull request before creating one,
@@ -617,7 +617,7 @@ It must explicitly instruct the implementation model not to claim completion wit
 
 Always include a separate `## UI work only` section in both generated downstream prompts, even when inactive. Preserve its activation gate so backend-only tasks perform no UI skill loading or UI work. Embed the complete text, applicable explicit skill links and companions, and limits below in each generated artifact; never replace them with a reference to this producer prompt. Include the general Simplicity and reuse procedure from the Engineering Contract in the generated planning prompt and its downstream execution contract for all tasks.
 
-For `INITIAL_OPUS_PLANNING_PROMPT.md`, embed this section as direct instructions to the planner:
+For `INITIAL_PLANNING_PROMPT.md`, embed this section as direct instructions to the planner:
 
 ```markdown
 ## UI work only
@@ -662,7 +662,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 - Put these decisions, verification steps, and documentation impact in the existing planning artifacts. Keep unresolved design decisions explicit. Do not build prototypes, change UI code, or author tests during planning.
 ```
 
-The generated planning prompt must also contain the following complete execution-section template and require Opus to embed it directly in `EXECUTION_PROMPT.md`. Preserve its conditional links and limits, and fill in the approved UI acceptance criteria and checks without expanding scope:
+The generated planning prompt must also contain the following complete execution-section template and require the planning model to embed it directly in `EXECUTION_PROMPT.md`. Preserve its conditional links and limits, and fill in the approved UI acceptance criteria and checks without expanding scope:
 
 ```markdown
 ## UI work only
@@ -866,7 +866,7 @@ The following typing coverage is a hard requirement:
 - Defer all test authoring to the dedicated model-agnostic `09_write_focused_tests_any_model.md` phase. This is a direct restriction on the current planning or execution agent, not permission to write tests through a companion skill.
 - Do not duplicate phase `09`'s test-design, test-framework-specific, or coverage contract in generated prompts for earlier phases.
 
-Before finishing, the generated prompt must instruct Opus to verify that:
+Before finishing, the generated prompt must instruct the planning model to verify that:
 
 - `FEATURE_SPEC_AND_PLAN.md` is sufficient for implementation,
 - `EXECUTION_PROMPT.md` contains every implementation rule above,

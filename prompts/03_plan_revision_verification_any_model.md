@@ -233,7 +233,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Goal:
 
-- determine whether Opus addressed the previous plan critique and whether the planning artifacts are ready for implementation.
+- determine whether the revision pass addressed the previous plan critique and whether the planning artifacts are ready for implementation.
 
 Success criteria:
 
@@ -246,14 +246,14 @@ Constraints:
 
 - do not implement code,
 - do not modify any file other than `PLAN_REVISION_VERIFICATION.md`,
-- run this phase only after an Opus revision pass. If `PLAN_REVISION_SUMMARY.md` is missing, stop and report that no revision pass ran; do not create `PLAN_REVISION_VERIFICATION.md`,
+- run this phase only after a plan revision pass. If `PLAN_REVISION_SUMMARY.md` is missing, stop and report that no revision pass ran; do not create `PLAN_REVISION_VERIFICATION.md`,
 - create or update only `PLAN_REVISION_VERIFICATION.md`. Do not edit planning artifacts, generated prompts, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state,
 - if evidence is missing, say so explicitly instead of guessing.
 
 Context to review:
 
 - the previous `PLAN_CRITIQUE.md`,
-- the previous `OPUS_PLAN_REVISION_REQUEST.md`, if present,
+- the previous `PLAN_REVISION_REQUEST.md`, if present,
 - `PLAN_REVISION_SUMMARY.md`,
 - the updated `FEATURE_SPEC_AND_PLAN.md`,
 - the updated `EXECUTION_PROMPT.md`,
@@ -280,7 +280,7 @@ Task:
 
 - determine whether the revised plan and revised execution prompt satisfy all previously raised concerns,
 - produce `PLAN_REVISION_VERIFICATION.md`,
-- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_any_model.md` can produce the next `OPUS_PLAN_REVISION_REQUEST.md`.
+- if anything remains unresolved, do not author a new revision prompt here; instead make it explicit that the workflow must return to the critique phase so `02_plan_critique_any_model.md` can produce the next `PLAN_REVISION_REQUEST.md`.
 
 Artifact location rule:
 
@@ -328,9 +328,9 @@ Use this structure:
 
 If any issue remains:
 
-- do not create `OPUS_PLAN_REVISION_REQUEST.md` in this phase,
+- do not create `PLAN_REVISION_REQUEST.md` in this phase,
 - state explicitly that the workflow must return to `02_plan_critique_any_model.md`,
-- state that `02` is the only phase that should author `OPUS_PLAN_REVISION_REQUEST.md`,
-- if `OPUS_PLAN_REVISION_REQUEST.md` was missing, weak, or failed to retain needed revision instructions, report the upstream critique/request failure; do not compensate here.
+- state that `02` is the only phase that should author `PLAN_REVISION_REQUEST.md`,
+- if `PLAN_REVISION_REQUEST.md` was missing, weak, or failed to retain needed revision instructions, report the upstream critique/request failure; do not compensate here.
 
 If no issue remains and every documentation checkpoint is complete, state clearly that the plan is ready for implementation.

@@ -1,4 +1,4 @@
-# 06 - Opus Refreshes Final Review and Walkthrough, Then Generates Interactive HTML
+# 06 - Refresh Final Review and Walkthrough, Then Generate Interactive HTML - Any Model
 
 ## Skills
 
@@ -241,7 +241,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Role:
 
-- You are Claude Opus refreshing the final review artifacts after the AI review/fix loop is complete.
+- You are a capable repository-aware model or agent refreshing the final review artifacts after the AI review/fix loop is complete.
 - Read before answering. Do not speculate about files or code you have not inspected.
 
 Task:
@@ -282,7 +282,7 @@ Constraints:
 - do not modify tests,
 - do not make new review findings unless you discover something severe that was missed,
 - treat missing, inaccurate, or unvalidated required durable documentation as a severe missed issue; do not finalize the review artifacts,
-- if you discover a severe missed issue, record it in `REVIEW.md` as a new finding with a stable identifier that continues the existing identifier sequence, status and destination set by `04`'s rules (status `Open` with destination `Review fix` for production defects, failed acceptance behavior, missing required runtime verification, and documentation gaps; status `Deferred to 09` with destination `09` only for test-only work), severity, exact file path and narrow line range, the affected requirement or contract and concrete impact, minimal reproduction steps (label unexecuted scenarios `Not run`), and the smallest justified correction or acceptance check. When the finding is assigned to `Review fix`, do not generate or refresh `WALKTHROUGH.html`; state that the workflow returns to `04_opus_review_branch.md` for an incremental pass that produces the next `REVIEW_FIX_PROMPT.md`, and that only `04` may author that prompt. In either case, stop and ask before proceeding,
+- if you discover a severe missed issue, record it in `REVIEW.md` as a new finding with a stable identifier that continues the existing identifier sequence, status and destination set by `04`'s rules (status `Open` with destination `Review fix` for production defects, failed acceptance behavior, missing required runtime verification, and documentation gaps; status `Deferred to 09` with destination `09` only for test-only work), severity, exact file path and narrow line range, the affected requirement or contract and concrete impact, minimal reproduction steps (label unexecuted scenarios `Not run`), and the smallest justified correction or acceptance check. When the finding is assigned to `Review fix`, do not generate or refresh `WALKTHROUGH.html`; state that the workflow returns to `04_review_branch_any_model.md` for an incremental pass that produces the next `REVIEW_FIX_PROMPT.md`, and that only `04` may author that prompt. In either case, stop and ask before proceeding,
 - write only `REVIEW.md`, `WALKTHROUGH.md`, and `WALKTHROUGH.html`; do not create application code, tests, dependencies, configuration, or other visual artifacts,
 - do not stage, commit, push, or change pull-request state. The conditional HTML is this phase's sole visual-artifact exception; UI skills may not create other artifacts or expand write permissions.
 
@@ -356,4 +356,4 @@ After refreshing and verifying `REVIEW.md` and `WALKTHROUGH.md`, create or refre
 - Use a single self-contained HTML file with inline styles and only the JavaScript needed for those interactions. It must open locally without a build step, dependency installation, external scripts, fonts, network requests, or live API calls. Use semantic controls, keyboard access, visible focus, readable responsive layouts, and a readable fallback if scripting fails. Treat source excerpts as text and escape them correctly; omit credentials and real user payloads. This artifact does not authorize prototypes, production UI changes, or generated assets.
 - Open the file in an available browser and verify navigation, scenario selection, step controls, keyboard operation, source references, and agreement with the refreshed Markdown and final code. Record the browser and observed results in `REVIEW.md` and the final response. If browser verification cannot run, report the exact blocker, mark HTML verification pending, and do not claim it passed. Keep the file uncommitted unless explicitly requested; downstream phases may read it as supplemental context but must inspect current code independently.
 
-Before finishing, verify that all three artifacts describe the same final revision. Report their paths and verification status. Pending required checks keep the handoff pending. When this pass recorded a severe missed issue assigned to `Review fix`, skip this check, report `WALKTHROUGH.html` as not generated, and state that the workflow returns to `04_opus_review_branch.md`.
+Before finishing, verify that all three artifacts describe the same final revision. Report their paths and verification status. Pending required checks keep the handoff pending. When this pass recorded a severe missed issue assigned to `Review fix`, skip this check, report `WALKTHROUGH.html` as not generated, and state that the workflow returns to `04_review_branch_any_model.md`.

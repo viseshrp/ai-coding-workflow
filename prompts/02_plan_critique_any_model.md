@@ -1,4 +1,4 @@
-# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Opus Revision Request — Any Model
+# 02 — Plan Critique Loop: Critique Feature Spec/Plan + Generate Plan Revision Request — Any Model
 
 ## Skills
 
@@ -227,7 +227,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 - For an eligible surface, critique the `Frontend Design Contract` for missing objective decisions, protected behavior, approved dependencies, and rendered-validation viewports. Check that the actual `EXECUTION_PROMPT.md` retains the complete frontend design gate and enforces the contract. Record gaps in `PLAN_CRITIQUE.md`; alternative aesthetic preferences remain suggestions.
 - Critique the applicable UI acceptance criteria and evidence plan: realistic data and state cases, keyboard and focus, touch, supported sizes/locales, and motion/reduced-motion behavior. Separate missing decisions from preferences.
-- Verify that `EXECUTION_PROMPT.md` contains a complete conditional UI section with the applicable construction skills, companions, limits, and verification instructions. Put gaps in `PLAN_CRITIQUE.md` and preserve or repair the full section through `OPUS_PLAN_REVISION_REQUEST.md`; do not create separate UI plans.
+- Verify that `EXECUTION_PROMPT.md` contains a complete conditional UI section with the applicable construction skills, companions, limits, and verification instructions. Put gaps in `PLAN_CRITIQUE.md` and preserve or repair the full section through `PLAN_REVISION_REQUEST.md`; do not create separate UI plans.
 
 ## Prompt
 
@@ -245,8 +245,8 @@ Success criteria:
 Constraints:
 
 - do not implement code,
-- do not modify any file other than `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`,
-- this phase's only permitted repository writes are `PLAN_CRITIQUE.md` and `OPUS_PLAN_REVISION_REQUEST.md`. Do not edit the locked plan, execution prompt, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state during critique,
+- do not modify any file other than `PLAN_CRITIQUE.md` and `PLAN_REVISION_REQUEST.md`,
+- this phase's only permitted repository writes are `PLAN_CRITIQUE.md` and `PLAN_REVISION_REQUEST.md`. Do not edit the locked plan, execution prompt, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state during critique,
 - critique the plan, not alternative future architectures,
 - if evidence is missing, say so explicitly instead of guessing.
 
@@ -275,7 +275,7 @@ Task:
 - critique the plan, not execute it,
 - decide whether the artifacts are good enough to lock for implementation,
 - produce `PLAN_CRITIQUE.md`,
-- produce `OPUS_PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No`, or when it is `Yes` and I ask to address non-blocking issues.
+- produce `PLAN_REVISION_REQUEST.md` only when `Ready to execute` is `No`, or when it is `Yes` and I ask to address non-blocking issues.
 
 ## Review dimensions
 
@@ -351,16 +351,16 @@ Set `Ready to execute: Yes` only when no blocking issue and no missing user deci
 
 When `Ready to execute` is `Yes` and I have not asked to address non-blocking issues:
 
-- do not create `OPUS_PLAN_REVISION_REQUEST.md`,
+- do not create `PLAN_REVISION_REQUEST.md`,
 - state in `## Final Recommendation` that the plan is locked and the next step is execution with `EXECUTION_PROMPT.md`,
-- state that any existing `OPUS_PLAN_REVISION_REQUEST.md` from a prior pass is superseded and must not be used,
+- state that any existing `PLAN_REVISION_REQUEST.md` from a prior pass is superseded and must not be used,
 - state that phase `03` does not run because no revision pass ran.
 
-When `Ready to execute` is `No`, create `OPUS_PLAN_REVISION_REQUEST.md` as required output 2.
+When `Ready to execute` is `No`, create `PLAN_REVISION_REQUEST.md` as required output 2.
 
 ## UI section in the generated revision prompt
 
-Include a separate `## UI work only` section in `OPUS_PLAN_REVISION_REQUEST.md`. Embed this complete section as direct instructions to Opus, including its explicit links, companions, activation gate, and limits:
+Include a separate `## UI work only` section in `PLAN_REVISION_REQUEST.md`. Embed this complete section as direct instructions to the revision model, including its explicit links, companions, activation gate, and limits:
 
 ```markdown
 ## UI work only
@@ -419,7 +419,7 @@ If the execution UI section is absent, use the explicit execution skill links be
 - Only when motion work requires choosing a web UI primitive: [pick-ui-library](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/pick-ui-library/SKILL.md), the procedure referenced by `animate`. Use it to evaluate existing options; new dependencies still require explicit approval.
 - When mobile-web behavior is in scope: [mobile-native](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/emilkowalski__skills/snapshot/skills/mobile-native/SKILL.md). Use it for planning or review only in phases that prohibit implementation.
 
-Always embed the complete execution UI template below in `OPUS_PLAN_REVISION_REQUEST.md` as the downstream contract to preserve or repair. Carry it directly into the actual revised `EXECUTION_PROMPT.md`, retaining any additional approved task-specific requirements already present. Its implementation instructions apply only to the later execution pass; they do not authorize code, test, documentation, dependency, configuration, or Git changes during revision. Do not replace this template with a summary of its requirements.
+Always embed the complete execution UI template below in `PLAN_REVISION_REQUEST.md` as the downstream contract to preserve or repair. Carry it directly into the actual revised `EXECUTION_PROMPT.md`, retaining any additional approved task-specific requirements already present. Its implementation instructions apply only to the later execution pass; they do not authorize code, test, documentation, dependency, configuration, or Git changes during revision. Do not replace this template with a summary of its requirements.
 
 ```markdown
 ## UI work only
@@ -467,13 +467,13 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 
 Verify both generated sections before handoff, including the explicit design-skill link, complete frontend design gate, locked-contract requirements, and rendered-verification instructions in the actual revision and execution prompts. Keep the general Simplicity and reuse procedure in the revision prompt's Engineering Contract and the revised execution prompt for backend and UI tasks alike.
 
-## Required output 2: `OPUS_PLAN_REVISION_REQUEST.md`
+## Required output 2: `PLAN_REVISION_REQUEST.md`
 
 Create this output only when `PLAN_CRITIQUE.md` sets `Ready to execute: No`, or when it sets `Yes` and I ask to address non-blocking issues.
 
-Only this phase may author `OPUS_PLAN_REVISION_REQUEST.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for Opus to revise `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`. There is no separate checked-in Opus revision prompt file after this critique step.
+Only this phase may author `PLAN_REVISION_REQUEST.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for a capable repository-aware model or agent to revise `FEATURE_SPEC_AND_PLAN.md` and `EXECUTION_PROMPT.md`. There is no separate checked-in revision prompt file after this critique step.
 
-If a later verification pass says another revision is needed, return to this phase and regenerate `OPUS_PLAN_REVISION_REQUEST.md` here. Do not create an alternate revision prompt in the verification phase.
+If a later verification pass says another revision is needed, return to this phase and regenerate `PLAN_REVISION_REQUEST.md` here. Do not create an alternate revision prompt in the verification phase.
 
 It must be self-contained.
 
@@ -484,7 +484,7 @@ Do not generate:
 - a skeleton that expects another prompt file to fill in the real contract,
 - a revision summary without the full direct-use prompt.
 
-The generated Opus revision prompt must have a clear title and these top-level sections:
+The generated revision prompt must have a clear title and these top-level sections:
 
 - `## Skills`
 - `## Skill Handling Rule`
@@ -493,7 +493,7 @@ The generated Opus revision prompt must have a clear title and these top-level s
 - `## UI work only`
 - `## Prompt`
 
-The generated Opus revision prompt must include these skill links explicitly:
+The generated revision prompt must include these skill links explicitly:
 
 - [spec-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/spec-driven-development/SKILL.md)
 - [planning-and-task-breakdown](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/planning-and-task-breakdown/SKILL.md)
@@ -507,7 +507,7 @@ The generated Opus revision prompt must include these skill links explicitly:
 - For the security checks and threat-model guidance referenced by the linked procedures: [security-and-hardening](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/SKILL.md), with [hardening-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/references/hardening-patterns.md) and [security-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/security-checklist.md). Use only the applicable analysis within this phase's permissions; do not start a separate hardening or incident-response task.
 - For the performance checks referenced by `code-review-and-quality`: [performance-optimization](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/performance-optimization/SKILL.md), with [optimization-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/performance-optimization/references/optimization-patterns.md) and [performance-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/performance-checklist.md). Use only applicable review guidance; do not start an optimization task, impose example thresholds, or create `PERF.md`.
 
-The generated Opus revision prompt must include a `## Skill Handling Rule` that instructs Opus to:
+The generated revision prompt must include a `## Skill Handling Rule` that instructs the revision model to:
 
 - use only the prompt's explicitly linked skills,
 - fetch skill procedures and required companions only from `https://github.com/viseshrp/ai-skills-archive`; resolve relative resource references to the linked archive copies; do not follow upstream skill URLs, install a skill package, or substitute an official-source copy; if a required archive resource is absent or unreadable, stop and report its exact missing path; keep optional related-skill mentions and provenance links inactive,
@@ -523,7 +523,7 @@ The generated Opus revision prompt must include a `## Skill Handling Rule` that 
 - let `no-ai-slop` win over conflicting writing-style guidance while the prompt and locked task artifacts continue to control scope, meaning, required structure, artifact names, constraints, and evidence,
 - ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-The generated Opus revision prompt must include `## Default Planning Artifact Reduction` and require:
+The generated revision prompt must include `## Default Planning Artifact Reduction` and require:
 
 - `FEATURE_SPEC_AND_PLAN.md`
 - `EXECUTION_PROMPT.md`
@@ -538,11 +538,11 @@ It must state that:
 6. All workflow-generated Markdown artifacts must be created or updated only in the target repo root using their exact required filenames, never in subdirectories or alternate paths.
 7. All workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving the creation fields after first creation and refreshing `Updated at` whenever an artifact is edited.
 
-The generated Opus revision prompt must embed the full Engineering Contract above verbatim or stricter.
+The generated revision prompt must embed the full Engineering Contract above verbatim or stricter.
 
 It must preserve every requirement in the existing planning and execution artifacts at its full level of detail. Do not replace explicit checklists, field lists, examples, conditions, exceptions, priorities, approval gates, or stop rules with compressed prose or a reference to another prompt. Carry every applicable requirement into the actual revised `EXECUTION_PROMPT.md`, not only into the revision request. A conflict must be surfaced and resolved explicitly; it is not permission to silently delete or weaken an instruction.
 
-Inside `## Prompt`, the generated Opus revision prompt must use clear sections for:
+Inside `## Prompt`, the generated revision prompt must use clear sections for:
 
 - role,
 - task,
@@ -553,11 +553,11 @@ Inside `## Prompt`, the generated Opus revision prompt must use clear sections f
 - required outputs,
 - final checks.
 
-Inside those sections, it must instruct Opus as follows.
+Inside those sections, it must instruct the revision model as follows.
 
 Role:
 
-- You are Claude Opus revising the planning artifacts before implementation.
+- You are a capable repository-aware model or agent revising the planning artifacts before implementation.
 - Be explicit about which critique items are valid, which are rejected, and which still require a user decision.
 - Read before answering. Do not speculate about code or files you have not inspected.
 
@@ -569,7 +569,7 @@ Task:
 Context to read before answering:
 
 - `PLAN_CRITIQUE.md`, if present,
-- `OPUS_PLAN_REVISION_REQUEST.md`, if present from a prior pass,
+- `PLAN_REVISION_REQUEST.md`, if present from a prior pass,
 - `PLAN_REVISION_VERIFICATION.md`, if present from a prior pass,
 - `PLAN_REVISION_SUMMARY.md`, if present from a prior pass,
 - current `FEATURE_SPEC_AND_PLAN.md`,
@@ -678,7 +678,7 @@ Final checks:
   - Required planning and incremental-verification companion: [definition-of-done.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/definition-of-done.md), applied within the execution scope, artifact policy, and test-authoring boundary,
   - For applicable security checks: [security-and-hardening](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/SKILL.md), with [hardening-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/references/hardening-patterns.md) and [security-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/security-checklist.md). Use only applicable analysis; do not start a separate hardening or incident-response task,
   - For the stack-discovery procedure referenced by `incremental-implementation`: [test-driven-development](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/test-driven-development/SKILL.md), including [testing-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/testing-patterns.md). Use only stack discovery and existing-test verification during execution; do not author tests or invoke its test-first cycle. Apply JavaScript/TypeScript examples only to a matching stack,
-- keep those downstream implementation resources and their scope limits explicit in the generated revision request so Opus can repair missing execution links. Their presence does not authorize implementation during revision,
+- keep those downstream implementation resources and their scope limits explicit in the generated revision request so the revision model can repair missing execution links. Their presence does not authorize implementation during revision,
 - verify the actual execution prompt retains its goal, success criteria, context, execution posture, constraints, stop rules, execution rules, and required final response. Do not reduce the execution prompt to the shared Engineering Contract alone,
 - preserve explicit full-diff checks for drift, omissions, unintended additions, duplication, excess abstractions, unused paths, and avoidable complexity. Require re-reading original requirements after long sessions or context handoffs and before completion,
 - preserve the check for all possible regressions within the branch's change scope, including indirect effects on callers, existing behavior, backwards compatibility, and error paths. Fix only within the locked plan and stop and ask if a repair would exceed it,
@@ -695,4 +695,4 @@ Final checks:
 - compare each applicable implementation requirement in the Engineering Contract with its wording in the revised `EXECUTION_PROMPT.md`, including priority, scope, conditions, exceptions, and stop gates; repair omissions or weakened instructions before handoff.
 - compare every existing execution instruction and each detailed preservation check above with the actual revised artifact. Preserve its full wording unless an explicitly approved change requires revision, and record the previous and revised wording of each changed or removed instruction in `PLAN_REVISION_SUMMARY.md`; do not mark it ready while any required section, field, companion resource, or operational check is absent or weaker.
 
-Do not ask Opus to implement code.
+Do not ask the revision model to implement code.
