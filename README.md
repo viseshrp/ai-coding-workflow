@@ -150,6 +150,7 @@ Prompt maintenance must preserve every requirement, checklist item, evidence fie
 Every phase applies a simplicity and reuse procedure to backend and UI work within its existing permissions:
 
 - inspect existing code, standard-library capabilities, native platform features, and installed dependencies before proposing custom code,
+- before adding new behavior, trace how the repository already handles comparable behavior and build on its established components, shared services, and extension points instead of a parallel flow; stop and ask when the approved scope appears to need one,
 - explicitly review duplication, excess abstractions, unused paths, and avoidable complexity; justify abstractions and dependencies by current requirements or necessary ownership boundaries,
 - trace relevant callers before choosing a bug-fix location, search the codebase for the same failure pattern when a defect is found, and verify references and contracts before proposing deletion. Fix only approved occurrences and report others within the phase's existing output,
 - preserve readability, compatibility, validation, security, and verification; fewer lines are not an acceptance criterion.
