@@ -261,7 +261,7 @@ Context to review:
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
 - `EXECUTION_PROMPT.md`, if present,
-- the implementation or review-fix pass's final response or pull-request description, if available, for existing-test failures it reported as caused by an intended behavior change.
+- the pull-request description, plus the implementation or review-fix pass's final response if it is supplied, for existing-test failures it reported as caused by an intended behavior change.
 
 The named planning and execution artifacts are optional. Do not require, recreate, or ask for them merely because they are absent.
 
@@ -651,7 +651,7 @@ Constraints:
 
 - do not blindly implement every review comment,
 - address all valid findings assigned to `Review fix`; do not implement findings marked `Deferred to 09`,
-- if a valid fix makes an existing test fail only because the test asserts the behavior the finding requires changing, do not modify the test. Keep the fix, report the test name, exact failure output, and cause in the final response as test-only work for phase `09`, and do not claim the suite passes. If the failure shows a regression or an incorrect fix, correct the fix instead,
+- if a valid fix makes an existing test fail only because the test asserts the behavior the finding requires changing, do not modify the test. Keep the fix, report the test name, exact failure output, cause, and finding identifier in the final response and in the pull-request description as test-only work for phase `09`, and do not claim the suite passes. If the failure shows a regression or an incorrect fix, correct the fix instead,
 - if no unresolved finding is assigned to this pass, report that no review-fix changes are needed; do not create an empty commit or change branch or pull-request state,
 - do not implement optional suggestions unless explicitly approved,
 - keep all fixes within the scope established by `REVIEW.md` and the current branch diff; when the original implementation scope can be established from available planning artifacts, preserve it too,
