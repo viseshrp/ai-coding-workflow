@@ -139,7 +139,7 @@ Prompt 09 changes test files only. It must not create another prompt, review, wa
 - Main implementation, review fixes, and human follow-up receive the same applicable engineering requirements used in review. Generated execution and fix prompts are checked for complete contracts before handoff; planning critique and verification block incomplete execution prompts.
 - No skill router. Each prompt lists only the supporting skills relevant to its phase, and the prompt always wins over a skill.
 - The default planning output is one combined `FEATURE_SPEC_AND_PLAN.md` plus a separate `EXECUTION_PROMPT.md`. Separate `SPEC.md` and `IMPLEMENTATION_PLAN.md` files are fallback-only.
-- Every phase, including generated-prompt passes, accepts any capable repository-aware model or agent. Phases 04 and 05 must run in a fresh session or agent without the implementation or review-fix context. Earlier pack versions named the planning artifacts `INITIAL_OPUS_PLANNING_PROMPT.md` and `OPUS_PLAN_REVISION_REQUEST.md`; rename or delete those files in a target repository before continuing a workflow that started under the old names.
+- Every phase, including generated-prompt passes, accepts any capable repository-aware model or agent. Phases 04 and 05 must run in a fresh session or agent without the implementation or review-fix context.
 - Planning and AI review each have a verification loop. Human review remains an independent approval gate.
 - Phase 09 adds the smallest meaningful focused test set. The final automated phase independently audits those tests before human review.
 
