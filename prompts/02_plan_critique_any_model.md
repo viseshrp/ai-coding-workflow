@@ -79,6 +79,7 @@ Apply this contract during planning, execution, review, and review fixes.
 - Always ground development work involving libraries 100% in documentation with zero assumptions.
 - Identify the installed or explicitly approved library/framework version and use documentation and source for that version. Do not treat an unapproved version upgrade as an implementation detail.
 - If documentation is poor and the library is open source, find its source code, clone it in a temporary folder, and read it thoroughly to supplement the documentation.
+- Do not depend on undocumented or private modules, files, formats, or internals of a third-party library unless no documented API or alternative design can meet the requirement. Reading library source to understand documented behavior does not authorize such a dependency. When one is unavoidable, stop and ask unless the approved plan already accepts it, and explain in a code comment why it is needed, what pins it, and what a library upgrade would break. In review-only phases, flag each such dependency and name the documented API or design that avoids it.
 - Ensure usage follows the latest APIs.
 - Flag outdated APIs, including deprecated or unsupported usage.
 - If using the latest API would require an unapproved dependency upgrade, conflict with the approved version, or break backwards compatibility, stop and ask. Do not upgrade the dependency or silently relax the latest-API requirement.
@@ -116,7 +117,8 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Before proposing or adding custom code, inspect relevant existing helpers, types, and patterns, then standard-library capabilities, native platform features, and already-installed dependencies. Prefer a compatible existing solution when it preserves behavior and readability; name the concrete alternative when flagging duplication.
 - Before adding new behavior, trace how the repository already handles comparable behavior: component responsibilities, dependency direction, shared services, and extension points. Build on those established flows instead of creating a parallel flow, duplicate infrastructure, or a path that bypasses an existing layer. If the approved scope appears to need a parallel path, or the established path cannot support the change without an architecture decision, stop and ask. In review-only phases, flag an unapproved parallel flow with concrete repository evidence and name the established path the code should use.
 - Explicitly review duplication, excess abstractions, unused paths, and avoidable complexity. Justify a new abstraction or dependency by a current requirement, meaningful duplication, or a necessary ownership boundary. A single implementation or caller is not by itself a defect. Preserve dependency approval and source-documentation grounding.
-- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
+- Treat each mechanism that a plan or change adds to choose between behaviors, such as a mode, fallback, comparison, or special case, as a design decision to test, not a settled one. Check whether a path the design already requires can handle every case on its own. When repository evidence shows a simpler design that meets the same requirements, name it, the code it would remove, and its trade-off in the phase's permitted output. In implementation phases, stop and ask before building a mechanism that the approved scope does not need. Record nothing for a mechanism without a supported alternative.
+- For a bug fix, trace the relevant callers, data flow, and error flow before choosing the repair location. Before choosing or proposing a repair that adds code, check whether removing or simplifying the faulty path resolves the defect, and prefer that repair when it preserves behavior and contracts. When a defect is found, search throughout the codebase for the same failure pattern and inspect candidate matches. Record the search scope, confirmed occurrences, and unexamined areas in the phase's existing output. For authorized fixes, address the root cause within this phase's permissions and approved scope; report other occurrences without changing them. If a shared fix would exceed scope or alter compatibility, stop and ask.
 - Before proposing deletion, inspect direct callers, dynamic or string references, public contracts, configuration, and relevant tests. Fewer lines or files are not acceptance criteria; preserve validation, security, accessibility, error handling, and verification.
 - Do not substitute a simpler interpretation for an explicit requirement or locked plan. Put out-of-scope simplifications in the phase's permitted suggestions or chat; implementation still requires its existing authorization. Preserve the test-authoring boundary, native test-framework rules, and coverage gate; do not introduce production assertion demos, one-test quotas, persistent modes, debt markers, or new ledgers.
 
@@ -247,7 +249,7 @@ Constraints:
 - do not implement code,
 - do not modify any file other than `PLAN_CRITIQUE.md` and `PLAN_REVISION_REQUEST.md`,
 - this phase's only permitted repository writes are `PLAN_CRITIQUE.md` and `PLAN_REVISION_REQUEST.md`. Do not edit the locked plan, execution prompt, production code, tests, durable documentation, configuration, dependencies, Git state, or pull-request state during critique,
-- critique the plan, not alternative future architectures,
+- critique the plan, not alternative future architectures. A simpler design that meets the same current requirements is part of critiquing the plan; record it under `Simplification Opportunities`,
 - if evidence is missing, say so explicitly instead of guessing.
 
 Context to review:
@@ -294,9 +296,9 @@ Review for:
 - unnecessary brute-force or quadratic operations,
 - poor reuse / DRY violations,
 - failure to reuse existing code,
-- excess abstractions, unused paths, and avoidable complexity without a current requirement,
+- excess abstractions, unused paths, avoidable complexity without a current requirement, and mechanisms whose job another required path already does,
 - separation-of-concerns violations,
-- missing documentation grounding for library/framework usage,
+- missing documentation grounding for library/framework usage, or a dependency on undocumented or private third-party internals,
 - outdated API usage, including deprecated or unsupported APIs. Apply the Engineering Contract's version and approval conflict rules rather than silently relaxing the requirement,
 - unnecessary third-party dependencies,
 - missing custom exception/error translation at public API boundaries,
