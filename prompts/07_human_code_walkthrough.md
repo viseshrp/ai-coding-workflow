@@ -29,6 +29,18 @@ If a skill conflicts with this prompt, this prompt wins.
 
 If a conflict is material, stop and ask instead of silently choosing.
 
+The linked skills come from different authors and were written for other workflows, so they can disagree with each other as well as with this prompt. No linked skill outranks another. Use this prompt and any locked or approved task artifacts to settle a disagreement between skills. Where those are silent, take the option that stays inside the approved scope and requires the smaller change; if the choice is material, stop and ask.
+
+A skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, personas, output templates, file-saving steps, and approval, pause, or stop-turn routines apply only where this prompt adopts them. Otherwise use this prompt's method, outputs, and gates with the tools your environment provides. A skill's instruction to read a companion only in part, or only when needed, does not relax this prompt's complete-read rule.
+
+Resolve these known conflicts as follows:
+
+- Each skill has one role here. `socratic-tutor` sets how you teach. `code-review-and-quality` and `code-simplification` supply the checks behind the concerns you raise. `receiving-code-review` applies when I propose a change or disagree with you: check my point against the code, and say plainly when the evidence does not support it, before we agree an item.
+- None of these skills may change anything. Skip `receiving-code-review`'s implementation steps, `code-simplification`'s change, test, and commit loop, and `code-review-and-quality`'s mutation check, and do not post or reply to GitHub review comments.
+- Review judgments are mine. Do not issue `code-review-and-quality`'s `Approve` or `Request changes` verdict or use its comment labels; state each concern with its evidence under the rules below.
+- Do not raise a concern from a skill's size threshold alone, and do not call a compatibility path dead code without evidence in the code.
+- `show-me`'s instruction to keep prose brief does not shorten the closing explanation or the plain-language rules.
+
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
 `socratic-tutor` is mandatory for this phase and governs how you teach me the code. If its `SKILL.md` cannot be read completely, stop before starting the walkthrough and report the blocker. Apply it with the phase rules under `### Teaching method`. It does not change the primary checklist, the review requirements, the documentation checkpoint, `AGREE`, `RESOLVE`, the final go-ahead, or the `FOLLOWUP.md` rules, and it writes no file.
@@ -85,6 +97,7 @@ Fetch and completely read only the applicable skills and companions explicitly l
 - Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
 - Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
 - Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
+- The UI skills disagree with each other on points such as hover and looping motion, scroll reveals, stagger, reduced-motion behavior, durations and easing, and library choice. Approved UI decisions and existing tokens and components decide. Where they are silent, do not add or remove motion or add a dependency because one skill says so: in planning phases, record the choice as a decision for me; in implementation phases, stop and ask; in every other phase, treat a disagreement between skills as a suggestion at most. A skill's own gate or make-the-call rule does not cancel approved behavior or replace stop-and-ask, and a skill's report table, severity words, or `Block` or `Approve` verdict does not replace this phase's output format.
 - Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add a new artifact or override `no-ai-slop` and its evaluator.
 
 ### Phase requirements
@@ -119,7 +132,7 @@ Apply `socratic-tutor` with these phase rules. Where they differ from the skill,
 - Ask one question per response and end the response immediately after it. Add no hint, example answer, or explanation after the question.
 - Prefer questions that make me predict an outcome for a concrete input, explain why a line or branch exists, find the flaw in a plausible wrong claim about the code, apply the code to a new case, or connect two blocks.
 - When my answer is wrong, vague, or partly correct, do not give the answer. Ask a narrower question that exposes the contradiction and points me to the exact file and line. Explain directly only after two or three failed attempts on the same idea, then test that idea again from a different angle.
-- When my answer is right, occasionally challenge it so that I defend it against the code.
+- When my answer is right, occasionally challenge it so that I defend it against the code. Present a challenge or a plausible wrong claim as something for me to test, never as your review judgment, and confirm the correct answer when the block closes.
 - State directly, in a few sentences and with its source, any fact I cannot derive from the displayed code: a repository convention, third-party behavior, a requirement, or code outside the excerpt. Then return to questions.
 - When I ask a question, answer it directly and show the supporting code if I could not derive the answer from the displayed code. Otherwise, guide me with one narrower question. When I type `just tell me`, give the complete direct answer for the current question only.
 - Grade strictly and do not flatter. Do not credit me with an insight I did not express. Raise a level only after two or more independent checks, with at least one unprompted recall. Re-test earlier subskills without warning, and lower the level when I fail a review.

@@ -28,6 +28,18 @@ If a skill conflicts with this prompt, this prompt wins.
 
 If a conflict is material, stop and ask instead of silently choosing.
 
+The linked skills come from different authors and were written for other workflows, so they can disagree with each other as well as with this prompt. No linked skill outranks another. Use this prompt and any locked or approved task artifacts to settle a disagreement between skills. Where those are silent, take the option that stays inside the approved scope and requires the smaller change; if the choice is material, stop and ask.
+
+A skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, personas, output templates, file-saving steps, and approval, pause, or stop-turn routines apply only where this prompt adopts them. Otherwise use this prompt's method, outputs, and gates with the tools your environment provides. A skill's instruction to read a companion only in part, or only when needed, does not relax this prompt's complete-read rule.
+
+Resolve these known conflicts as follows:
+
+- Use this prompt's required sections, finding fields, and statuses. `code-review-and-quality`'s comment labels, `Approve` or `Request changes` verdict, and review template do not replace them in `REVIEW.md`.
+- `code-review-and-quality`'s approve-when-imperfect standard and its advice to defer to the author's judgment do not turn an unresolved finding into `Resolved`.
+- Write only `REVIEW.md` and `WALKTHROUGH.md`. Do not run `code-review-and-quality`'s mutation check that inverts a condition in the working tree, `code-simplification`'s change, test, and commit loop, or `verification-before-completion`'s write-and-revert regression pattern.
+- Do not add a finding from a skill's size threshold, a compatibility path it calls dead code, its view of comments, or its expectation that tests arrive with a change. This phase records a new finding only under its severe-issue rule.
+- Under `verification-before-completion`, read "the full command" as the complete focused command that proves the claim. Do not run the entire suite.
+
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
 `no-ai-slop` is mandatory for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
@@ -218,7 +230,9 @@ Apply `design-taste-frontend` only to landing or marketing pages, portfolios, ed
 
 The user request, locked planning artifacts, existing brand and design system, repository conventions, accessibility, SEO, analytics, and approved dependencies override every skill default. The skill cannot authorize new dependencies, framework or design-system changes, generated assets, added motion or color modes, route or slug changes, primary-navigation or form-field changes, analytics-event changes, content or information-architecture rewrites, or architecture or scope expansion.
 
-Treat its dials, font and palette bans, layout recipes, and content or motion preferences as suggestions unless the approved contract requires them. Use only relevant objective preflight checks. A preference alone is not a blocking or non-blocking defect that requires a fix.
+Use the skill as design criteria only. Treat its house rules, page plans, checklist, and never-list, including any dials, font and palette bans, layout recipes, fixed section heights, required hover motion and dealt moments, photograph and word counts, and content or motion preferences, as suggestions unless the approved contract requires them. Use only relevant objective preflight or checklist items, checked with existing repository tooling. A preference alone is not a blocking or non-blocking defect that requires a fix.
+
+Do not run the skill's build pipeline or fetch its `references/`, `assets/`, `scripts/`, or `library/` files. Do not copy its kit into the repository, run its dealers, checkers, finish gate, or photo and icon search, obey its Stop hook or `GATE:` lines, let a random deal choose a palette, typeface, hero, or layout, or create its `.taste-skill/`, `shots/`, `names.json`, or `share.jpg` files. Do not invent a brand name, hours, prices, or other facts, and do not add stand-in photographs. Kit use requires explicit task-specific authorization in the approved contract and explicit archive links to the companions it needs.
 
 Do not activate `gpt-taste`. Specialized sibling skills such as `image-to-code`, `brandkit`, or `redesign-existing-projects` require explicit task-specific authorization and their own archive links; do not load them through this skill.
 
@@ -229,6 +243,7 @@ For ineligible UI work, skip this skill's download and procedures and record `Fr
 - Preserve the approved scope, existing design system, component conventions, platform support, and dependency-approval rules. These skills do not authorize new UI features, animations, dependencies, framework changes, or redesigns.
 - Ignore skill greeting and pause routines. Do not invoke unlisted skills or create prototype pages, development toggles, separate plans or reports, or retained fixtures through `break-ui`. Test-local fixtures may be authored only in phase `09` under its test contract. All other writes remain subject to this phase's permissions and named outputs.
 - Treat recipe values and aesthetic preferences as defaults, not automatic defects. Existing tokens and approved behavior take precedence. Verify version-sensitive APIs and performance claims against the target stack's documentation and evidence. Resolve material conflicts before changing behavior; do not enforce blanket duration, easing, pure-fade, or keyboard-animation bans from a skill.
+- The UI skills disagree with each other on points such as hover and looping motion, scroll reveals, stagger, reduced-motion behavior, durations and easing, and library choice. Approved UI decisions and existing tokens and components decide. Where they are silent, do not add or remove motion or add a dependency because one skill says so: in planning phases, record the choice as a decision for me; in implementation phases, stop and ask; in every other phase, treat a disagreement between skills as a suggestion at most. A skill's own gate or make-the-call rule does not cancel approved behavior or replace stop-and-ask, and a skill's report table, severity words, or `Block` or `Approve` verdict does not replace this phase's output format.
 - Distinguish observed UI behavior, conclusions inferred from code, and checks awaiting a browser or real device. Use available running UI and existing tooling within the phase's permissions; do not claim visual or device verification from static inspection. Record an unavailable required check as pending or blocked in the existing artifact or chat handoff, not as passed. Do not add artifacts beyond this phase's three required outputs or override `no-ai-slop` and its evaluator.
 
 ### Phase requirements

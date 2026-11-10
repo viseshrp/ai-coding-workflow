@@ -91,6 +91,7 @@ If a task appears to require changing a source file, stop and ask instead of mod
 These are the main design constraints that define this repo:
 
 - No skill router. Each prompt lists its skills with explicit GitHub links, including required skill dependencies. Generated prompts must embed their complete skill links and handling rules. Fetch linked skills and required companions from GitHub; do not depend on local skill repositories, installed slash commands, or earlier prompt text.
+- No conflict of intent. The linked skills come from different authors and were written for other workflows. No phase may leave a skill directive in conflict with the phase contract or with another linked skill. Every `## Skill Handling Rule`, checked-in or generated, states that no linked skill outranks another, how to settle a disagreement, and that phase's known conflicts with their resolutions.
 - Prompts are intentionally self-contained, even when that creates duplication.
 - Prompts are language-agnostic by default. Put language-specific guidance in clearly labeled subsections organized by language, and apply it only when the target repository uses that language or framework.
 - Every checked-in phase prompt and every generated downstream prompt must include `no-ai-slop` and its `eval.md`. For every Markdown document a phase creates or revises, make them a hard requirement and the ultimate writing guide. They are the final authority for prose and presentation after the prompt's factual, technical, structural, and output requirements are satisfied. Require the model to apply the skill while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. Let `no-ai-slop` win over conflicting writing-style guidance, but never let it change scope, meaning, required structure, artifact names, constraints, or evidence. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly asks for them.
@@ -244,6 +245,10 @@ Expectation:
 - The exact phrasing can vary slightly only if the phase genuinely requires it.
 - Match handling instructions to the phase: include downstream-prompt rules only in prompt producers, skill-specific restrictions only where that skill is linked, and artifact-writing instructions only where files may be written. Keep shared constraints aligned without copying inapplicable procedures.
 - Do not weaken the rule in one phase without a deliberate reason.
+- Keep the skill-against-skill rule identical in every phase `01` through `12`: no linked skill outranks another; the prompt and any locked or approved task artifacts settle a disagreement; where they are silent, the option inside the approved scope with the smaller change applies; a material choice stops and asks. Keep the adjacent rule with it: a skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, personas, output templates, file-saving steps, and approval, pause, or stop-turn routines apply only where the prompt adopts them, and a skill's partial-read instruction does not relax the complete-read rule.
+- Keep each phase's known-conflict list specific to the skills that phase links. Phases `01` through `08` carry it under `Resolve these known conflicts as follows:`, phases `09` and `10` under `In particular:`, and phases `11` and `12` in prose. The generated planning, execution, revision, and review-fix Skill Handling Rules carry the lists for their own skills. `02` also requires the revised `EXECUTION_PROMPT.md` to retain the execution list, and `03` verifies it against the list in `PLAN_REVISION_REQUEST.md`.
+- A known-conflict entry names the skill, the conflicting directive, and the phase rule that replaces it. Ground each entry in the archived skill text. When a linked skill or its archived snapshot changes, re-read the skill and its required companions completely and update every phase that links it; an entry that attributes to a skill a directive its archived snapshot does not contain is a defect. General wording kept to cover more than one snapshot, such as `any dials`, is acceptable.
+- Keep these recurring resolutions aligned where their skills are linked: one question at a time in `01`; no skill-owned output files; no assume-and-proceed pattern; no test authoring, feature flag, rollback, observability, or architecture-record work added on a skill's say-so; `code-review-and-quality`'s labels, verdict, approval standard, size thresholds, mutation check, and dead-code view of compatibility paths; `code-simplification`'s editing loop in read-only phases; `source-driven-development`'s citation comments and `UNVERIFIED` label; `verification-before-completion`'s full-command and write-and-revert wording; `incremental-implementation`'s increment cycle; `definition-of-done.md` under the Engineering Contract; `receiving-code-review`'s implementation steps and GitHub thread replies; and each skill's role in `07`.
 
 ### Archive-only skill dependencies
 
@@ -349,6 +354,7 @@ Keep UI guidance in a separate `## UI work only` section in phases `01` through 
 - Preserve existing design decisions, tokens, platform support, dependency approval, and output formats. Apply web guidance only to web UI. Do not promote recipe values or aesthetic preferences to automatic blockers; verify version-sensitive APIs and performance claims.
 - Override upstream prototype, development-toggle, fixture-retention, separate-report, and alternate-plan workflows. Phase `09` alone may author test-local fixtures; UI guidance must not expand another phase's write permissions or bypass `AGREE`, `RESOLVE`, or the final go-ahead.
 - Verify that generated planning, revision, execution, and review-fix prompts carry complete conditional UI sections, including activation, links, companions, limits, and verification requirements. Record observed behavior separately from code-only conclusions and required browser or device checks still pending.
+- Keep the UI skill-disagreement bullet in every `### UI skill limits` copy. The UI skills disagree on hover and looping motion, scroll reveals, stagger, reduced-motion behavior, durations and easing, and library choice. Approved UI decisions and existing tokens and components decide; where they are silent, planning records a decision for the human, implementation stops and asks, and every other phase treats the disagreement as a suggestion at most. A skill's own gate, make-the-call rule, report table, severity words, or verdict does not replace the phase's behavior or output format.
 
 Optional phase `12` is entirely UI prototyping and the only exception to the prototype prohibition. Its simplicity rule reuses existing components inside the isolated prototype directory and treats that directory as an approved preview, not a parallel production flow. List its skills directly under `## Skills`; do not add a conditional UI section or backend-only skip rule. Keep its explicit opt-in entry point, isolated directory, synthetic sample data, named `UI_PROTOTYPE.md` artifact, browser verification, selection gate, and planning handoff self-contained. Do not copy this write permission into `01` through `10` or `11`. Prototype sample data is not authorization to author shared test fixtures. Override the upstream prototype skill's automatic promotion and cleanup steps: user selection records a design choice, and production integration remains subject to planning and execution gates. Phase `11` has no UI skill downloads and applies only its complexity evidence bar to in-scope UI code.
 
@@ -358,6 +364,7 @@ Keep [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/
 
 - Keep the same narrow gate everywhere: landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. Exclude backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. Backend-only work skips all UI downloads and reporting; ineligible UI work records `Frontend design: Not applicable` in its existing artifact or chat.
 - Preserve the user request, locked artifacts, existing brand/design system, repository conventions, accessibility, SEO, analytics, and dependency approval above skill defaults. Its dials, style bans, recipes, and preflight preferences cannot authorize dependencies, frameworks, assets, motion, themes, content/route/form/analytics changes, architecture changes, or broader scope.
+- The archived skill is a kit-and-script build pipeline. Phases use its house rules, page plans, checklist, and never-list as design criteria only. Its `references/`, `assets/`, `scripts/`, and `library/` files, kit copy, dealers, checkers, finish gate, Stop hook and `GATE:` lines, random deals, generated files, invented facts, and stand-in photographs stay off. Kit use requires explicit task-specific authorization in the approved contract and explicit archive links to the companions it needs. Keep both gate paragraphs identical in every copy.
 - Planning must lock `## Frontend Design Contract` inside `FEATURE_SPEC_AND_PLAN.md`, carrying the resolved brief, required design decisions, preservation rules, approved dependencies, and desktop/mobile acceptance checks. Generated execution prompts consume that contract; generated revision prompts repair and preserve it. Verify the actual generated prompts contain the complete explicit link, gate, contract requirements, and rendered-verification instructions.
 - Review and fix phases must distinguish objective failures from aesthetic suggestions and record rendered evidence or pending checks in existing artifacts or execution responses. Direct-entry review uses repository and branch evidence when planning artifacts are absent. `FOLLOWUP.md` remains human-approved only; design guidance cannot add an item or bypass its approval.
 - Keep direct skill use out of `07`, `09`, `10`, `11`, and `12`. Exclude `gpt-taste`; `image-to-code`, `brandkit`, and `redesign-existing-projects` require explicit task-specific authorization and their own archive links. Preserve immutable `sources/` and historical `archived/` material.
@@ -494,6 +501,8 @@ Also check:
 
 - the prompt file that uses it,
 - other prompts that should stay aligned by phase,
+- the archived skill and its required companions, read completely for directives that conflict with the phase contract or with another linked skill,
+- the phase's known-conflict list and the matching list in any generated prompt that links the skill,
 - `README.md`.
 
 ### If you change the Engineering Contract
@@ -544,6 +553,7 @@ Before finishing a change, verify:
 - filenames referenced in docs actually exist,
 - artifact names are spelled consistently across producer and consumer prompts,
 - skill references are consistent where intended,
+- every directive of a linked skill that conflicts with a phase or with another linked skill has a stated resolution in each phase and generated prompt that links the skill,
 - repeated policy blocks are updated everywhere they should be,
 - `README.md` matches the actual prompt set and workflow,
 - no file under `sources/` was modified, added, renamed, moved, or deleted,
@@ -569,6 +579,9 @@ When making non-trivial changes, search for these strings before finalizing:
 - `Do not write tests`
 - `85% coverage`
 - `Use only the explicitly linked skills`
+- `No linked skill outranks another`
+- `Resolve these known conflicts`
+- `The UI skills disagree`
 - `Fetch and read`
 - `no-ai-slop`
 - `test-audit`

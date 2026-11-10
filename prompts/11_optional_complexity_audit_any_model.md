@@ -5,7 +5,7 @@ Run this independent phase only when I explicitly request a repository complexit
 ## Skills
 
 - [ponytail-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-audit/SKILL.md).
-- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md), the review procedure referenced by `ponytail-audit`.
+- [ponytail-review](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/DietrichGebert__ponytail/snapshot/skills/ponytail-review/SKILL.md), the companion change-review procedure from the same collection. `ponytail-audit` does not call it; use only the `Lean` criteria and pre-report checks the two share.
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md).
 
 ## Skill Handling Rule
@@ -18,11 +18,15 @@ Use only this prompt's explicitly linked skills. Fetch and read each applicable 
 
 The prompt is the contract. Skills are supporting procedures only. If a skill conflicts with this prompt, this prompt wins. If a conflict is material, stop and ask instead of silently choosing. Do not invoke unlisted skills or let a skill expand the phase's write permissions, outputs, or approval scope.
 
+The linked skills come from different authors and were written for other workflows, so they can disagree with each other as well as with this prompt. No linked skill outranks another. Use this prompt and any locked or approved task artifacts to settle a disagreement between skills. Where those are silent, take the option that stays inside the approved scope and requires the smaller change; if the choice is material, stop and ask.
+
+A skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, personas, output templates, file-saving steps, and approval, pause, or stop-turn routines apply only where this prompt adopts them. Otherwise use this prompt's method, outputs, and gates with the tools your environment provides. A skill's instruction to read a companion only in part, or only when needed, does not relax this prompt's complete-read rule.
+
 `no-ai-slop` is mandatory for the chat report. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and approved task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
 Apply `no-ai-slop` while drafting the chat report and run its `eval.md` self-check before sending it. If its `SKILL.md` or `eval.md` cannot be read and applied, stop and report the blocker. Ignore its draft-request, detection-mode, and mandatory `What changed` workflow unless this prompt explicitly asks for them.
 
-Use the Ponytail skills for evidence-based complexity findings only. Ignore line-count scoring, automatic single-caller or single-implementation findings, persistent modes, and the prescribed one-line output. Do not copy examples that weaken validation, correctness, compatibility, or test requirements. Rank findings by maintenance benefit, confidence, and change risk.
+Use the Ponytail skills for evidence-based complexity findings only. Take `ponytail-audit`'s repository mapping, its `Lean` criteria, and its pre-report checks. From `ponytail-review` take only the matching `Lean` criteria and checks; ignore its change-review target, which defaults to uncommitted changes or the last commit. Both skills also look for bugs, security risks, scale problems, missing tests, and slow paths; handle anything of that kind under this prompt's rule for incidentally discovered issues. Ignore line-count scoring, automatic single-caller or single-implementation findings, persistent modes, the prescribed one-line output, and the skills' report format: the `What this repo does:` opening, the `Must fix`, `Should fix`, and `Nice to have` groups, the 20-finding cap, and the `Verdict:`, `Ship`, and `Lean:` lines. Where a skill tells you to state the load you assumed, report the load evidence you found and name the limit when there is none; do not judge a finding against an assumed load. Do not copy examples that weaken validation, correctness, compatibility, or test requirements. Rank findings by maintenance benefit, confidence, and change risk.
 
 ## Engineering Contract
 

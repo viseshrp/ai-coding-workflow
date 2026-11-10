@@ -74,7 +74,7 @@ These phases run only when explicitly requested. Their numbers identify standalo
 | 11 | [Repository complexity audit](prompts/11_optional_complexity_audit_any_model.md) | Any capable repo-aware agent | Read-only findings in chat; no file or Git changes |
 | 12 | [UI prototyping](prompts/12_optional_ui_prototyping_any_model.md) | Any capable repo-aware model with a human | Isolated previews under `.ui-prototypes/<slug>/` and `UI_PROTOTYPE.md`; explicit human selection before planning |
 
-Use `11` to inspect repository complexity, including backend code. It uses `ponytail-audit` and its `ponytail-review` companion, ranks supported findings by maintenance benefit and risk, and checks callers and contracts before recommending deletion. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
+Use `11` to inspect repository complexity, including backend code. It uses the complexity criteria and pre-report checks of `ponytail-audit` and its `ponytail-review` companion, ranks supported findings by maintenance benefit and risk, and checks callers and contracts before recommending deletion. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
 
 Use `12` when choosing between UI directions before locking a plan. It uses `prototype`, its required `PICKER.md`, and `emil-design-eng` for isolated web UI variants. It creates no production changes, tests, dependencies, commits, or pull requests. A native UI request needs a compatible approach agreed before construction. A selected variant and `UI_PROTOTYPE.md` become context for `01`; selection does not authorize production integration. Keep previews available through selection and plan their cleanup explicitly.
 
@@ -235,6 +235,8 @@ The contract records the audience, visual direction and references, existing bra
 
 The user request, locked artifacts, existing design system, repository conventions, accessibility, and dependency approvals override skill defaults. Dials, font and palette bans, layout recipes, and motion preferences do not authorize dependencies, framework or design-system changes, assets, themes, content rewrites, or a broader redesign. Review findings need an objective defect or contract violation; a different aesthetic remains a suggestion.
 
+The archived skill is a kit-and-script build pipeline. The workflow uses its house rules, page plans, checklist, and never-list as design criteria only. Its kit, scripts, dealers, finish gate and Stop hook, random palette and layout deals, generated files, invented facts, and stand-in photographs stay off unless the approved contract authorizes kit use and links the companions it needs.
+
 `gpt-taste` is excluded. Specialized sibling skills such as `image-to-code`, `brandkit`, and `redesign-existing-projects` require explicit task-specific authorization and their own archive links. They are not loaded automatically.
 
 ## Documentation Checkpoints
@@ -276,6 +278,8 @@ The full test-authoring policy is in [phase 09](prompts/09_write_focused_tests_a
 Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
 
 Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [socratic-tutor](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/janestreet__agent_skills/snapshot/socratic-tutor/SKILL.md) as its required teaching method and [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md) for focused diffs and pseudocode in chat; no installation is required. The human walkthrough does not use diagrams; its text skill map stays in chat.
+
+The skills come from different authors and were written for other workflows, so some of their instructions conflict with a phase or with each other. Each prompt's `Skill Handling Rule` states that no linked skill outranks another: the prompt and the locked or approved artifacts settle a disagreement, the option inside the approved scope with the smaller change applies where they are silent, and a material choice stops and asks. A skill's own tools, sub-agents, modes, personas, output templates, saved files, and approval or stop-turn routines apply only where the prompt adopts them. Each prompt also lists its known conflicts and how to resolve them, such as question counts in `01`, review labels and verdicts in `04` through `07`, test-first steps in implementation phases, and citation comments in code. When UI skills disagree, approved UI decisions and existing tokens and components decide.
 
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Every phase fetches skills and required companions from their GitHub links without depending on a local skill repository or installation.
 
