@@ -2,7 +2,7 @@
 
 A phase-based prompt pack for moving a coding task from clarification to planning, implementation, review, human approval, focused tests, and an independent test audit.
 
-Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, `WALKTHROUGH.html`, and `TEST_AUDIT.md` belong in the target repository root.
+Use this repository as the workflow source; make application changes in the target repository. Copy each checked-in prompt into a fresh model session with the target code repository open. Runtime artifacts such as `DRAFT_PLAN.md`, `FEATURE_SPEC_AND_PLAN.md`, `REVIEW.md`, and `TEST_AUDIT.md` belong in the target repository root.
 
 ## Workflow
 
@@ -25,9 +25,9 @@ flowchart TD
     M --> N["05 Verify review fixes"]
     N -- "more fixes" --> K
     N -- "check blocked by missing precondition" --> V["Report the missing precondition; rerun 05 when available"]
-    N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md, then generate WALKTHROUGH.html"]
+    N -- "review loop complete" --> O["06 Refresh REVIEW.md + WALKTHROUGH.md"]
     O -- "severe Review fix issue recorded" --> K
-    O --> P["07 Human walkthrough"]
+    O --> P["07 Human walkthrough: Socratic tutoring"]
     P --> Q{"Approved FOLLOWUP.md items?"}
     Q -- "yes" --> R["08 Implementation model implements FOLLOWUP.md"]
     Q -- "no" --> S["09 Write minimal focused tests"]
@@ -57,8 +57,8 @@ If a generated prompt is incomplete, return to its producer phase instead of inv
 | 03 | [Plan-revision verification](prompts/03_plan_revision_verification_any_model.md) | Any capable repo-aware model | `PLAN_REVISION_VERIFICATION.md` |
 | 04 | [Implemented-branch review](prompts/04_review_branch_any_model.md) | Any capable repo-aware model | `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md` |
 | 05 | [Review-fix verification](prompts/05_verify_review_fixes_any_model.md) | Any capable repo-aware model | `REVIEW_FIX_VERIFICATION.md` |
-| 06 | [Final review-artifact refresh](prompts/06_refresh_review_and_walkthrough_any_model.md) | Any capable repo-aware model | Refreshed `REVIEW.md` and `WALKTHROUGH.md`, then interactive `WALKTHROUGH.html` |
-| 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Human-approved `FOLLOWUP.md`, when needed, including declined audit findings |
+| 06 | [Final review-artifact refresh](prompts/06_refresh_review_and_walkthrough_any_model.md) | Any capable repo-aware model | Refreshed `REVIEW.md` and `WALKTHROUGH.md` |
+| 07 | [Human code walkthrough](prompts/07_human_code_walkthrough.md) | Any capable repo-aware model with a human | Socratic tutoring on the PR in chat; human-approved `FOLLOWUP.md`, when needed, including declined audit findings |
 | 08 | [Human follow-up implementation](prompts/08_implement_human_followup_any_model.md) | Any capable repo-aware model | Unchecked approved follow-up changes, with per-item evidence in `FOLLOWUP.md` |
 | 09 | [Focused test writing](prompts/09_write_focused_tests_any_model.md) | Any capable repo-aware model | Test-file changes only, followed by phase-10 audit |
 | 10 | [Independent test audit](prompts/10_test_audit_any_model.md) | Any capable repo-aware agent | `TEST_AUDIT.md`, followed by human review after approval |
@@ -87,7 +87,7 @@ Use `12` when choosing between UI directions before locking a plan. It uses `pro
 5. After a plan revision pass, run [prompt 03](prompts/03_plan_revision_verification_any_model.md). It stops without a verdict when no revision pass ran. Repeat `02 -> plan revision -> 03` until the plan is locked. On each repeat, `02` and the revision pass read `PLAN_REVISION_VERIFICATION.md` and carry its unresolved items forward.
 6. Paste `EXECUTION_PROMPT.md` into any capable repository-aware coding model to implement `FEATURE_SPEC_AND_PLAN.md`.
 7. Run [prompt 04](prompts/04_review_branch_any_model.md). Paste its generated `REVIEW_FIX_PROMPT.md` into any capable repository-aware coding model when review fixes are needed, then run [prompt 05](prompts/05_verify_review_fixes_any_model.md). Repeat until all findings assigned to `Review fix` are resolved; when `04` reports none unresolved, go straight to step 8. Run `04` and `05` in a fresh session or agent. Implementation and review-fix passes record intended existing-test breaks in the pull-request description so those fresh sessions can read them. Carry test-only findings marked `Deferred to 09` to phase 09. When `05` reports that a required check cannot run only because an environment, credential, or access precondition is unavailable, supply that precondition and rerun `05` instead of returning to `04`.
-8. Run [prompt 06](prompts/06_refresh_review_and_walkthrough_any_model.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`, then generate and browser-check `WALKTHROUGH.html`. If `06` records a severe missed issue assigned to `Review fix` in `REVIEW.md`, it skips `WALKTHROUGH.html` and the workflow returns to `04` for the next `REVIEW_FIX_PROMPT.md`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review. Start with a brief prose overview of the code; explain success/error flows alongside small semantic blocks using focused diffs, pseudocode for material logic changes, and excerpts for referenced declarations and definitions. Keep presentation diffs and pseudocode in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. The HTML is supplemental context and does not replace current-code review. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending.
+8. Run [prompt 06](prompts/06_refresh_review_and_walkthrough_any_model.md) to refresh `REVIEW.md` and `WALKTHROUGH.md`. If `06` records a severe missed issue assigned to `Review fix` in `REVIEW.md`, the workflow returns to `04` for the next `REVIEW_FIX_PROMPT.md`. Use [prompt 07](prompts/07_human_code_walkthrough.md) for independent human review as an always-on Socratic tutoring session on the PR. The model gives a facts-only orientation, runs a short diagnostic, and tracks a skill map of subskills derived from the changed code. For each small semantic block it shows a focused diff and excerpts for referenced declarations and definitions, asks one question per response, and closes the block by explaining every success/error flow your answers did not cover, with pseudocode for material logic changes. Keep presentation diffs, pseudocode, and the skill map in chat only; `WALKTHROUGH.md` retains source excerpts and prose context. Approve follow-up items with `AGREE`. After `RESOLVE`, the model rechecks the file and verifies it is marked Viewed on the PR through `gh` before advancing; failures keep completion pending. A final mixed assessment precedes the final go-ahead. Skill levels inform you and never block an approval gate.
 9. If the human approves follow-up work, record it in `FOLLOWUP.md` and run [prompt 08](prompts/08_implement_human_followup_any_model.md). It implements only unchecked implementation items, records evidence under each completed item, leaves test-authoring items for `09`, and makes no commit when nothing remains. If the walkthrough agrees no item, `07` creates no `FOLLOWUP.md` and the workflow skips to step 10.
 10. Run [prompt 09](prompts/09_write_focused_tests_any_model.md) against the final branch state. It treats unchecked `FOLLOWUP.md` test-authoring items as required test work.
 11. Run [prompt 10](prompts/10_test_audit_any_model.md) with any capable repository-aware agent, and give it phase `09`'s chat handoff. If it reports test-only findings, return to `09`, then repeat `10`. Route findings that require production or documentation changes back to [prompt 07](prompts/07_human_code_walkthrough.md), where only `AGREE`d corrections enter `FOLLOWUP.md` for `08`, before repeating `09` and `10`. Test-only findings that `09` reported as unsupported with evidence and that `10` still holds also go to `07` for a human decision. `07` records findings the human explicitly declines under `## Declined Audit Findings` in `FOLLOWUP.md`; when every routed finding is declined, skip `08` and `09` and run the next `10` pass. Audit findings keep stable identifiers and statuses across passes.
@@ -100,11 +100,11 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 ## Operator Rules
 
 - Run the workflow in the target code repository, never in this prompt-pack repository.
-- Store every workflow-generated Markdown artifact and `WALKTHROUGH.html` in the target repository root under its exact required filename.
+- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename.
 - Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
 - Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
-- Do not stage or commit workflow-generated artifacts, including `WALKTHROUGH.html`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/`, unless explicitly requested.
+- Do not stage or commit workflow-generated artifacts, including `UI_PROTOTYPE.md` and files under `.ui-prototypes/`, unless explicitly requested.
 - Execution phases verify their work, stage intended source/test changes, create focused commits, push the current branch, and create a pull request only when that branch does not already have one. GitHub CLI (`gh`) is the fallback for checking PR existence.
 - Documentation is a required checkpoint, not final cleanup: at every planning, implementation, review, verification, and human-handoff stage, record either the exact durable documentation updated and its validation evidence or an evidence-based `Not applicable` decision. Implementation and fix stages complete applicable documentation in the same change set. Phases `09` and `10` verify this status but cannot edit documentation.
 - Stop and ask when required decisions, repository facts, or instructions conflict. Do not fill material gaps with assumptions.
@@ -123,7 +123,6 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `PLAN_REVISION_VERIFICATION.md` | 03, only after a revision pass | Execution gate; 02 and the next plan revision when issues remain |
 | `REVIEW.md` | 04, refreshed by 06; 06 also records severe missed issues | Review-fix context, 05, 04 on its next pass, and later workflow context |
 | `WALKTHROUGH.md` | 04, refreshed by 06 | Review-fix and human walkthrough context |
-| `WALKTHROUGH.html` | 06, after refreshing both Markdown files | Interactive mental model for the human reviewer; supplemental context only |
 | `REVIEW_FIX_PROMPT.md` | 04 | Review-fix pass |
 | `REVIEW_FIX_VERIFICATION.md` | 05 | 06; 04 on its next pass, which adopts recorded new issues |
 | `FOLLOWUP.md` | 07; 08 adds per-item evidence | 08; 09 and 10 |
@@ -184,13 +183,13 @@ Test-only findings, including missing integration tests or final coverage proof,
 
 Review records the challenged claims, independently derived scenarios, exact commands or interactions, expected and observed results, source revision and environment, pending checks, repeated-defect search scope and occurrences, and incident diagnostic evidence. Logging review asks whether an engineer could identify the failing operation, correlate a request or job, understand the cause and trace, and determine retry or recovery outcomes without exposing secrets or sensitive payloads or creating duplicate noise. Reviewers re-read original requirements after long sessions or handoffs to identify drift. Generated planning, revision, execution, and fix prompts carry the applicable requirements; verification, human follow-up, test writing, and test audit apply them within their existing permissions. Test authoring remains in phase 09, and broader defect discovery does not authorize broader fixes.
 
-## Walkthrough Explanations and Interactive Model
+## Walkthrough Explanations and Human Tutoring
 
 Phases 04, 06, and 07 use ISO-style plain language and ASD-STE100-inspired technical writing without claiming formal compliance. Explanations use complete sentences, define terms and abbreviations, and explain symbols, background, and cause and effect without assuming prior chat or repository knowledge. Exact identifiers, source excerpts, and line-by-line coverage remain required, with `no-ai-slop` as the final writing guide.
 
-After refreshing and verifying both Markdown files, phase 06 generates one self-contained `WALKTHROUGH.html`. It provides a navigable code map, component details, selectable success/error scenarios, and step controls connected to verified source locations. It opens locally without dependencies or network access, records the reviewed revision and browser verification status, and distinguishes observed behavior from code-derived explanations. Required browser verification stays pending when unavailable.
+Phase 07 teaches the PR with [socratic-tutor](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/janestreet__agent_skills/snapshot/socratic-tutor/SKILL.md). Tutoring is always on. The model derives 4 to 10 subskills from the changed code, places you with a diagnostic, and tracks each subskill from level 0 to 5 in a text skill map. It shows each block's code first, asks one question per response, and explains directly only after two or three failed attempts or when you type `just tell me`. Every block closes with an explanation of the flows your answers did not cover and every supported review concern, so tutoring never withholds review information. `save state` and `resume from:` carry progress to a new session in chat.
 
-This HTML explains the changes; it does not execute the application or replace independent human review, `AGREE`, `RESOLVE`, or the final go-ahead. Only phase 06 generates or refreshes it. Later code changes can make it stale, so consumers check it against current code. Keep it uncommitted unless explicitly requested.
+Skill levels and the final mixed assessment inform you. They do not replace or block `AGREE`, `RESOLVE`, or the final go-ahead. The session writes no file except `FOLLOWUP.md`, and no phase generates an HTML walkthrough.
 
 ## UI Work Only
 
@@ -276,7 +275,7 @@ The full test-authoring policy is in [phase 09](prompts/09_write_focused_tests_a
 
 Current skill references live in the prompts that use them. [sources/current_skill_set.txt](sources/current_skill_set.txt) is a preserved historical input, not a synchronization target.
 
-Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md) for focused diffs and pseudocode in chat; no installation is required. The human walkthrough does not use diagrams.
+Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [socratic-tutor](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/janestreet__agent_skills/snapshot/socratic-tutor/SKILL.md) as its required teaching method and [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md) for focused diffs and pseudocode in chat; no installation is required. The human walkthrough does not use diagrams; its text skill map stays in chat.
 
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Every phase fetches skills and required companions from their GitHub links without depending on a local skill repository or installation.
 
