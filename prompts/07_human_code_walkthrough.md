@@ -6,6 +6,7 @@
 - [code-review-and-quality](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-review-and-quality/SKILL.md)
 - [code-simplification](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/code-simplification/SKILL.md)
 - [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md), including its required [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md)
+- [socratic-tutor](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/janestreet__agent_skills/snapshot/socratic-tutor/SKILL.md), the required teaching method for this phase
 - [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md)
 - For the security checks and threat-model guidance referenced by the linked procedures: [security-and-hardening](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/SKILL.md), with [hardening-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/security-and-hardening/references/hardening-patterns.md) and [security-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/security-checklist.md). Use only the applicable analysis within this phase's permissions; do not start a separate hardening or incident-response task.
 - For the performance checks referenced by `code-review-and-quality`: [performance-optimization](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/performance-optimization/SKILL.md), with [optimization-patterns.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/skills/performance-optimization/references/optimization-patterns.md) and [performance-checklist.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/addyosmani__agent-skills/snapshot/references/performance-checklist.md). Use only applicable review guidance; do not start an optimization task, impose example thresholds, or create `PERF.md`.
@@ -29,6 +30,8 @@ If a skill conflicts with this prompt, this prompt wins.
 If a conflict is material, stop and ask instead of silently choosing.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
+
+`socratic-tutor` is mandatory for this phase and governs how you teach me the code. If its `SKILL.md` cannot be read completely, stop before starting the walkthrough and report the blocker. Apply it with the phase rules under `### Teaching method`. It does not change the primary checklist, the review requirements, the documentation checkpoint, `AGREE`, `RESOLVE`, the final go-ahead, or the `FOLLOWUP.md` rules, and it writes no file.
 
 `no-ai-slop` is mandatory for every Markdown document this phase creates or revises. Treat it as the ultimate writing guide and final authority for prose and presentation after satisfying this prompt's factual, technical, structural, and output requirements. If another skill or instruction conflicts only on writing style, `no-ai-slop` wins; this prompt and locked task artifacts still control scope, meaning, required structure, artifact names, constraints, and evidence.
 
@@ -86,71 +89,107 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Phase requirements
 
-- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the prose overview and semantic blocks.
+- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the orientation, subskills, and semantic blocks.
 - Where available, inspect the running interaction using existing facilities. Discuss observed behavior separately from inferred behavior and pending browser or device checks. Do not create HTML, prototype pages, toggles, fixtures, or additional visual artifacts.
 - Record documentation and required pending UI checks in the primary checklist. Preserve `AGREE` for each exact follow-up item, renewed review on changed code, `RESOLVE` plus verified GitHub Viewed state for file completion, and the final go-ahead before implementation.
 
 ## Prompt
 
-Help me review the current PR from the actual code and PR changes. Start by showing how the code fits together and where each flow ends, then discuss one small semantic block at a time. Keep explanations concise without losing detail, and follow my questions about the code before moving on.
+Teach me the current PR until I can explain the changed code myself. This phase is a tutoring session on the actual code and PR changes. Tutoring is always on: start it without asking whether I want to be taught. Use `socratic-tutor` as the teaching method. Teach mainly by asking questions that make me read the code, predict its behavior, and explain it; do not lecture. Review judgments, `FOLLOWUP.md` approvals, and file completions in this phase remain my decisions.
 
-Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts or line-by-line coverage.
+Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. Apply this standard to every question, correction, and explanation. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts or line-by-line coverage.
 
 ### Read the PR and code
 
 - For each review turn, pull the current PR changed-file list and per-file changes from GitHub CLI (`gh`). Use them as the source of truth for the review checklist and changed blocks. If `gh` cannot provide either, stop and ask; do not substitute the manual diff against `main`.
-- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
+- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Track taught blocks and documentation results; show progress when a file is completed or I ask for it.
 - Re-read available original requirements and approved scope changes at the start, after long sessions or handoffs, and before completion to check for drift.
 - Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
-- Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
+- Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings, and do not turn them into questions. Base questions, expected answers, and review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
-- If `WALKTHROUGH.html` exists, use it only as supplemental explanatory context after checking its revision and claims against current code. Do not import review verdicts or findings from it, regenerate it here, or let it replace independent review or any approval gate.
 
-Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
+Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs, pseudocode, and the skill map in chat only; do not save them in `WALKTHROUGH.md` or other files. The text skill map defined below is the only progress display. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
 
-### Re-entry from the test audit
+### Teaching method
 
-Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase, plus test-only findings that phase `09` reported as unsupported with evidence and the audit still holds. When I start this walkthrough for those findings:
+Apply `socratic-tutor` with these phase rules. Where they differ from the skill, these rules win.
 
-- Read `TEST_AUDIT.md` and list each `Open` finding whose destination is phase `07` by its identifier. Unlike `REVIEW.md`, these findings are input for our discussion. Check each one against the actual code and PR changes, show the code it cites, and explain whether the evidence supports it. The audit's conclusion is not my decision.
-- Limit the checklist to the files those findings cite and the non-test files whose `viewerViewedState` is `DISMISSED` (changed since viewed) or `UNVIEWED` (added or not yet reviewed). Test files changed only by phase `09` stay with phase `10` and the final human review unless a routed finding cites them. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.
-- Record an agreed correction in `FOLLOWUP.md` only after `AGREE`, as a new item that cites the audit finding's identifier. Keep existing items and their checkboxes unchanged.
-- When I explicitly decline a routed finding by its identifier, keep it out of the implementation items. Record an entry with its identifier and my reason in the `## Declined Audit Findings` section of `FOLLOWUP.md`.
-- If this re-entry adds no new `FOLLOWUP.md` item because I declined every routed finding, state that phases `08` and `09` are skipped and that the workflow goes to the next phase-`10` pass.
-- The existing block review, documentation checkpoint, `RESOLVE`, Viewed-state verification, and final go-ahead rules apply unchanged.
+- The topic is this PR: the changed code, the declarations and definitions it depends on, and the requirements it implements. Derive every question, expected answer, and correction from inspected code, PR changes, and available requirements. Do not ask about or grade against behavior you have not verified; mark an unverifiable path instead of inventing an answer.
+- Skip the skill's intent-confirmation guard. Running this prompt is my request to be taught.
+- Ask one question per response and end the response immediately after it. Add no hint, example answer, or explanation after the question.
+- Prefer questions that make me predict an outcome for a concrete input, explain why a line or branch exists, find the flaw in a plausible wrong claim about the code, apply the code to a new case, or connect two blocks.
+- When my answer is wrong, vague, or partly correct, do not give the answer. Ask a narrower question that exposes the contradiction and points me to the exact file and line. Explain directly only after two or three failed attempts on the same idea, then test that idea again from a different angle.
+- When my answer is right, occasionally challenge it so that I defend it against the code.
+- State directly, in a few sentences and with its source, any fact I cannot derive from the displayed code: a repository convention, third-party behavior, a requirement, or code outside the excerpt. Then return to questions.
+- When I ask a question, answer it directly and show the supporting code if I could not derive the answer from the displayed code. Otherwise, guide me with one narrower question. When I type `just tell me`, give the complete direct answer for the current question only.
+- Grade strictly and do not flatter. Do not credit me with an insight I did not express. Raise a level only after two or more independent checks, with at least one unprompted recall. Re-test earlier subskills without warning, and lower the level when I fail a review.
+- Keep the skill's commands: `show progress`, `harder`, `easier`, `just tell me`, `save state`, and `resume from:`. `save state` emits a chat-only block with the skill map, my recorded misconceptions, the blocks covered, and the primary checklist statuses; never write it to a file. After `resume from:`, restore that state, pull the PR again with `gh`, and review any file that changed since. A restored state does not replace `RESOLVE` or Viewed-state verification.
+- For a practical exercise, ask me to predict the result of an existing command or to trace a concrete input, then check my prediction against the actual result with existing tools under the runtime rule below. Do not create or modify a file for an exercise.
+- Tutoring never withholds review information. State every supported concern, unverified path, documentation gap, and pending check explicitly before the block closes, whether or not I found it.
 
-### Explain the code context first
+### Start the session
 
-Open the first review response with a brief prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
+1. Pull the PR, build the primary checklist, and read the code as required above.
+2. Open the first response with a short orientation: the problem and intended behavior from the available requirements, the changed files, and the entry points and main symbols by exact name. State facts only; do not explain how the code behaves yet.
+3. Break the change into 4 to 10 subskills named with concrete files and symbols, such as each main success flow, each error path, each state or data transition, each contract with callers, and each dependency the change relies on. Every changed file and every material changed behavior must belong to at least one subskill.
+4. Tell me that a few questions come first. Run a diagnostic of 3 to 5 questions from easy to hard, one per response. Do not teach until the diagnostic is done.
+5. Show the skill map and propose the file to start with. Let me override the order.
 
-Explain every reachable control-flow branch and data/state transition alongside the relevant semantic block. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
+### Skill map
 
-Base the overview and flow explanations on inspected code and PR changes, checking relevant `WALKTHROUGH.md` context against them. Show the overview in chat and pause for my questions or choice of where to start. Correct an explanation if later inspection changes a relationship, path, or outcome.
+Track each subskill at one of these levels:
 
-### Review a semantic block
+- `0`: I do not know the code exists.
+- `1`: I know what it is for.
+- `2`: I can follow it when shown.
+- `3`: I can trace it with help.
+- `4`: I can trace and explain it independently.
+- `5`: I can teach it and handle its edge cases.
 
-Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order.
+Render the map in chat with the skill's text format after every level change and when I type `show progress`. List each subskill with its bar, level, and files, and mark the current focus. The target level is 4 of 5 for every subskill, or 5 of 5 when I ask for full mastery.
 
-Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
+### Teach a semantic block
 
-For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
+Teach one primary file at a time and one small semantic block at a time. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to teach when my questions change the order.
 
-Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
+Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one. Show code only at this point: do not explain its behavior or add pseudocode before I answer.
 
-Independently derive scenarios that could disprove the block's claimed behavior. Ground acceptance criteria and expected outcomes in product requirements, approved clarifications, or public contracts; do not treat the implementation or its tests as the specification. Check focused integration proof for material component or API interactions. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; inspect candidate matches, distinguish confirmed occurrences from false positives, record search limits, and discuss supported occurrences without expanding implementation authority. Missing test authoring remains work for phase `09`, subject to the existing `AGREE` gate when recording it in `FOLLOWUP.md`.
+Ask questions, one per response, until I have accounted for what the block does, the inputs and state it depends on, and how its outputs, side effects, returns, or errors connect to the surrounding code. Cover every reachable control-flow branch and data/state transition: branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist, and loop conditions and exits. Confirm a formatting change or simple rename in one sentence instead of asking about it.
+
+Close the block when I have answered or the attempts are used up. Give a concise closing explanation that confirms what I got right, corrects what is still wrong, and explains every item in the previous paragraph that my answers did not cover. Mark paths or outcomes that cannot be verified; do not invent behavior. For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames. Include relevant context from `WALKTHROUGH.md` after checking it against the code. Correct an earlier explanation if later inspection changes a relationship, path, or outcome. Update the affected levels, then continue to the next block.
+
+Point out a review concern only when the code supports it. First ask one question that lets me find it. Then state the concern explicitly, explain your judgment, and state where evidence is missing, whether or not I found it.
+
+Independently derive scenarios that could disprove the block's claimed behavior, and use them as questions where they fit. Ground acceptance criteria and expected outcomes in product requirements, approved clarifications, or public contracts; do not treat the implementation or its tests as the specification. Check focused integration proof for material component or API interactions. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; inspect candidate matches, distinguish confirmed occurrences from false positives, record search limits, and discuss supported occurrences without expanding implementation authority. Missing test authoring remains work for phase `09`, subject to the existing `AGREE` gate when recording it in `FOLLOWUP.md`.
 
 For runtime changes, use available running applications and real APIs through existing tools in an authorized environment. Remote requests remain read-only unless their side effects are authorized. Record observed behavior, code-only conclusions, and required pending checks in the primary checklist; required runtime verification gaps keep the relevant item pending.
 
 For each material changed behavior, identify affected durable user-, operator-, API-, configuration-, or developer-facing documentation. Record the exact documentation update and validation evidence, or an evidence-based `Not applicable` decision, in the primary checklist. Discuss a missing or inaccurate documentation result alongside the relevant code; do not implement the documentation change here.
 
+### Re-entry from the test audit
+
+Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase, plus test-only findings that phase `09` reported as unsupported with evidence and the audit still holds. When I start this walkthrough for those findings:
+
+- Read `TEST_AUDIT.md` and list each `Open` finding whose destination is phase `07` by its identifier. Unlike `REVIEW.md`, these findings are input for our discussion. Check each one against the actual code and PR changes, show the code it cites, and state directly whether the evidence supports it. The audit's conclusion is not my decision.
+- Limit the checklist to the files those findings cite and the non-test files whose `viewerViewedState` is `DISMISSED` (changed since viewed) or `UNVIEWED` (added or not yet reviewed). Test files changed only by phase `09` stay with phase `10` and the final human review unless a routed finding cites them. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.
+- Derive the subskills from the confirmed file list and the routed findings. I may resume a saved state from the earlier walkthrough with `resume from:`.
+- Record an agreed correction in `FOLLOWUP.md` only after `AGREE`, as a new item that cites the audit finding's identifier. Keep existing items and their checkboxes unchanged.
+- When I explicitly decline a routed finding by its identifier, keep it out of the implementation items. Record an entry with its identifier and my reason in the `## Declined Audit Findings` section of `FOLLOWUP.md`.
+- If this re-entry adds no new `FOLLOWUP.md` item because I declined every routed finding, state that phases `08` and `09` are skipped and that the workflow goes to the next phase-`10` pass.
+- The teaching method, block teaching, documentation checkpoint, `RESOLVE`, Viewed-state verification, final assessment, and final go-ahead rules apply unchanged.
+
 ### Approve follow-up work and finish a file
 
 - Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file. The only other `FOLLOWUP.md` write is a `## Declined Audit Findings` entry, recorded when I explicitly decline a routed `TEST_AUDIT.md` finding by its identifier.
-- Ask for `RESOLVE` only after every changed block in the current file is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
-- Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, review the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
-- For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the review or `RESOLVE` gate.
+- Ask for `RESOLVE` only after every changed block in the current file is taught and closed and each material changed behavior has a documentation-checkpoint result. When you ask, show the skill map and name each subskill of this file that is below the target level. I decide whether to keep practicing or to type `RESOLVE`. A level never blocks `AGREE`, `RESOLVE`, or the final go-ahead. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
+- Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, teach the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
+- For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the teaching or the `RESOLVE` gate.
 - If the GitHub update or verification fails, report the failure and keep completion pending. Do not silently skip it, claim success, or advance to another file. File completion must not resolve review conversations or submit PR approval.
-- After verified file completion, show the next file's first semantic block and explain how it connects to the surrounding code. If every file is resolved, wait for my final go-ahead before implementation.
+- After verified file completion, show the next file's first semantic block and ask its first question. If every file is resolved, run the final assessment, then wait for my final go-ahead before implementation.
+
+### Final assessment
+
+When every file is resolved, run a mixed assessment across the whole change, one question per response. Ask at least one question per subskill and one integrative problem that traces a concrete input through several changed files. Then show the final skill map and a summary of my weakest areas, with the files and symbols to read again. If a subskill is below the target level, offer to return to the teaching loop for it. The assessment result informs my decision; it does not replace the final go-ahead.
 
 Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 
