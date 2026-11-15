@@ -69,7 +69,7 @@ Apply this procedure within the prototype's scope and output boundaries:
 
 ### Skill limits
 
-- This phase alone permits isolated prototype files and a picker. It does not enable prototypes, development toggles, or additional artifacts in phases `01` through `10` or the complexity audit.
+- This phase alone permits isolated prototype files and a picker. It does not enable prototypes, development toggles, or additional artifacts in phases `01` through `10`, the complexity audit, or the security audit.
 - Reuse the project's visual language and component conventions where the isolation boundary permits. Existing tokens, approved behavior, accessibility, and supported platforms take precedence over generic aesthetic preferences or recipe values. Do not add motion solely to distinguish variants or introduce a dependency to satisfy a skill recipe.
 - Follow `PICKER.md` for picker structure, appearance, and keyboard behavior. Preserve its accessible controls, instant variant switching, conditional replay, and input-focus exclusions. Check reload selection and invalid selection parameters; correct functional or accessibility defects within the isolated preview rather than copying a broken edge case verbatim.
 - Distinguish observed behavior, code-only conclusions, and browser or device checks still pending. Do not claim visual verification from static inspection. Record unavailable required checks as pending or blocked in `UI_PROTOTYPE.md`.

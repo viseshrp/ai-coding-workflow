@@ -73,10 +73,13 @@ These phases run only when explicitly requested. Their numbers identify standalo
 |---|---|---|---|
 | 11 | [Repository complexity audit](prompts/11_optional_complexity_audit_any_model.md) | Any capable repo-aware agent | Read-only findings in chat; no file or Git changes |
 | 12 | [UI prototyping](prompts/12_optional_ui_prototyping_any_model.md) | Any capable repo-aware model with a human | Isolated previews under `.ui-prototypes/<slug>/` and `UI_PROTOTYPE.md`; explicit human selection before planning |
+| 13 | [Repository security audit](prompts/13_optional_security_audit_any_model.md) | Any capable repo-aware agent that can delegate to fresh-context agents | Verified findings, coverage ledger, and reports in a directory outside the target repository; no repository or Git changes |
 
 Use `11` to inspect repository complexity, including backend code. It uses the complexity criteria and pre-report checks of `ponytail-audit` and its `ponytail-review` companion, ranks supported findings by maintenance benefit and risk, and checks callers and contracts before recommending deletion. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
 
 Use `12` when choosing between UI directions before locking a plan. It uses `prototype`, its required `PICKER.md`, `emil-design-eng`, and `modern-web-guidance` with its applicable archived guides for isolated web UI variants. It creates no production changes, tests, dependencies, commits, or pull requests. A native UI request needs a compatible approach agreed before construction. A selected variant and `UI_PROTOTYPE.md` become context for `01`; selection does not authorize production integration. Keep previews available through selection and plan their cleanup explicitly.
+
+Use `13` to audit a repository for vulnerabilities that cross a real trust boundary. It runs the archived Cloudflare [security-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cloudflare__security-audit-skill/snapshot/skills/security-audit/SKILL.md) skill in its full audit mode: reconnaissance, a coverage ledger, hunting waves, independent verification of every candidate, and reports derived from the verified records. The target repository stays read-only. The audit writes to `~/security-audit-skill/<repo-name>/run-<N>` by default and refuses a directory inside the target. It needs fresh-context delegation and a local Node.js runtime for the skill's validators, and it stops before reconnaissance when either is missing. Target code runs only inside the sandbox the skill requires; without one the audit stays source-only and records decisive runtime facts as `needs_validation`. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
 
 ## How to Run It
 
@@ -100,7 +103,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 ## Operator Rules
 
 - Run the workflow in the target code repository, never in this prompt-pack repository.
-- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename.
+- Store every workflow-generated Markdown artifact in the target repository root under its exact required filename. Optional phase `13` is the exception: its audit files use the names the `security-audit` skill defines and live in an output directory outside the target repository.
 - Give each generated artifact `Created by`, `Created at`, and `Updated at` fields. Preserve the creation fields and refresh `Updated at` on edits.
 - Treat the implementation-plan section of `FEATURE_SPEC_AND_PLAN.md` as the execution contract and its spec/reference section as context.
 - Use the checked-in prompt for checked-in phases and the generated artifact for generated phases.
@@ -128,6 +131,7 @@ Use a fresh chat for each major phase or model handoff. Use artifact files for h
 | `FOLLOWUP.md` | 07; 08 adds per-item evidence | 08; 09 and 10 |
 | `TEST_AUDIT.md` | 10 | Human reviewer; 09 for test-only findings; 07 for production or documentation findings and disputed test-only findings; 08 for items that cite a finding; 10 on the next audit pass |
 | `UI_PROTOTYPE.md` | Optional 12 | Human selection; 01 when planning is requested |
+| Audit directory outside the target repository (`findings.json`, `coverage-ledger.json`, `REPORT.md`, `FINDINGS-DETAIL.md`, `NEEDS-VALIDATION.md`) | Optional 13 | Human selection; 01 for selected findings; the next optional 13 run as prior-run input |
 
 Prompt 09 changes test files only. It must not create another prompt, review, walkthrough, plan, summary, or workflow Markdown artifact, and it must not leave generated coverage output in the repository. Prompt 10 then performs a read-only audit, writes only `TEST_AUDIT.md`, and routes supported findings to the correct earlier phase. Human review of the audited test diff ends the workflow after phase 10 passes.
 
@@ -193,7 +197,7 @@ Skill levels and the final mixed assessment inform you. They do not replace or b
 
 ## UI Work Only
 
-Phases `01` through `11` and generated downstream prompts have a separate `## UI work only` section. Enable it only when the task or reviewed change includes UI behavior, layout, presentation, or interaction. Backend-only work skips the section, including its skill downloads, questions, checks, and reporting. A backend service having UI consumers does not by itself enable it. Phase `12` is entirely UI prototyping: its skills and requirements apply directly, without a separate UI activation gate.
+Phases `01` through `11` and generated downstream prompts have a separate `## UI work only` section. Enable it only when the task or reviewed change includes UI behavior, layout, presentation, or interaction. Backend-only work skips the section, including its skill downloads, questions, checks, and reporting. A backend service having UI consumers does not by itself enable it. Phase `12` is entirely UI prototyping: its skills and requirements apply directly, without a separate UI activation gate. Optional phase `13` has the same conditional section; it selects the security skill's client-side companions and adds no UI skill downloads.
 
 | Stage | UI requirements when applicable |
 |---|---|
@@ -223,7 +227,7 @@ The isolated preview and `UI_PROTOTYPE.md` in optional phase `12` are the only p
 
 Alongside the UI skills above, [design-taste-frontend](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/Leonxlnx__taste-skill/snapshot/skills/taste-skill/SKILL.md) supports landing or marketing pages, portfolios, editorial or brand pages, and explicitly approved visual redesigns of those surfaces. It excludes backend-only work, dashboards, admin or dense product interfaces, data tables, multi-step forms, native mobile UI, and general refactors. Mixed tasks apply it only to the eligible surface.
 
-Its explicit link and gate live inside the existing `UI work only` sections of phases `01` through `06` and `08` and their generated planning, revision, execution, and review-fix prompts. In those phases, other UI work keeps its existing skill guidance and records `Frontend design: Not applicable`; backend-only work skips UI downloads and reporting entirely. Phases `07`, `09`, `10`, `11`, and `12` have no direct use of this skill.
+Its explicit link and gate live inside the existing `UI work only` sections of phases `01` through `06` and `08` and their generated planning, revision, execution, and review-fix prompts. In those phases, other UI work keeps its existing skill guidance and records `Frontend design: Not applicable`; backend-only work skips UI downloads and reporting entirely. Phases `07`, `09`, `10`, `11`, `12`, and `13` have no direct use of this skill.
 
 | Stage | Frontend design responsibility |
 |---|---|
@@ -250,7 +254,7 @@ Documentation follows the same gate discipline as code and verification:
 - Critique, review, verification, refresh, and human-walkthrough phases check the result against the actual branch and record missing documentation as an issue or approved follow-up item.
 - Phases 09 and 10 must verify that the prior documentation checkpoint passed and stop/escalate an unresolved gap instead of editing documentation. Phase 09 reports, without stopping on, a gap whose audit finding the human declined in `FOLLOWUP.md`.
 
-Optional phase `11` identifies the documentation impact of proposed changes in chat without editing files. Optional phase `12` records the selected design's documentation impact, planned validation, or evidence-based `Not applicable` decision in `UI_PROTOTYPE.md`; durable documentation changes wait for authorized implementation.
+Optional phase `11` identifies the documentation impact of proposed changes in chat without editing files. Optional phase `12` records the selected design's documentation impact, planned validation, or evidence-based `Not applicable` decision in `UI_PROTOTYPE.md`; durable documentation changes wait for authorized implementation. Optional phase `13` reports the documentation each confirmed finding's fix would affect in its final response without editing files.
 
 ## Testing Policy
 
@@ -281,13 +285,15 @@ Current skill references live in the prompts that use them. [sources/current_ski
 
 Skills support the workflow; they do not widen scope or override prompt constraints. Phase 07 uses [socratic-tutor](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/janestreet__agent_skills/snapshot/socratic-tutor/SKILL.md) as its required teaching method and [show-me](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/humanlayer__skills/snapshot/plugins/show-me/skills/show-me/SKILL.md) for focused diffs and pseudocode in chat; no installation is required. The human walkthrough does not use diagrams; its text skill map stays in chat.
 
-The skills come from different authors and were written for other workflows, so some of their instructions conflict with a phase or with each other. Each prompt's `Skill Handling Rule` states that no linked skill outranks another: the prompt and the locked or approved artifacts settle a disagreement, the option inside the approved scope with the smaller change applies where they are silent, and a material choice stops and asks. A skill's own tools, sub-agents, modes, personas, output templates, saved files, and approval or stop-turn routines apply only where the prompt adopts them. Each prompt also lists its known conflicts and how to resolve them, such as question counts in `01`, review labels and verdicts in `04` through `07`, test-first steps in implementation phases, and citation comments in code. When UI skills disagree, approved UI decisions and existing tokens and components decide.
+The skills come from different authors and were written for other workflows, so some of their instructions conflict with a phase or with each other. Each prompt's `Skill Handling Rule` states that no linked skill outranks another: the prompt and the locked or approved artifacts settle a disagreement, the option inside the approved scope with the smaller change applies where they are silent, and a material choice stops and asks. A skill's own tools, sub-agents, modes, personas, output templates, saved files, and approval or stop-turn routines apply only where the prompt adopts them. Optional phase `13` is the one phase that adopts them: it runs `security-audit`'s delegated agents, run files, and validators inside its external output directory. Each prompt also lists its known conflicts and how to resolve them, such as question counts in `01`, review labels and verdicts in `04` through `07`, test-first steps in implementation phases, and citation comments in code. When UI skills disagree, approved UI decisions and existing tokens and components decide.
 
 Every prompt includes explicit GitHub links to its skills and required companions. Generated prompts carry their own complete skill links and handling rules. Phase 01 includes [grilling](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/mattpocock__skills/snapshot/skills/productivity/grilling/SKILL.md), the procedure required by `grill-me`. Every phase fetches skills and required companions from their GitHub links without depending on a local skill repository or installation.
 
 Every checked-in phase and every generated downstream prompt must use [no-ai-slop](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/SKILL.md) and its [eval.md](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/petergyang__no-ai-slop/snapshot/skills/no-ai-slop/eval.md). For every Markdown document a phase creates or revises, this is a hard requirement and the ultimate writing guide. It is the final authority for prose and presentation after the phase's factual, technical, structural, and output requirements are satisfied. The model must apply it while drafting, run the evaluator before saving each Markdown artifact, and stop before writing Markdown if either file cannot be read and applied. This writing rule cannot change scope, meaning, required structure, artifact names, constraints, or evidence. Each prompt disables the draft-request, detection-mode, and mandatory `What changed` workflow unless the phase explicitly needs one of them.
 
 Phase 10 also uses the repository-maintained [test-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/skills/test-audit/SKILL.md) skill. It applies a language-neutral value bar with separate Python and JavaScript/TypeScript guidance and remains read-only under the phase prompt.
+
+Optional phase 13 uses [security-audit](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/cloudflare__security-audit-skill/snapshot/skills/security-audit/SKILL.md) from the archived Cloudflare collection, with its reconnaissance, hunting, attack-class, and validation companions, its report schema, and its two validators. The ten domain companions, such as web protocol and authentication, supply chain, and AI and LLM, apply only when reconnaissance finds the trust boundary each describes.
 
 Skill procedures, evaluators, and companion resources must come from `viseshrp/ai-skills-archive`, including relative references embedded in a skill. Do not substitute upstream or official-source skill copies when an archived file is missing. Report the missing path instead. This does not replace the target-library API/version documentation required by the Engineering Contract.
 
@@ -312,6 +318,7 @@ The explicit companion links include `eval.md`, the idea-refinement frameworks, 
 |   +-- 10_test_audit_any_model.md
 |   +-- 11_optional_complexity_audit_any_model.md
 |   +-- 12_optional_ui_prototyping_any_model.md
+|   +-- 13_optional_security_audit_any_model.md
 +-- sources/
 |   +-- current_skill_set.txt
 |   +-- original_scrappy_prompts.txt
@@ -338,6 +345,7 @@ The explicit companion links include `eval.md`, the idea-refinement frameworks, 
 - Start at 10 when the final test diff is ready for an independent audit.
 - Run optional 11 only when a repository complexity audit is requested.
 - Run optional 12 only when UI prototypes are requested before planning.
+- Run optional 13 only when a repository security audit is requested.
 
 ## Maintenance
 
