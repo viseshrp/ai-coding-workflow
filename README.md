@@ -76,7 +76,7 @@ These phases run only when explicitly requested. Their numbers identify standalo
 
 Use `11` to inspect repository complexity, including backend code. It uses the complexity criteria and pre-report checks of `ponytail-audit` and its `ponytail-review` companion, ranks supported findings by maintenance benefit and risk, and checks callers and contracts before recommending deletion. Select findings before taking them to `01`; an active human walkthrough still requires `AGREE` and the final go-ahead for follow-up work.
 
-Use `12` when choosing between UI directions before locking a plan. It uses `prototype`, its required `PICKER.md`, and `emil-design-eng` for isolated web UI variants. It creates no production changes, tests, dependencies, commits, or pull requests. A native UI request needs a compatible approach agreed before construction. A selected variant and `UI_PROTOTYPE.md` become context for `01`; selection does not authorize production integration. Keep previews available through selection and plan their cleanup explicitly.
+Use `12` when choosing between UI directions before locking a plan. It uses `prototype`, its required `PICKER.md`, `emil-design-eng`, and `modern-web-guidance` with its applicable archived guides for isolated web UI variants. It creates no production changes, tests, dependencies, commits, or pull requests. A native UI request needs a compatible approach agreed before construction. A selected variant and `UI_PROTOTYPE.md` become context for `01`; selection does not authorize production integration. Keep previews available through selection and plan their cleanup explicitly.
 
 ## How to Run It
 
@@ -210,6 +210,8 @@ The conditional skill set comes from the archived [Emil Kowalski collection](htt
 - `animate` with `RECIPES.md` for web motion construction, with `pick-ui-library` only when that work requires selecting a UI primitive,
 - `review-animations` with `STANDARDS.md` for changed web motion,
 - `mobile-native` for mobile-web behavior.
+
+Phases 01 through 04, 08, 12, and the generated planning, revision, execution, and review-fix prompts also link [modern-web-guidance](https://github.com/viseshrp/ai-skills-archive/blob/main/archives/googlechrome__modern-web-guidance/snapshot/skills/modern-web-guidance/SKILL.md) from the archived Chrome collection for web UI built with HTML, CSS, or client-side JavaScript. The upstream skill fetches its guides with an `npx` command; the prompts turn that command off and read the applicable files in the archived [guides](https://github.com/viseshrp/ai-skills-archive/tree/main/archives/googlechrome__modern-web-guidance/snapshot/skills/modern-web-guidance/guides) directory instead. The repository's supported browsers, components, tokens, and conventions decide whether a guide's pattern applies, and a guide cannot authorize a dependency or work outside the approved scope.
 
 Each prompt carries the full GitHub links for its applicable skills and companions. Web-specific guidance applies only to web UI. Existing design decisions and tokens take precedence over recipe values; aesthetic preferences do not become required fixes without evidence of a defect or contract mismatch. Verify version-sensitive APIs and performance claims against the target stack.
 
