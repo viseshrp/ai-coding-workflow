@@ -181,7 +181,7 @@ For each material changed behavior, identify affected durable user-, operator-, 
 
 ### Re-entry from the test audit
 
-Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase, plus test-only findings that phase `09` reported as unsupported with evidence and the audit still holds. When I start this walkthrough for those findings:
+Phase `10` routes production, documentation, dependency, build, configuration, and environment findings to this phase, plus test-only findings that phase `09` reported as unsupported with evidence and the audit still holds, and test-only findings that are still `Open` after three phase-`09` correction attempts. When I start this walkthrough for those findings:
 
 - Read `TEST_AUDIT.md` and list each `Open` finding whose destination is phase `07` by its identifier. Unlike `REVIEW.md`, these findings are input for our discussion. Check each one against the actual code and PR changes, show the code it cites, and state directly whether the evidence supports it. The audit's conclusion is not my decision.
 - Limit the checklist to the files those findings cite and the non-test files whose `viewerViewedState` is `DISMISSED` (changed since viewed) or `UNVIEWED` (added or not yet reviewed). Test files changed only by phase `09` stay with phase `10` and the final human review unless a routed finding cites them. Confirm this file list with me before starting. Another file leaves the review only when I confirm it.

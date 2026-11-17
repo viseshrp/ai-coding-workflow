@@ -72,7 +72,7 @@ A skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, pe
 - Do not edit tests, production code, documentation, dependencies, build files, test configuration, coverage configuration, or other workflow artifacts.
 - Do not stage, commit, push, create or update a pull request, resolve review threads, or merge.
 - Temporary test or coverage output may exist while commands run, but remove only output created by this phase and do not retain it.
-- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, configuration, or environment work returns to phase `07`. A test-only finding that phase `09` reported as unsupported with evidence, and that this audit still holds, also returns to phase `07` for my decision instead of to `09`. There, the human decides whether to record it in `FOLLOWUP.md` with `AGREE` for phase `08`. This audit does not create follow-up items.
+- A test-only finding returns to phase `09`. A finding that requires production, documentation, dependency, build, configuration, or environment work returns to phase `07`. A test-only finding that phase `09` reported as unsupported with evidence, and that this audit still holds, also returns to phase `07` for my decision instead of to `09`. So does a test-only finding that is still `Open` after three phase-`09` correction attempts. There, the human decides whether to record it in `FOLLOWUP.md` with `AGREE` for phase `08`. This audit does not create follow-up items.
 - Human review of the audited test diff remains the terminal workflow gate.
 
 ### Simplicity and reuse
@@ -107,6 +107,8 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Stronger existing coverage must not already prove the same contract unless the additional layer covers a distinct risk.
 - Expected values, mocks, fakes, fixtures, and snapshots must not implement or precompute the behavior under test.
 - Tests must remain deterministic, isolated, readable, and independent of execution order.
+- A property-based test must state a property derived from a requirement or public contract, generate inputs that reach the changed behavior, reproduce a failure deterministically, and not recompute the expected value with the production logic. A differential test must compare through public entry points against a previous or reference implementation that does not share the changed code, and each excluded difference or normalization must trace to an approved change or to a detail the contract declares irrelevant. Do not require either form where example tests already prove the contract.
+- The test diff must not weaken verification. Flag a skipped, disabled, deleted, or loosened existing test or assertion, an added retry or sleep, and any change to test, coverage, lint, or CI configuration, unless a cited locked requirement, review finding, or approved `FOLLOWUP.md` item explicitly replaces the asserted behavior. Record an unsupported one as a Blocking Issue.
 - Assertions must prove the named scenario through the exercised path, including negative controls.
 - Tests must not exist only to preserve production exports, flags, wrappers, reset hooks, or dead paths that no production caller needs.
 - The measured coverage claim must match the command and scope actually reported. Broader file or package coverage is not changed-line coverage.
@@ -114,7 +116,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 
 ### Finding classes
 
-- **Blocking Issues:** false confidence, missing material behavior, invalid controls, unsafe flakiness, an unverified coverage gate, a test-only production seam, or a documentation gap that prevents approval.
+- **Blocking Issues:** false confidence, missing material behavior, invalid controls, unsafe flakiness, an unverified coverage gate, a weakened existing check, a test-only production seam, or a documentation gap that prevents approval.
 - **Non-Blocking Issues:** real duplication, brittleness, or maintainability cost that should be corrected before the workflow ends but does not hide a material behavior gap.
 - **Retained Tests:** suspicious-looking tests that meet the retention bar; name the contract that justifies each one.
 - **Rejected Candidates:** possible issues that evidence disproves; record why they are not findings.
@@ -129,6 +131,7 @@ Do not report style preferences, speculative edge cases, or deletion ideas witho
 - Mark a finding `Resolved` only with fresh evidence from the current revision. Move it to `Finding History` with that evidence, outside the active issue lists.
 - Mark a finding `Declined by human` only when the `## Declined Audit Findings` section of `FOLLOWUP.md` records my explicit decline from phase `07` with the finding's identifier and my reason. Accept nothing weaker, such as a chat remark or the finding's absence from `FOLLOWUP.md` items. Keep it in its issue list with the reason. A declined finding still prevents the pass statement; report it in the handoff so I can decide whether to end the workflow.
 - When phase `09`'s handoff reported, with evidence, that a finding routed to `09` is unsupported and this pass still holds it, keep it `Open`, record phase `09`'s evidence and your reason for holding it, and change its destination to phase `07` for my decision instead of routing it back to `09`.
+- Record for each finding routed to `09` its number of phase-`09` correction attempts: the audit passes, after the pass that first reported it, on which it remained `Open`. When the third attempt leaves it `Open`, keep it `Open`, record what each attempt changed and why the finding still holds, and change its destination to phase `07` for my decision instead of routing it back to `09`.
 
 ### Verification
 
@@ -272,7 +275,8 @@ For each actionable finding, include:
 - stronger existing proof or missing owner-boundary proof;
 - any production or test-support seam involved;
 - smallest justified correction;
-- destination phase: `09` for test-only changes, or `07` for production, documentation, dependency, build, configuration, or environment changes and for test-only findings that phase `09` disputed with evidence and this audit still holds;
+- destination phase: `09` for test-only changes, or `07` for production, documentation, dependency, build, configuration, or environment changes and for test-only findings that phase `09` disputed with evidence and this audit still holds, or that remain `Open` after three phase-`09` correction attempts;
+- the number of phase-`09` correction attempts, for a finding routed to `09`;
 - focused command that should verify the correction.
 
 Use `None.` under both issue headings when no actionable findings exist, and under `Finding History` when no earlier finding has been resolved. Do not omit the headings.

@@ -201,6 +201,8 @@ The following typing coverage is a hard requirement:
 - Explain the work in commit descriptions with as much detail as needed; no length limit.
 - Do not claim work is complete without fresh verification evidence.
 - Run linter and smoke test if any on every commit, unless the prompt explicitly forbids command execution.
+- Before pushing, run the repository's existing build, linter, type or static checks, and the focused existing tests that the change affects, and fix every failure the change caused. Do not push a failure that these local checks can reproduce and leave CI or a later review to find it. The one exception is an existing test that fails only because it asserts behavior that a cited locked requirement, accepted finding, or approved follow-up item explicitly replaces; report that failure as this prompt requires. In a phase that does not push, this rule adds no command to run.
+- Do not weaken a check so that a change passes. Do not edit, skip, disable, or delete an existing test or assertion; relax a lint, type, or static-analysis rule; add a suppression, retry, or sleep that hides a failure; or change a CI step, coverage threshold or exclusion, or other verification configuration, unless a cited locked requirement, accepted finding, or approved follow-up item explicitly requires that exact change. Correct the code, or stop and ask. In review and verification phases, report an unauthorized change of this kind in the inspected diff as a blocking finding that names the weakened check.
 - If a command fails, paste the exact error/log back. Never paraphrase logs.
 
 ### Tests
@@ -358,6 +360,8 @@ Execution rules:
 - before marking each approved item complete, update and validate the exact durable documentation in the same change set, or report the item's evidence-based `Not applicable` decision,
 - do not substitute code comments, commit messages, or workflow artifacts for durable documentation,
 - do not write the changelog,
+- before pushing, run the repository's existing build, linter, type or static checks, and the focused existing tests that the change affects, and fix every failure the change caused; do not push a failure that these local checks can reproduce, apart from an existing-test failure reported under the intended-behavior-change rule above,
+- do not weaken a check so that the change passes: do not edit, skip, disable, or delete an existing test or assertion, relax a lint, type, or static-analysis rule, add a suppression, retry, or sleep that hides a failure, or change a CI step, coverage threshold or exclusion, or other verification configuration, unless a cited approved `FOLLOWUP.md` item explicitly requires that exact change; correct the code, or stop and ask,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/` or `.security-audit/`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,

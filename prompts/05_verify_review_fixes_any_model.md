@@ -202,6 +202,8 @@ The following typing coverage is a hard requirement:
 - Explain the work in commit descriptions with as much detail as needed; no length limit.
 - Do not claim work is complete without fresh verification evidence.
 - Run linter and smoke test if any on every commit, unless the prompt explicitly forbids command execution.
+- Before pushing, run the repository's existing build, linter, type or static checks, and the focused existing tests that the change affects, and fix every failure the change caused. Do not push a failure that these local checks can reproduce and leave CI or a later review to find it. The one exception is an existing test that fails only because it asserts behavior that a cited locked requirement, accepted finding, or approved follow-up item explicitly replaces; report that failure as this prompt requires. In a phase that does not push, this rule adds no command to run.
+- Do not weaken a check so that a change passes. Do not edit, skip, disable, or delete an existing test or assertion; relax a lint, type, or static-analysis rule; add a suppression, retry, or sleep that hides a failure; or change a CI step, coverage threshold or exclusion, or other verification configuration, unless a cited locked requirement, accepted finding, or approved follow-up item explicitly requires that exact change. Correct the code, or stop and ask. In review and verification phases, report an unauthorized change of this kind in the inspected diff as a blocking finding that names the weakened check.
 - If a command fails, paste the exact error/log back. Never paraphrase logs.
 
 ### Tests
@@ -328,6 +330,8 @@ Focused verification:
 - Record the requirement or claim, scenario, exact command or interaction, revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
 - Verify that each defect category assigned to `Review fix` is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
 
+- When `REVIEW.md` `## Review Basis` records a repository-owned review checklist, read it at the base revision on `main` and apply only the items whose trigger matches the changes since the baseline. Record each matched item and its result in `## Independent Behavior and Diagnostic Evidence`. Record a failed item as a new issue only with the evidence the new-issue fields require.
+
 For each material changed behavior, verify that its documentation checkpoint is complete. Treat missing, inaccurate, or unvalidated required durable documentation as unresolved.
 
 ## Required output: `REVIEW_FIX_VERIFICATION.md`
@@ -350,8 +354,8 @@ Use this structure:
 
 ## Finding-by-Finding Verification
 
-| Original Finding | Status | Evidence | Remaining Action |
-|---|---|---|---|
+| Original Finding | Status | Fix Attempts | Evidence | Remaining Action |
+|---|---|---|---|---|
 
 ## Documentation Checkpoint Verification
 
@@ -367,6 +371,15 @@ Use this structure:
 ```
 
 The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`. Deferral schedules work; it does not resolve or waive it. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
+
+In `Fix Attempts`, record how many review-fix passes have attempted the finding, counting the pass under verification. A pass counts when its `REVIEW_FIX_PROMPT.md` assigned the finding to it. Establish the count from `REVIEW.md`, earlier `REVIEW_FIX_VERIFICATION.md` evidence, and the commit history; when it cannot be established, record the passes you can identify and state the limit. Write `-` for a finding that no pass attempted.
+
+If a finding assigned to `Review fix` is still `Open` or `Partially Resolved` after three review-fix passes attempted it:
+
+- do not return the workflow to `04` and do not create `REVIEW_FIX_PROMPT.md`,
+- keep the finding's status and keep `Ready to finalize review/walkthrough docs` at `No`,
+- report to me, in `Required Next Action` and in chat, the finding identifier, what each attempt changed, and the evidence that the finding still fails,
+- stop and ask me how to proceed. This stop takes precedence over the return to `04` described below. Return to `04` for another pass on that finding only with my direction.
 
 If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
 

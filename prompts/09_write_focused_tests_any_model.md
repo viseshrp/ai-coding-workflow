@@ -145,6 +145,8 @@ Apply this procedure to backend and UI work within this phase's existing permiss
 - Reject tautological or self-testing tests that compare a value with itself, reproduce production logic in the expected value, or verify only behavior supplied by a test double. Derive expectations independently from the observable contract.
 - Reject change-detector tests that freeze implementation details or snapshots without an intentional observable contract. Harmless refactors must not break tests when the protected behavior still holds.
 - Assert the smallest stable public result that proves the behavior.
+- Use a property-based test when a requirement or public contract holds across a range of inputs and the repository already installs and uses a property-based testing library. Such contracts include a round trip (encoding then decoding returns the input), an invariant (a balance never becomes negative), idempotency (a second run changes nothing), and equivalence with an existing independent reference implementation. Derive the property from the requirement, not from the implementation. One property test counts as one test and replaces the example tests it makes redundant; keep an example only where it proves a distinct requirement-derived outcome. Keep generation reproducible through the library's own options in the test file or the repository's existing settings; generated inputs controlled that way are not uncontrolled randomness. Without an installed library, use native parameterization over independently chosen boundary inputs; do not add a dependency or hand-roll a generator.
+- Use a differential test when the branch rewrites, migrates, or optimizes an implementation whose observable behavior the requirements keep unchanged, and the previous or reference implementation is still callable in the repository at the final revision. Run both implementations on the same inputs through their public entry points and assert equal results. Name each difference that an approved change requires, with its requirement source, and exclude only that difference; normalize only details that the contract declares irrelevant. Do not copy the previous implementation into test code, check out another revision, or call a live service to obtain an oracle. When no callable oracle exists, report that limit in the handoff and cover the behavior with requirement-derived tests.
 
 ### Test-framework conventions
 
@@ -174,6 +176,7 @@ Apply this procedure to backend and UI work within this phase's existing permiss
   - `caplog` over custom logging handlers,
   - `pytest.raises` and `pytest.warns` over manual `try`/`except` or warning-capture code,
   - `pytest.mark.parametrize` over duplicated tests for variants of one behavior,
+  - Hypothesis, when the repository already installs it, for a property-based test that meets the Test design rule,
   - the repository's existing mock fixture, such as `mocker`, when already installed and appropriate.
 - If no existing pytest or plugin API covers the need, prefer a small test-local fake over elaborate Python standard-library machinery.
 - Do not install `pytest-mock` or another plugin. If a new dependency or unavoidable standard-library workaround would be required, stop and ask.
@@ -202,6 +205,7 @@ When tests pass but a real API check fails, investigate the disagreement against
 - Reach at least 85% coverage for new or changed lines.
 - Measure changed-line coverage directly when existing tooling supports it. Otherwise report the closest focused coverage measurement available and its limitation; do not present it as changed-line coverage.
 - Do not weaken exclusions, omit relevant files, or alter coverage configuration to reach the threshold.
+- Do not skip, disable, delete, or loosen an existing test or assertion, or add a retry, to get a passing run. Change an existing test's expected result only when a cited locked requirement, review finding, or approved `FOLLOWUP.md` item explicitly replaces the asserted behavior, and name that source in the handoff.
 - Run the smallest relevant test selection first.
 - Do not manually run the entire test suite unless explicitly asked.
 - Run any focused lint or static checks that apply to changed test files.
@@ -328,6 +332,7 @@ Do not write the handoff to a file. In the final chat response, state concisely:
 - which test files changed,
 - why this is the minimum test set,
 - the exact focused test and coverage commands with their results,
+- each existing test whose expected result this phase changed, with the requirement, finding, or `FOLLOWUP.md` item that replaces the asserted behavior, and any differential-test oracle that was unavailable,
 - the commit, push, and pull-request status,
 - the documentation-checkpoint status for the changed behavior, including any reason work was escalated rather than edited here and any gap whose audit finding I declined, with that finding identifier,
 - the disposition and evidence for each deferred finding identifier, each `TEST_AUDIT.md` finding identifier routed to `09`, each unchecked `FOLLOWUP.md` test-authoring item, and each existing test that phase `08` recorded as failing because of an intended behavior change, plus any blocker or existing-test concern left unchanged. Report this in chat; do not update the review artifacts.

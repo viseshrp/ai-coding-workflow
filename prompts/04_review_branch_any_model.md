@@ -200,6 +200,8 @@ The following typing coverage is a hard requirement:
 - Explain the work in commit descriptions with as much detail as needed; no length limit.
 - Do not claim work is complete without fresh verification evidence.
 - Run linter and smoke test if any on every commit, unless the prompt explicitly forbids command execution.
+- Before pushing, run the repository's existing build, linter, type or static checks, and the focused existing tests that the change affects, and fix every failure the change caused. Do not push a failure that these local checks can reproduce and leave CI or a later review to find it. The one exception is an existing test that fails only because it asserts behavior that a cited locked requirement, accepted finding, or approved follow-up item explicitly replaces; report that failure as this prompt requires. In a phase that does not push, this rule adds no command to run.
+- Do not weaken a check so that a change passes. Do not edit, skip, disable, or delete an existing test or assertion; relax a lint, type, or static-analysis rule; add a suppression, retry, or sleep that hides a failure; or change a CI step, coverage threshold or exclusion, or other verification configuration, unless a cited locked requirement, accepted finding, or approved follow-up item explicitly requires that exact change. Correct the code, or stop and ask. In review and verification phases, report an unauthorized change of this kind in the inspected diff as a blocking finding that names the weakened check.
 - If a command fails, paste the exact error/log back. Never paraphrase logs.
 
 ### Tests
@@ -284,9 +286,10 @@ Context to review:
 - `IMPLEMENTATION_PLAN.md`, if present,
 - any local `PLAN*.md` files in the repo root, if available,
 - `EXECUTION_PROMPT.md`, if present,
+- a repository-owned review checklist, when repository instructions such as `AGENTS.md` or the repository's contribution documentation identify one. Read the version at the base revision on `main`, not the branch's version, so that the branch cannot change the checklist that judges it. Review a branch change to the checklist like any other change,
 - the pull-request description, plus the implementation or review-fix pass's final response if it is supplied, for existing-test failures it reported as caused by an intended behavior change.
 
-The named planning and execution artifacts are optional. Do not require, recreate, or ask for them merely because they are absent.
+The named planning and execution artifacts and the review checklist are optional. Do not require, recreate, or ask for them merely because they are absent.
 
 Success criteria:
 
@@ -314,6 +317,7 @@ Working method:
 - trace how comparable behavior fits into the existing architecture: component responsibilities, dependency direction, shared services, and extension points. Verify that changed code uses those paths and preserves ownership boundaries. Flag unapproved parallel abstractions, duplicate infrastructure, or bypassed architectural layers with concrete repository evidence,
 - give architecture and other high-impact changes deeper scrutiny, including changes to shared behavior, public contracts, persistent data, security boundaries, or concurrency. Assess impact from affected consumers and failure consequences, even for small diffs. Trace the relevant compatibility, migration, and failure/recovery paths and prioritize independent verification of those risks,
 - treat the declared design as one candidate, not a settled decision, even when it follows an available plan or the pull-request description. For each material mechanism the change adds, work out the simplest design that would meet the same requirements, and compare the two against callers, contracts, failure paths, and the Simplicity and reuse procedure. Treat follow-ups, TODOs, and "until then" caveats in the pull-request description, code comments, or linked issues as signs that the design may be provisional, and state when one would remove code this change adds; a tracked follow-up does not make the current design final. Record supported alternatives under `Suggestions`; they do not authorize a redesign,
+- when a repository-owned review checklist exists, read every item's trigger and apply only the items whose trigger matches the selected changes. Apply an item that states no trigger only when the selected changes touch what it checks, and do not run the unmatched items. Record in `## Review Basis` the checklist path and revision, each matched item, the change that matched it, and its result with evidence. Report a failed item as a finding only when the evidence meets the finding rules below; a checklist item does not replace that evidence. Do not create or edit the checklist in this phase,
 - when planning artifacts are available, audit compliance with them; when they are absent, use the branch diff as the scope boundary and existing behavior, public APIs, documentation, configuration, and tests as evidence,
 - flag plan divergence only when an available planning artifact provides evidence of divergence,
 - quote or clearly point to the exact evidence for each material finding,
@@ -349,6 +353,7 @@ Review for:
 - reinvention/duplication of existing code,
 - excess abstractions, unused paths, avoidable complexity, and mechanisms whose job another required path already does, with caller and contract evidence before recommending removal,
 - incident diagnostics for changed failure paths,
+- changes that weaken the checks that judge the branch: an edited, skipped, disabled, or deleted existing test or assertion; a relaxed lint, type, or static-analysis rule; an added suppression, retry, or sleep that hides a failure; or a changed CI step, coverage threshold or exclusion, or other verification configuration, without a cited requirement that requires that exact change,
 - comment quality and missing comments where code is not obvious,
 - bloated comment blocks,
 - cross-platform Linux/Windows safety, including explicit escalation of conflicts with repository or approved platform requirements,
@@ -471,6 +476,8 @@ Report only actionable, evidence-backed findings under `Blocking Issues` or `Non
 
 Use exactly one of these finding statuses: `Open` (confirmed and not yet fixed), `Partially Resolved` (fixed for some, but not all, confirmed occurrences or acceptance checks), `Resolved` (fixed and verified with fresh evidence), `Invalid Finding` (disproved by inspected evidence, which the entry records), or `Deferred to 09` (test-only work assigned to phase `09`). Do not use other status values.
 
+Before recording a defect as a finding, check whether the code at the base revision recorded in `## Review Basis` already has it. A defect is `Pre-existing` when the base code has it and the selected changes do not introduce it, worsen it, newly reach it, or depend on it for the changed behavior. Do not hold the branch responsible for a `Pre-existing` defect: record it under `Suggestions` with the label `Pre-existing`, its file and line evidence at the base revision, and its concrete impact. Give it no finding status or destination, do not count it in `Verdict`, and do not carry it into `REVIEW_FIX_PROMPT.md`. A defect that the branch worsens, newly reaches, or depends on stays a finding under the issue headings.
+
 For static issues, provide repeatable inspection or call-trace steps that demonstrate the mismatch. Label unexecuted reproduction scenarios `Not run`; never invent observations. Keep unanswered intent questions and pending verification in the existing review-basis and evidence sections, separate from confirmed defects.
 
 Every valid review issue must remain categorized under either `Blocking Issues` or `Non-Blocking Issues`, including test-only findings assigned to `09`. Put each finding's corrective suggestion directly below its evidence and reproduction steps. Keep broader optional improvements in `Suggestions` and reference the related finding identifier without reposting the finding.
@@ -573,7 +580,7 @@ Verify that the actual generated fix prompt includes the complete UI activation 
 
 Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings assigned to `Review fix`, including both blocking and non-blocking issues. Carry test-only deferrals to `09` without authoring tests here. There is no separate checked-in review-fix prompt file after this review step.
 
-If a later verification pass, or a severe missed issue recorded by phase `06`, requires another fix iteration, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase.
+If a later verification pass, or a severe missed issue recorded by phase `06`, requires another fix iteration, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase. When `REVIEW_FIX_VERIFICATION.md` records that a finding is still unresolved after three review-fix passes attempted it, assign that finding to the next `REVIEW_FIX_PROMPT.md` only with my direction for it, and include that direction in the prompt. Without my direction, stop and ask.
 
 It must be self-contained.
 
@@ -727,6 +734,8 @@ Focused verification:
 - derive verification scenarios from the accepted finding and independent acceptance criteria grounded in the available original requirements or public contracts, then replay the reviewer's independent scenarios against the changed behavior. Give fixes in architecture or other high-impact areas deeper verification of the affected consumers and risks recorded in `REVIEW.md`. For runtime changes, verify the running application and relevant real APIs in an authorized environment using existing tools; preserve the read-only remote-request boundary unless side effects are authorized. Record the finding identifier, requirement or claim, scenario, exact command or interaction, expected and observed results, environment and revision, and pending checks; do not claim completion from author-written tests alone,
 - verify that the accepted defect category is resolved across every confirmed in-scope occurrence, not only the originally reported example. Update the existing search evidence for new or affected matches and assess incident diagnostics for changed failure paths. Report other supported occurrences and gaps by the existing finding identifier for the appropriate approval path; preserve the test-authoring boundary,
 - run the applicable focused documentation validation for every documentation update before staging; if no update applies, record the evidence-based `Not applicable` rationale,
+- before pushing, run the repository's existing build, linter, type or static checks, and the focused existing tests that the change affects, and fix every failure the change caused; do not push a failure that these local checks can reproduce, apart from an existing-test failure reported under the intended-behavior-change rule above,
+- do not weaken a check so that the change passes: do not edit, skip, disable, or delete an existing test or assertion, relax a lint, type, or static-analysis rule, add a suppression, retry, or sleep that hides a failure, or change a CI step, coverage threshold or exclusion, or other verification configuration, unless a cited accepted finding explicitly requires that exact change; correct the code, or stop and ask,
 - after verification, stage the intended files with `git add`,
 - do not stage or commit workflow-generated artifacts by default, including `DRAFT_PLAN.md`, `INITIAL_PLANNING_PROMPT.md`, `FEATURE_SPEC_AND_PLAN.md`, `EXECUTION_PROMPT.md`, `PLAN_CRITIQUE.md`, `PLAN_REVISION_REQUEST.md`, `PLAN_REVISION_SUMMARY.md`, `PLAN_REVISION_VERIFICATION.md`, `REVIEW.md`, `WALKTHROUGH.md`, `REVIEW_FIX_PROMPT.md`, `REVIEW_FIX_VERIFICATION.md`, `FOLLOWUP.md`, `TEST_AUDIT.md`, `UI_PROTOTYPE.md`, and files under `.ui-prototypes/` or `.security-audit/`, unless I explicitly ask for them to be committed,
 - create focused commit(s) with detailed messages,
