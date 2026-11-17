@@ -205,7 +205,7 @@ When tests pass but a real API check fails, investigate the disagreement against
 - Reach at least 85% coverage for new or changed lines.
 - Measure changed-line coverage directly when existing tooling supports it. Otherwise report the closest focused coverage measurement available and its limitation; do not present it as changed-line coverage.
 - Do not weaken exclusions, omit relevant files, or alter coverage configuration to reach the threshold.
-- Do not skip, disable, delete, or loosen an existing test or assertion, or add a retry, to get a passing run. Change an existing test's expected result only when a cited locked requirement, review finding, or approved `FOLLOWUP.md` item explicitly replaces the asserted behavior, and name that source in the handoff.
+- Do not skip, disable, delete, or loosen an existing test or assertion, or add a retry, to get a passing run. Consolidating or removing a test whose contract retained coverage still proves, under the minimum-test rules or a `TEST_AUDIT.md` finding, is not weakening. Change an existing test's expected result only when a cited locked requirement, review finding, or approved `FOLLOWUP.md` item explicitly replaces the asserted behavior, and name that source in the handoff.
 - Run the smallest relevant test selection first.
 - Do not manually run the entire test suite unless explicitly asked.
 - Run any focused lint or static checks that apply to changed test files.
