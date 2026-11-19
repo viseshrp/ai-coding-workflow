@@ -39,6 +39,7 @@ Resolve these known conflicts as follows:
 - Review judgments are mine. Do not issue `code-review-and-quality`'s `Approve` or `Request changes` verdict or use its comment labels; state each concern with its evidence under the rules below.
 - Do not raise a concern from a skill's size threshold alone, and do not call a compatibility path dead code without evidence in the code.
 - `show-me`'s instruction to keep prose brief does not shorten the required explanations or the plain-language rules.
+- `no-ai-slop`'s rules against bullet lists, headers over short sections, and identical paragraph structures do not remove the block response format under `### Review a semantic block`. Its numbered sections, bold labels that start a bullet, numbered steps, and horizontal rules are required structure. The skill's other rules still apply inside that format: use no bold for emphasis inside a sentence and no decorative em dashes.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
@@ -130,27 +131,31 @@ Base the overview and flow explanations on inspected code and PR changes, checki
 
 ### Review a semantic block
 
-Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order.
+Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order. Give each block a short label, such as `Block 3b` for the second block of the third file, and use that label whenever you refer to the block.
 
 Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
-After the code, explain the block in this order:
+After the code, explain the block in this response format. Keep each part short and concrete.
 
-1. Overview: in a few sentences, state what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code.
-2. Line by line: go through the displayed block in source order. For each line, cite its file/line location and state what it does: the value it reads or sets, the condition it tests, the call it makes, and the branch, return, or error that follows. Cover every changed line and each unchanged line needed to follow them. Group lines only when they form one statement.
-3. Example run: step through the block once with concrete values, the way a debugger steps over each line.
+1. Concrete sample: open with one sample of the real data the block works on, such as the input it receives, the structure it reads, or the output it produces. Take it from inspected code, cite its file/line location, and add a short comment on each part that says where the part comes from. Give the value of every argument, constant, attribute, and other value that the block reads but does not define. Take constant and configuration values from their verified declarations or definitions. Take argument and state values from a real call site, an existing fixture, or a requirement example when one exists; otherwise choose a realistic value and introduce it with `e.g.` or `Suppose`. Never use a real secret, credential, or personal data; use an obviously fake value. Use the sample's values in every part that follows.
+2. Sections: give each symbol or step in the block its own numbered section, in source order, with a horizontal rule between sections. Use the exact identifier as the heading and put its code excerpt directly under the heading. Under the code, write short bullets that each start with a bold label. Choose labels that fit the code, and cover each of these that applies:
+   - Overview, under a label such as `What it is` or `What it solves`: one or two sentences on what the symbol does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code.
+   - Change, under `Before this PR` and `After this PR`: when the PR changed the code, the earlier code or behavior, the case that it handled wrongly or not at all, and the new behavior.
+   - Example run, under a label such as `How it runs`: numbered steps in execution order, one for each line, the way a debugger steps over each line. Each step states what the line does and the concrete value that it reads, sets, or returns for the sample, such as `retries = 3`. State the branch that the sample's values take. Step over each call: state its arguments and the value it returns for them, taken from its inspected code or documented behavior, without tracing its body. If you cannot determine a returned value, say so and continue with an example value. For a loop, step through the first pass and the pass that exits instead of repeating cycles. End with the result for the sample: the returned value, raised error, or changed state, and where control goes next.
+   - Other paths, under a label such as `Fallback`: for each line or branch that the sample's values do not reach, state the value that reaches it and what the code then does. The example run and the other paths together cover every changed line and each unchanged line needed to follow them. Group lines only when they form one statement.
+   - Worked numbers: for a threshold, limit, or calculation, give a small scenario with real numbers, write out the arithmetic, and state what the code does with the result.
+   - Reason, under a label such as `Why it is written this way`: why the code has this form, when the inspected code or the requirements show the reason.
+3. Close: after any review concerns, ask in one line whether the block is clear. Then tell me to say `next` for the next block, and name that block by its label. `next` only moves to the next block; it is not `AGREE`, `RESOLVE`, or the final go-ahead.
 
-Build the example run as follows:
+Apply these limits to the format:
 
-- Start with the starting values: every argument, constant, attribute, and other value that the block reads but does not define. Take constant and configuration values from their verified declarations or definitions. Take argument and state values from a real call site, an existing fixture, or a requirement example when one exists; otherwise choose a realistic value. Label each starting value `from code`, with its file/line location, or `example`. Never use a real secret, credential, or personal data; use an obviously fake value.
-- Choose values that follow the block's main path. List each executed line in order with its file/line location, the values it reads, the value it sets or returns, and the branch it takes. Name the lines that this run skips and the condition that skips them. For a loop, step through the first pass and the pass that exits instead of repeating cycles.
-- Step over each call: state its arguments and the value it returns for them, taken from its inspected code or documented behavior, without tracing its body. If you cannot determine the returned value, say so and continue with a value labeled `example`.
-- End with the block's result for this run: the returned value, raised error, or changed state, and where control goes next.
-- Derive the run from inspected code and label it as a code-derived trace. It is not observed behavior and does not satisfy a required runtime check. Do not create or modify a file to produce it.
-- Give one run per block. Add a run with other values when I ask for one, or when a reachable error or alternate branch stays unclear after the line-by-line explanation.
-- For a formatting-only change or a simple rename, state the change in one sentence and skip the line-by-line explanation and the example run. When the block has no executable statement, such as a type declaration, a configuration value, or documentation text, state that no example run applies.
+- Write identifiers and values as inline code. Use bold only for the label that starts a bullet.
+- A symbol with no executable statement, such as a constant, a type declaration, or a configuration value, has no example run. Show how the code uses it with the sample's values instead.
+- The example run and the worked numbers come from reading the code. Do not present them as observed behavior or use them to satisfy a required runtime check. Do not create or modify a file to produce them.
+- Give one example run per symbol. Add a run with other values when I ask for one.
+- For a formatting-only change or a simple rename, state the change in one sentence and skip the sections.
 
-For material logic changes, include brief before/after pseudocode after the overview, covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
+For material logic changes, include brief before/after pseudocode in the changed symbol's section, covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
 
 Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
