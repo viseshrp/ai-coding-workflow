@@ -107,7 +107,7 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 Help me review the current PR from the actual code and PR changes. Start by showing how the code fits together and where each flow ends, then discuss one small semantic block at a time. Keep explanations concise without losing detail, and follow my questions about the code before moving on. Review judgments, `FOLLOWUP.md` approvals, and file completions in this phase remain my decisions.
 
-Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts.
+Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts, line-by-line coverage, or the example run.
 
 ### Read the PR and code
 
@@ -118,7 +118,7 @@ Use ISO-style plain language and ASD-STE100-inspired technical writing as guidan
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 
-Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs and pseudocode in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
+Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs, pseudocode, and example runs in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
 
 ### Explain the code context first
 
@@ -134,9 +134,25 @@ Review one primary file at a time and one small semantic block per response. Cho
 
 Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
-For material logic changes, include brief before/after pseudocode covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
+After the code, explain the block in this order:
 
-Explain what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code. Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
+1. Overview: in a few sentences, state what the block does, the inputs and state it depends on, the branch conditions, and how its outputs, side effects, returns, or errors connect to the surrounding code.
+2. Line by line: go through the displayed block in source order. For each line, cite its file/line location and state what it does: the value it reads or sets, the condition it tests, the call it makes, and the branch, return, or error that follows. Cover every changed line and each unchanged line needed to follow them. Group lines only when they form one statement.
+3. Example run: step through the block once with concrete values, the way a debugger steps over each line.
+
+Build the example run as follows:
+
+- Start with the starting values: every argument, constant, attribute, and other value that the block reads but does not define. Take constant and configuration values from their verified declarations or definitions. Take argument and state values from a real call site, an existing fixture, or a requirement example when one exists; otherwise choose a realistic value. Label each starting value `from code`, with its file/line location, or `example`. Never use a real secret, credential, or personal data; use an obviously fake value.
+- Choose values that follow the block's main path. List each executed line in order with its file/line location, the values it reads, the value it sets or returns, and the branch it takes. Name the lines that this run skips and the condition that skips them. For a loop, step through the first pass and the pass that exits instead of repeating cycles.
+- Step over each call: state its arguments and the value it returns for them, taken from its inspected code or documented behavior, without tracing its body. If you cannot determine the returned value, say so and continue with a value labeled `example`.
+- End with the block's result for this run: the returned value, raised error, or changed state, and where control goes next.
+- Derive the run from inspected code and label it as a code-derived trace. It is not observed behavior and does not satisfy a required runtime check. Do not create or modify a file to produce it.
+- Give one run per block. Add a run with other values when I ask for one, or when a reachable error or alternate branch stays unclear after the line-by-line explanation.
+- For a formatting-only change or a simple rename, state the change in one sentence and skip the line-by-line explanation and the example run. When the block has no executable statement, such as a type declaration, a configuration value, or documentation text, state that no example run applies.
+
+For material logic changes, include brief before/after pseudocode after the overview, covering the relevant conditions, side effects, and error handling. Label it as pseudocode and keep the actual code visible. Skip pseudocode for formatting and simple renames.
+
+Include relevant context from `WALKTHROUGH.md` beside the block. Point out a review concern only when the code supports it, explain your judgment, and state where evidence is missing. Discuss my questions about the displayed code before continuing to the next block.
 
 Independently derive scenarios that could disprove the block's claimed behavior. Ground acceptance criteria and expected outcomes in product requirements, approved clarifications, or public contracts; do not treat the implementation or its tests as the specification. Check focused integration proof for material component or API interactions. Apply the Simplicity and reuse checks to duplication, excess abstractions, unused paths, and complexity, and assess incident diagnostics for changed failure paths. Search for the same defect pattern when a supported issue is found; inspect candidate matches, distinguish confirmed occurrences from false positives, record search limits, and discuss supported occurrences without expanding implementation authority. Missing test authoring remains work for phase `09`, subject to the existing `AGREE` gate when recording it in `FOLLOWUP.md`.
 
