@@ -284,8 +284,8 @@ Context to review:
 
 Success criteria:
 
-- `REVIEW.md` matches the final code and distinguishes resolved findings, test-only findings deferred to `09`, and optional suggestions,
-- `REVIEW.md` explicitly reports whether all valid blocking and non-blocking findings are resolved. Keep that overall result `No` while any valid finding, including a test-only deferral, remains unresolved; readiness for the current handoff does not mean final completion,
+- `REVIEW.md` matches the final code and distinguishes resolved findings, test-only findings deferred to `09`, findings I declined, and optional suggestions,
+- `REVIEW.md` explicitly reports whether all valid blocking and non-blocking findings are resolved. Keep that overall result `No` while any valid finding, including a test-only deferral or a finding marked `Declined by human`, remains unresolved; readiness for the current handoff does not mean final completion,
 - `WALKTHROUGH.md` matches the final code state and remains useful for a beginner human reviewer,
 - `REVIEW.md` records the final documentation-checkpoint status for every material changed behavior,
 - the refreshed artifacts are detailed, grounded, and internally consistent.
@@ -334,7 +334,7 @@ It must include:
 - documentation review with every material changed behavior's update-and-validation evidence or evidence-based `Not applicable` rationale,
 - any remaining suggestions.
 
-Preserve each finding's identifier, original evidence, and occurrence history, and update its final status in place using exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, or `Deferred to 09`. `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, and `Deferred to 09` is test-only work assigned to phase `09`. Adopt each `Deferred to 09` entry recorded under `New Issues Introduced` in `REVIEW_FIX_VERIFICATION.md` into `REVIEW.md` under its assigned identifier, with its status, destination, severity, evidence, reproduction steps, and correction. Do not treat it as a new finding or repost it under a new identifier. Clearly mark findings fixed during the review loop. Do not repost an existing finding as new; reference it when recording remaining occurrences or pending evidence.
+Preserve each finding's identifier, original evidence, and occurrence history, and update its final status in place using exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, `Deferred to 09`, or `Declined by human`. `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, `Deferred to 09` is test-only work assigned to phase `09`, and `Declined by human` is a valid finding that I left out of the review-fix pass at the phase-`04` findings approval gate. Keep each declined finding's recorded reason and each approved fix scope unchanged; only phase `04` records those decisions. Adopt each `Deferred to 09` entry recorded under `New Issues Introduced` in `REVIEW_FIX_VERIFICATION.md` into `REVIEW.md` under its assigned identifier, with its status, destination, severity, evidence, reproduction steps, and correction. Do not treat it as a new finding or repost it under a new identifier. Clearly mark findings fixed during the review loop. Do not repost an existing finding as new; reference it when recording remaining occurrences or pending evidence.
 
 ## Required output 2: refreshed `WALKTHROUGH.md`
 

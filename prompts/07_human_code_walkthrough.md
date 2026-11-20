@@ -39,7 +39,7 @@ Resolve these known conflicts as follows:
 - Review judgments are mine. Do not issue `code-review-and-quality`'s `Approve` or `Request changes` verdict or use its comment labels; state each concern with its evidence under the rules below.
 - Do not raise a concern from a skill's size threshold alone, and do not call a compatibility path dead code without evidence in the code.
 - `show-me`'s instruction to keep prose brief does not shorten the required explanations or the plain-language rules.
-- `no-ai-slop`'s rules against bullet lists, headers over short sections, and identical paragraph structures do not remove the block response format under `### Review a semantic block`. Its numbered sections, bold labels that start a bullet, numbered steps, and horizontal rules are required structure. The skill's other rules still apply inside that format: use no bold for emphasis inside a sentence and no decorative em dashes.
+- `no-ai-slop`'s rules against bullet lists, headers over short sections, and identical paragraph structures do not remove the block response format under `### Review a semantic block` or the bullets of a `Summary` response under `### Choose each file's review depth`. The block format's numbered sections, bold labels that start a bullet, numbered steps, and horizontal rules are required structure. The skill's other rules still apply inside that format: use no bold for emphasis inside a sentence and no decorative em dashes.
 
 Do not use any skill to expand scope, add architecture changes, add tests, add unrelated refactors, or override my explicit instructions.
 
@@ -100,20 +100,20 @@ Fetch and completely read only the applicable skills and companions explicitly l
 
 ### Phase requirements
 
-- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the prose overview and semantic blocks.
+- Review UI behavior independently from the actual PR changes and inspected code; continue to discard `REVIEW.md`. Connect applicable data and state, keyboard and focus, touch, and motion paths to the prose overview and to the semantic blocks or file summaries.
 - Where available, inspect the running interaction using existing facilities. Discuss observed behavior separately from inferred behavior and pending browser or device checks. Do not create HTML, prototype pages, toggles, fixtures, or additional visual artifacts.
 - Record documentation and required pending UI checks in the primary checklist. Preserve `AGREE` for each exact follow-up item, renewed review on changed code, `RESOLVE` plus verified GitHub Viewed state for file completion, and the final go-ahead before implementation.
 
 ## Prompt
 
-Help me review the current PR from the actual code and PR changes. Start by showing how the code fits together and where each flow ends, then discuss one small semantic block at a time. Keep explanations concise without losing detail, and follow my questions about the code before moving on. Review judgments, `FOLLOWUP.md` approvals, and file completions in this phase remain my decisions.
+Help me review the current PR from the actual code and PR changes. Start by showing how the code fits together and where each flow ends, then propose how deeply to review each file. Discuss a `Full` file one small semantic block at a time, and a `Summary` file in one response. Keep explanations concise without losing detail, and follow my questions about the code before moving on. Review judgments, `FOLLOWUP.md` approvals, and file completions in this phase remain my decisions.
 
-Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts, line-by-line coverage, or the example run.
+Use ISO-style plain language and ASD-STE100-inspired technical writing as guidance, without claiming formal compliance. Write complete sentences with explicit subjects, actions, and outcomes. Define technical terms and abbreviations on first use. Explain each symbol's role, required background, and cause-and-effect relationships without assuming knowledge of earlier chats, the implementation session, or repository-specific concepts. Keep identifiers and technical meaning exact. These writing guidelines remain subordinate to `no-ai-slop` and do not replace required code excerpts, the line-by-line coverage of `Full` files, or the example run.
 
 ### Read the PR and code
 
 - At the start of each session, and whenever I say the PR changed, pull the current PR changed-file list and per-file changes from GitHub CLI (`gh`). Use them as the source of truth for the review checklist and changed blocks. The `RESOLVE` rule below refreshes the current file again. If `gh` cannot provide either, stop and ask; do not substitute the manual diff against `main`.
-- Maintain a primary checklist with one item per changed file and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
+- Maintain a primary checklist with one item per changed file, its review depth, and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
 - Re-read available original requirements and approved scope changes at the start, after long sessions or handoffs, and before completion to check for drift.
 - Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
 - Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
@@ -125,13 +125,23 @@ Use `show-me` only for focused diffs and pseudocode alongside the required code 
 
 Open the first review response with a brief prose overview of the code under review: entry points, affected files and symbols, dependencies, shared state, and their relationships. Use concrete file and symbol names from inspected code.
 
-Explain every reachable control-flow branch and data/state transition alongside the relevant semantic block. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
+Explain every reachable control-flow branch and data/state transition alongside the relevant semantic block of a `Full` file, or in the summary of a `Summary` file. Identify branch conditions, inputs, calls, side effects, and terminal success or error states. Include early returns, skipped work, exception propagation and handling, retries, and cleanup wherever they exist. Explain loop conditions and exits instead of repeating cycles. Mark paths or outcomes that cannot be verified; do not invent behavior.
 
 Base the overview and flow explanations on inspected code and PR changes, checking relevant `WALKTHROUGH.md` context against them. Show the overview in chat and pause for my questions or choice of where to start. Correct an explanation if later inspection changes a relationship, path, or outcome.
 
+### Choose each file's review depth
+
+With the overview, propose a review depth for each file on the primary checklist. Wait for me to confirm or change the list before you review a file.
+
+- `Full`: review the file block by block under `### Review a semantic block`. Propose `Full` for a file whose changes touch a public interface, such as a function signature, schema, configuration key, command-line option, or API response; authentication, authorization, secrets, or another security boundary; persistent data, storage formats, or migrations; money or billing; concurrency or shared state; or error handling, retries, or recovery. Also propose `Full` when the changes do not show whether one of these applies.
+- `Summary`: review the whole file in one response. Show each changed symbol's signature or declaration with its file/line location. Then state in short bullets what changed and why, its inputs and outputs, its side effects, its success and error paths and where each one ends, and any review concerns with their evidence. Propose `Summary` for the other files, such as internal helpers, renames, formatting, and wiring that passes values through unchanged.
+- Apply the review checks that follow the block format to a `Summary` file as a whole: independent scenarios, Simplicity and reuse, the repeated-defect search, runtime checks, and the documentation checkpoint. Report only what they find.
+- Record each file's depth in the primary checklist. When I say `deeper` while a `Summary` file is in review, switch that file to `Full` and show its first semantic block. I may change any file's depth at any time.
+- A `Summary` file needs the same documentation checkpoint, `RESOLVE`, and Viewed-state verification as a `Full` file before it is complete. The depth changes how much you explain, not what I decide.
+
 ### Review a semantic block
 
-Review one primary file at a time and one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order. Give each block a short label, such as `Block 3b` for the second block of the third file, and use that label whenever you refer to the block.
+Review one primary file at a time. For a `Full` file, review one small semantic block per response. Choose a coherent operation or decision, such as input validation, a state update, or an error handler. Keep related declarations and definitions alongside that block, even when they come from other files. Track any blocks left to review when my questions change the order. Give each block a short label, such as `Block 3b` for the second block of the third file, and use that label whenever you refer to the block.
 
 Show the block as a focused source diff with file/line locations and a few relevant surrounding lines. Show the complete block when most of it is new or omitted context would obscure ownership, order, or behavior. Identify before/after source locations where they differ. For every variable, constant, parameter, attribute, function, or method referenced but not defined in the displayed block, show its declaration or definition in a separate short excerpt with its file/line location. Show the relevant binding or initialization for values and enough of a called function or method to explain the call. For imported symbols, identify the source and use its verified declaration or definition; never invent one.
 
@@ -174,16 +184,16 @@ Phase `10` routes production, documentation, dependency, build, configuration, a
 - Record an agreed correction in `FOLLOWUP.md` only after `AGREE`, as a new item that cites the audit finding's identifier. Keep existing items and their checkboxes unchanged.
 - When I explicitly decline a routed finding by its identifier, keep it out of the implementation items. Record an entry with its identifier and my reason in the `## Declined Audit Findings` section of `FOLLOWUP.md`.
 - If this re-entry adds no new `FOLLOWUP.md` item because I declined every routed finding, state that phases `08` and `09` are skipped and that the workflow goes to the next phase-`10` pass.
-- The existing block review, documentation checkpoint, `RESOLVE`, Viewed-state verification, and final go-ahead rules apply unchanged.
+- The existing review-depth, block review, documentation checkpoint, `RESOLVE`, Viewed-state verification, and final go-ahead rules apply unchanged.
 
 ### Approve follow-up work and finish a file
 
 - Discuss each proposed change and agree on its exact step-by-step implementation plan, including all details needed to implement it, before recording it. Leave `FOLLOWUP.md` unchanged until I explicitly type `AGREE` in all caps for that specific item. Add only that item; `AGREE` does not advance the review to the next file. The only other `FOLLOWUP.md` write is a `## Declined Audit Findings` entry, recorded when I explicitly decline a routed `TEST_AUDIT.md` finding by its identifier.
-- Ask for `RESOLVE` only after every changed block in the current file is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
+- Ask for `RESOLVE` only after every changed block of a `Full` file, or the summary of a `Summary` file, is reviewed and each material changed behavior has a documentation-checkpoint result. Required documentation work may enter `FOLLOWUP.md` only after `AGREE`; otherwise keep it as a concern in the primary checklist.
 - Only when I type `RESOLVE` in all caps, refresh the current file's PR changes with `gh` and compare them with the reviewed version. If they changed, review the new changes, refresh the documentation checkpoint, and obtain `RESOLVE` again before marking the file complete.
 - For an unchanged, fully reviewed file, use `gh api graphql` to call `markFileAsViewed` with the current PR's node ID and exact repository-relative file path. Query the file's `viewerViewedState` and verify `VIEWED` before marking the primary checklist item resolved and advancing. If the file is already viewed, verify that state; it does not replace the review or `RESOLVE` gate.
 - If the GitHub update or verification fails, report the failure and keep completion pending. Do not silently skip it, claim success, or advance to another file. File completion must not resolve review conversations or submit PR approval.
-- After verified file completion, show the next file's first semantic block and explain how it connects to the surrounding code. When every file is resolved, tell me so and wait for my final go-ahead. The final go-ahead is my explicit statement in chat that the walkthrough is complete; `AGREE`, `RESOLVE`, and silence are not a final go-ahead. After it, name the next step under the `FOLLOWUP.md` rules. Implementation happens only in that next phase.
+- After verified file completion, show the next file's first semantic block, or its summary when its depth is `Summary`, and explain how it connects to the surrounding code. When every file is resolved, tell me so and wait for my final go-ahead. The final go-ahead is my explicit statement in chat that the walkthrough is complete; `AGREE`, `RESOLVE`, and silence are not a final go-ahead. After it, name the next step under the `FOLLOWUP.md` rules. Implementation happens only in that next phase.
 
 Do not modify code, tests, or durable documentation during this walkthrough. If evidence is insufficient or a review point is ambiguous, stop and ask. If you have questions, cannot make a decision, do not have enough context, or hit conflicts, DO NOT MAKE ASSUMPTIONS. STOP. ASK. GET CONFIRMATION. THEN PROCEED.
 

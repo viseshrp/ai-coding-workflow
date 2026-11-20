@@ -474,7 +474,7 @@ Report only actionable, evidence-backed findings under `Blocking Issues` or `Non
 - minimal reproduction steps with prerequisites, inputs, expected behavior, and the observed failure or failure shown by the code,
 - the smallest justified correction or the acceptance check needed to demonstrate resolution.
 
-Use exactly one of these finding statuses: `Open` (confirmed and not yet fixed), `Partially Resolved` (fixed for some, but not all, confirmed occurrences or acceptance checks), `Resolved` (fixed and verified with fresh evidence), `Invalid Finding` (disproved by inspected evidence, which the entry records), or `Deferred to 09` (test-only work assigned to phase `09`). Do not use other status values.
+Use exactly one of these finding statuses: `Open` (confirmed and not yet fixed), `Partially Resolved` (fixed for some, but not all, confirmed occurrences or acceptance checks), `Resolved` (fixed and verified with fresh evidence), `Invalid Finding` (disproved by inspected evidence, which the entry records), `Deferred to 09` (test-only work assigned to phase `09`), or `Declined by human` (a valid finding assigned to `Review fix` that I left out of the review-fix pass at the findings approval gate; the entry records my reason). Do not use other status values.
 
 Before recording a defect as a finding, check whether the code at the base revision recorded in `## Review Basis` already has it. A defect is `Pre-existing` when the base code has it and the selected changes do not introduce it, worsen it, newly reach it, or depend on it for the changed behavior. Do not hold the branch responsible for a `Pre-existing` defect: record it under `Suggestions` with the label `Pre-existing`, its file and line evidence at the base revision, and its concrete impact. Give it no finding status or destination, do not count it in `Verdict`, and do not carry it into `REVIEW_FIX_PROMPT.md`. A defect that the branch worsens, newly reaches, or depends on stays a finding under the issue headings.
 
@@ -482,7 +482,7 @@ For static issues, provide repeatable inspection or call-trace steps that demons
 
 Every valid review issue must remain categorized under either `Blocking Issues` or `Non-Blocking Issues`, including test-only findings assigned to `09`. The one exception is a `Pre-existing` defect, which stays under `Suggestions` as described above. Put each finding's corrective suggestion directly below its evidence and reproduction steps. Keep broader optional improvements in `Suggestions` and reference the related finding identifier without reposting the finding.
 
-Mark test-only findings `Deferred to 09`, retaining their identifiers, severity, evidence, and required scenarios in the issue list and `Test Review`. In `Verdict`, explicitly report whether all valid blocking and non-blocking findings are resolved, and keep that overall result `No` while any valid finding is deferred or unresolved. Separately report readiness for phase `06` and human code review, without implying completion of phases `09` and `10`. State the next step: when a finding assigned to `Review fix` is unresolved, paste `REVIEW_FIX_PROMPT.md` into a capable repository-aware coding model and then run `05_verify_review_fixes_any_model.md`; otherwise, run `06_refresh_review_and_walkthrough_any_model.md`. Deferral applies only to test work; it cannot excuse a production defect, failed acceptance behavior, or a required runtime check that has not passed.
+Mark test-only findings `Deferred to 09`, retaining their identifiers, severity, evidence, and required scenarios in the issue list and `Test Review`. In `Verdict`, explicitly report whether all valid blocking and non-blocking findings are resolved, and keep that overall result `No` while any valid finding is deferred, declined, or unresolved. Separately report readiness for phase `06` and human code review, without implying completion of phases `09` and `10`. A `Declined by human` finding records my decision and does not block that readiness; list its identifier in `Verdict`. After the findings approval gate, state the next step: when a finding approved at the gate is unresolved, paste `REVIEW_FIX_PROMPT.md` into a capable repository-aware coding model and then run `05_verify_review_fixes_any_model.md`; otherwise, run `06_refresh_review_and_walkthrough_any_model.md`. Deferral applies only to test work; it cannot excuse a production defect, failed acceptance behavior, or a required runtime check that has not passed.
 
 Use `None.` under either issue heading when no actionable findings exist. Keep optional improvements in `Suggestions`; include only concrete, evidence-backed actions and write `None.` when there are none. Suggestions are not required in the review-fix pass.
 
@@ -519,6 +519,18 @@ Include enough detail for a thorough review without opening the source code.
 Every line of code must have an English explanation beside it.
 
 Use short, readable excerpts and keep each explanation beside the code it describes.
+
+## Findings approval gate
+
+After writing `REVIEW.md` and `WALKTHROUGH.md`, and before writing `REVIEW_FIX_PROMPT.md`, stop and ask me which findings the review-fix pass may fix. The review-fix pass fixes only the findings I approve here, and each fix must stay inside the fix scope I approve.
+
+- In chat, list each finding assigned to `Review fix` with status `Open` or `Partially Resolved` that has no approved fix scope yet. For each finding, give its identifier, severity, whether it is blocking, a one-sentence description, and its proposed fix scope.
+- A fix scope names the files the correction should change, including any durable documentation that the documentation checkpoint requires, and the kind of change, such as a missing null check added to one function. State whether the correction changes a public interface, such as a function signature, schema, configuration key, command-line option, or API response, and whether it adds a dependency. Base the scope on the finding's correction and its confirmed occurrences; do not widen it to cover suggestions.
+- Propose each blocking finding as included and each non-blocking finding as left out. I may include or leave out any finding and change any fix scope. Wait for my answer, and do not write `REVIEW_FIX_PROMPT.md` until I give it.
+- Record my decisions in `REVIEW.md`. Under each included finding, add its approved fix scope. Set the status of each finding I leave out to `Declined by human` and record my reason, or `No reason given` when I give none.
+- On later passes, an approved fix scope stays approved. This includes a wider scope that I approved during a review-fix pass and that the pull-request description records. List a finding again only when it is new or when its correction now needs a scope I have not approved. Keep a `Declined by human` finding declined and out of `REVIEW_FIX_PROMPT.md` unless I ask to fix it; then list it with a proposed fix scope.
+- Findings with destination `09` and `Pre-existing` suggestions stay out of this gate.
+- When no finding needs a decision, skip the gate and say so.
 
 ## UI section in the generated review-fix prompt
 
@@ -578,9 +590,9 @@ Verify that the actual generated fix prompt includes the complete UI activation 
 
 ## Required output 3: `REVIEW_FIX_PROMPT.md`
 
-Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix all valid `REVIEW.md` findings assigned to `Review fix`, including both blocking and non-blocking issues. Carry test-only deferrals to `09` without authoring tests here. There is no separate checked-in review-fix prompt file after this review step.
+Only this phase may author `REVIEW_FIX_PROMPT.md`. Create it in the target repo root as the final direct-use, paste-ready prompt for any capable repository-aware coding model to fix the `REVIEW.md` findings that I approved at the findings approval gate, blocking and non-blocking, each within its approved fix scope. Leave out findings marked `Declined by human`. Carry test-only deferrals to `09` without authoring tests here. There is no separate checked-in review-fix prompt file after this review step.
 
-If a later verification pass, or a severe missed issue recorded by phase `06`, requires another fix iteration, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase. When `REVIEW_FIX_VERIFICATION.md` records that a finding is still unresolved after three review-fix passes attempted it, assign that finding to the next `REVIEW_FIX_PROMPT.md` only with my direction for it, and include that direction in the prompt. Without my direction, stop and ask.
+If a later verification pass, or a severe missed issue recorded by phase `06`, requires another fix iteration, return to this phase and regenerate `REVIEW_FIX_PROMPT.md` here. Do not create an alternate fix prompt in the verification phase. When `REVIEW_FIX_VERIFICATION.md` records that a finding is still unresolved after three review-fix passes attempted it, assign that finding to the next `REVIEW_FIX_PROMPT.md` only with my direction for it, and include that direction in the prompt. When my direction is to decline the finding, set its status to `Declined by human` and record my reason. Without my direction, stop and ask.
 
 It must be self-contained.
 
@@ -655,16 +667,18 @@ Inside `## Prompt`, the generated review-fix prompt must use clear sections for:
 - focused verification,
 - required final response.
 
+In the goal section, list each finding approved for this pass by its identifier, with its approved fix scope copied from `REVIEW.md`.
+
 Inside those sections, it must instruct the review-fix model as follows.
 
 Goal:
 
-- fix all valid findings assigned to `Review fix` and stop only when you have fresh verification evidence or a concrete blocker.
+- fix every finding that this prompt lists as approved for this pass, within its approved fix scope, and stop only when you have fresh verification evidence or a concrete blocker.
 
 Success criteria:
 
 - each implemented fix is validated against the actual review finding and the current code,
-- all valid findings assigned to `Review fix` in `Blocking Issues` and `Non-Blocking Issues` are fixed, including minor non-blocking issues; findings marked `Deferred to 09` remain tracked for that phase,
+- every finding approved for this pass is fixed within its approved fix scope, including approved minor non-blocking issues; findings marked `Declined by human` stay unfixed, and findings marked `Deferred to 09` remain tracked for that phase,
 - scope stays within the review contract and, when available, the original implementation contract,
 - backwards compatibility is preserved,
 - each fixed or retained material behavior completes its documentation checkpoint: applicable durable documentation is updated and validated in the same change set, or an evidence-based `Not applicable` decision is reported,
@@ -696,7 +710,9 @@ Execution posture:
 Constraints:
 
 - do not blindly implement every review comment,
-- address all valid findings assigned to `Review fix`; do not implement findings marked `Deferred to 09`,
+- address every finding approved for this pass; do not implement a finding marked `Declined by human` or `Deferred to 09`, or any other finding that this prompt does not list as approved,
+- keep each fix inside its approved fix scope. Stop and ask before you change a file outside that scope, change a public interface that the scope does not name, such as a function signature, schema, configuration key, command-line option, or API response, add a dependency, or make a different kind of change than the scope describes. Describe the change you need and why. When I approve a wider scope, record the finding identifier and the approved scope in the pull-request description and under `## Review Items Fixed`, so that phase `05` can check the fix against it,
+- report other problems you notice under `## Suggestions Not Implemented Because Out Of Scope` instead of fixing them,
 - if a valid fix makes an existing test fail only because the test asserts the behavior the finding requires changing, do not modify the test. Keep the fix, report the test name, exact failure output, cause, and finding identifier in the final response and in the pull-request description as test-only work for phase `09`, and do not claim the suite passes. If the failure shows a regression or an incorrect fix, correct the fix instead,
 - if no unresolved finding is assigned to this pass, report that no review-fix changes are needed; do not create an empty commit or change branch or pull-request state,
 - do not implement optional suggestions unless explicitly approved,
@@ -717,7 +733,7 @@ Per-review-item process:
 
 1. Verify the review item against the actual code.
 2. Determine whether it is valid.
-3. Fix each unresolved valid defect category assigned to `Review fix`, including minor valid issues. Confirm its root cause, inspect the existing occurrence inventory, and correct every confirmed occurrence within the approved scope. Use the smallest coherent correction; avoid broad mechanical replacements, unrelated refactors, or abstractions without a current need. Preserve finding identifiers in the fix summary, including deferred test work, and do not redo resolved fixes whose behavior is unchanged.
+3. Fix each approved defect category, including approved minor issues. Confirm its root cause, inspect the existing occurrence inventory, and correct every confirmed occurrence within the finding's approved fix scope. Use the smallest coherent correction; avoid broad mechanical replacements, unrelated refactors, or abstractions without a current need. Preserve finding identifiers in the fix summary, including deferred test work, and do not redo resolved fixes whose behavior is unchanged.
 4. Complete the documentation checkpoint for the changed behavior before treating the review item as fixed.
 5. Do not implement items from `Suggestions` unless explicitly approved.
 6. If a review item is wrong, stale, or conflicts with an available plan or code reality, stop and ask.
@@ -780,6 +796,6 @@ It must explicitly instruct the review-fix model not to claim completion without
 
 It must instruct the review-fix model to end its final response by stating that the next step is `05_verify_review_fixes_any_model.md`, run in a fresh session or agent without the implementation or review-fix context.
 
-Before handing off `REVIEW_FIX_PROMPT.md`, check that it embeds every Engineering Contract requirement and review-fix instruction above with its priority, scope, conditions, exceptions, and stop gates intact. Verify its explicit design-skill link, complete frontend design gate, accepted-finding boundary, and rendered-verification instructions. Repair omissions or weakened instructions before handoff.
+Before handing off `REVIEW_FIX_PROMPT.md`, check that it embeds every Engineering Contract requirement and review-fix instruction above with its priority, scope, conditions, exceptions, and stop gates intact. Verify its explicit design-skill link, complete frontend design gate, accepted-finding boundary, and rendered-verification instructions. Verify that it lists only the findings approved at the findings approval gate, each with its approved fix scope, and that it carries the fix-scope stop rule. Repair omissions or weakened instructions before handoff.
 
 Do not modify code during this review phase.

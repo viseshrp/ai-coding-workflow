@@ -36,7 +36,7 @@ A skill's named tools, slash commands, sub-agents, MCP servers, hooks, modes, pe
 Resolve these known conflicts as follows:
 
 - Use this prompt's verdict, statuses, destinations, and structure. `code-review-and-quality`'s comment labels, `Approve` or `Request changes` verdict, and review template do not replace them in `REVIEW_FIX_VERIFICATION.md`.
-- Verify every finding assigned to `Review fix`. `code-review-and-quality`'s approve-when-imperfect standard and its advice to defer to the author's judgment do not turn an unresolved finding into `Resolved`.
+- Verify every finding approved for review fixes. `code-review-and-quality`'s approve-when-imperfect standard and its advice to defer to the author's judgment do not turn an unresolved finding into `Resolved`.
 - Use `receiving-code-review` only to judge how the fix pass handled each finding: check its fixes and its reasons for not fixing against the code, without deferring to the reviewer or the fixer. Skip the skill's implementation steps and GitHub thread replies.
 - Leave the working tree unchanged apart from this phase's artifacts. Do not run `code-review-and-quality`'s mutation check that inverts a condition in the working tree, `code-simplification`'s change, test, and commit loop, or `verification-before-completion`'s write-and-revert regression pattern. Record the missing proof in `REVIEW_FIX_VERIFICATION.md`.
 - Treat a skill's size and count thresholds, such as changed-line counts, file or function length, or nesting depth, as reasons to look closer. Record a new issue only with evidence of a defect or contract mismatch, and do not ask to split the branch or pull request.
@@ -264,7 +264,7 @@ Role:
 
 Task:
 
-- verify every finding assigned to `Review fix` and confirm that test-only findings remain explicitly deferred to `09`,
+- verify every finding approved for review fixes, check each fix against its approved fix scope, and confirm that test-only findings remain explicitly deferred to `09` and that `Declined by human` findings remain declined,
 - verify that every material changed behavior still has a completed documentation checkpoint,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
@@ -275,7 +275,7 @@ Artifact location rule:
 - all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
 - treat any artifact-path drift as a workflow failure to call out explicitly.
 
-Treat all valid findings assigned to `Review fix`, whether blocking or non-blocking, as required for this pass. A `Deferred to 09` finding must require only test work; production defects, failed acceptance behavior, and missing required runtime checks cannot be deferred this way.
+Treat every finding that I approved for review fixes at the phase-`04` findings approval gate, whether blocking or non-blocking, as required for this pass. A `Declined by human` finding records my decision: carry it forward unchanged, do not add to its `Fix Attempts`, and do not return the workflow to `04` for it. A `Deferred to 09` finding must require only test work; production defects, failed acceptance behavior, and missing required runtime checks cannot be deferred this way.
 
 Context to review:
 
@@ -307,7 +307,8 @@ For each prior review finding:
 
 - identify the original finding by its existing identifier; reference earlier evidence and statuses rather than reposting the finding,
 - inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
-- classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, or `Deferred to 09`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, and `Deferred to 09` is test-only work assigned to phase `09`,
+- classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, `Deferred to 09`, or `Declined by human`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, `Deferred to 09` is test-only work assigned to phase `09`, and `Declined by human` is a valid finding that I left out of the review-fix pass, with my reason recorded in `REVIEW.md`,
+- check that the fix changed only what the finding's approved fix scope in `REVIEW.md` allows, or a wider scope that I approved and the pull-request description records. Record a change outside that scope as a new issue with destination `Review fix`, citing the approved scope as the affected contract, so that phase `04` asks me whether to keep it,
 - cite fresh verification evidence or reference the unchanged prior evidence,
 - when the pull-request description, or the fix pass's final response if it is supplied, reports an existing test that fails because of an intended behavior change, verify, citing the finding or approved requirement that requires the changed behavior, that the failure comes only from that change, and record it as a new issue with status `Deferred to 09` and destination `09`; otherwise record it as an `Open` regression assigned to `Review fix`,
 - identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
@@ -328,7 +329,7 @@ Focused verification:
 - For new or affected findings, independently derive scenarios and expected outcomes from the finding and the acceptance criteria grounded in original requirements or public contracts. Give architecture and high-impact fixes deeper scrutiny by tracing affected consumers and the relevant compatibility, migration, security, concurrency, and recovery risks identified in `REVIEW.md`. Try to disprove the fix model's completion claims, then replay the reviewer's relevant scenarios and focused existing integration checks where applicable.
 - For changed runtime behavior, exercise the running application and relevant real APIs in an authorized environment with existing tools. Remote requests remain read-only unless their side effects are authorized. Do not author tests, scripts, fixtures, or instrumentation.
 - Record the requirement or claim, scenario, exact command or interaction, revision, environment, expected and observed results, and exact evidence. Passing author-written tests alone is insufficient. Investigate disagreement with failed real API checks and withhold readiness until the acceptance criteria are met. Keep required unavailable checks pending; explain `Not applicable` when no runnable behavior exists.
-- Verify that each defect category assigned to `Review fix` is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
+- Verify that each defect category approved for review fixes is resolved across all confirmed in-scope occurrences. Use the existing occurrence inventory and recheck new or affected matches and incident diagnostics; do not repeat unchanged scans. A remaining occurrence keeps the original finding unresolved. Report broader occurrences against the same identifier without expanding the fix scope.
 
 - When `REVIEW.md` `## Review Basis` records a repository-owned review checklist, read it at the base revision on `main` and apply only the items whose trigger matches the changes since the baseline. Record each matched item and its result in `## Independent Behavior and Diagnostic Evidence`. Record a failed item as a new issue only with the evidence the new-issue fields require.
 
@@ -345,8 +346,9 @@ Use this structure:
 
 ## Verdict
 - All valid blocking and non-blocking review findings resolved: Yes/No
-- All valid findings assigned to Review fix resolved: Yes/No
+- All findings approved for review fixes resolved: Yes/No
 - Test-only findings deferred to 09: IDs/None
+- Findings declined by human: IDs/None
 - Documentation checkpoints complete: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
@@ -370,7 +372,7 @@ Use this structure:
 ## Required Next Action
 ```
 
-The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`. Deferral schedules work; it does not resolve or waive it. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
+The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09` or `Declined by human`. Deferral schedules work; it does not resolve or waive it. A decline records my decision; it does not resolve the finding, and it does not block readiness. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
 
 In `Fix Attempts`, record how many review-fix passes have attempted the finding, counting the pass under verification. A pass counts when its `REVIEW_FIX_PROMPT.md` assigned the finding to it. Establish the count from `REVIEW.md`, earlier `REVIEW_FIX_VERIFICATION.md` evidence, and the commit history; when it cannot be established, record the passes you can identify and state the limit. Write `-` for a finding that no pass attempted.
 
@@ -381,7 +383,7 @@ If a finding assigned to `Review fix` is still `Open` or `Partially Resolved` af
 - report to me, in `Required Next Action` and in chat, the finding identifier, what each attempt changed, and the evidence that the finding still fails,
 - stop and ask me how to proceed. This stop takes precedence over the return to `04` described below. Return to `04` for another pass on that finding only with my direction.
 
-If a finding or new issue assigned to `Review fix` or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
+If a finding approved for review fixes, a new issue assigned to `Review fix`, or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_review_branch_any_model.md`,
@@ -395,4 +397,4 @@ If the only unresolved items are required current-phase checks that cannot run b
 - report to me, in `Required Next Action` and in chat, the exact missing precondition and the check it blocks,
 - stop. Rerun this phase when the precondition is available.
 
-If all valid findings assigned to `Review fix` are resolved, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved; final test completion still requires phases `09` and `10`.
+If all findings approved for review fixes are resolved, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved, and carry `Declined by human` identifiers forward as my decisions; final test completion still requires phases `09` and `10`.
