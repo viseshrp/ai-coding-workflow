@@ -264,7 +264,7 @@ Role:
 
 Task:
 
-- verify every finding approved for review fixes, check each fix against its approved fix scope, and confirm that test-only findings remain explicitly deferred to `09` and that `Declined by human` findings remain declined,
+- verify every finding approved for review fixes, check each fix against its approved fix scope, and confirm that test-only findings remain explicitly deferred to `09` and that findings marked `Declined by human` or `Deferred to human` stay out of the fix loop,
 - verify that every material changed behavior still has a completed documentation checkpoint,
 - decide whether the code is ready for final review-artifact refresh or needs another fix pass.
 
@@ -275,7 +275,7 @@ Artifact location rule:
 - all workflow-generated Markdown artifacts must include `Created by`, `Created at`, and `Updated at` metadata, preserving creation fields and refreshing `Updated at` on edits,
 - treat any artifact-path drift as a workflow failure to call out explicitly.
 
-Treat every finding that I approved for review fixes at the phase-`04` findings approval gate, whether blocking or non-blocking, as required for this pass. A `Declined by human` finding records my decision: carry it forward unchanged, do not add to its `Fix Attempts`, and do not return the workflow to `04` for it. A `Deferred to 09` finding must require only test work; production defects, failed acceptance behavior, and missing required runtime checks cannot be deferred this way.
+Treat every finding approved for review fixes under the phase-`04` findings approval gate, whether blocking or non-blocking, as required for this pass. A finding marked `Declined by human` or `Deferred to human` is out of the fix loop and waits for my decision after it: carry it forward unchanged, do not add to its `Fix Attempts`, and do not return the workflow to `04` for it. A `Deferred to 09` finding must require only test work; production defects, failed acceptance behavior, and missing required runtime checks cannot be deferred this way.
 
 Context to review:
 
@@ -307,8 +307,9 @@ For each prior review finding:
 
 - identify the original finding by its existing identifier; reference earlier evidence and statuses rather than reposting the finding,
 - inspect the actual changed code and affected occurrences relevant to its status; retain prior verified evidence for unchanged behavior,
-- classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, `Deferred to 09`, or `Declined by human`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, `Deferred to 09` is test-only work assigned to phase `09`, and `Declined by human` is a valid finding that I left out of the review-fix pass, with my reason recorded in `REVIEW.md`,
-- check that the fix changed only what the finding's approved fix scope in `REVIEW.md` allows, or a wider scope that I approved and the pull-request description records. Record a change outside that scope as a new issue with destination `Review fix`, citing the approved scope as the affected contract, so that phase `04` asks me whether to keep it,
+- classify as exactly one of `Open`, `Partially Resolved`, `Resolved`, `Invalid Finding`, `Deferred to 09`, `Declined by human`, or `Deferred to human`, with the meanings `REVIEW.md` uses: `Open` is confirmed and not yet fixed, `Partially Resolved` is fixed for some but not all confirmed occurrences or acceptance checks, `Resolved` is fixed and verified with fresh evidence, `Invalid Finding` is disproved by recorded evidence, `Deferred to 09` is test-only work assigned to phase `09`, `Declined by human` is a valid finding that I left out of the review-fix loop, with my reason recorded in `REVIEW.md`, and `Deferred to human` is a non-blocking finding whose correction needs more than its approved fix scope,
+- classify an approved non-blocking finding as `Deferred to human` when the fix pass left it unfixed because its correction needs more than its approved fix scope, and record what the correction would need. An approved blocking finding left unfixed for that reason stays `Open`, and phase `04` asks me about it,
+- check that the fix changed only what the finding's approved fix scope in `REVIEW.md` allows, or a wider scope that I approved and the pull-request description records. Record a change outside that scope as a new issue with destination `Review fix`, citing the approved scope as the affected contract, with the correction of undoing that change. Phase `04` includes it in the next fix pass without asking me,
 - cite fresh verification evidence or reference the unchanged prior evidence,
 - when the pull-request description, or the fix pass's final response if it is supplied, reports an existing test that fails because of an intended behavior change, verify, citing the finding or approved requirement that requires the changed behavior, that the failure comes only from that change, and record it as a new issue with status `Deferred to 09` and destination `09`; otherwise record it as an `Open` regression assigned to `Review fix`,
 - identify distinct new issues introduced by the fix. Record new occurrences of an existing defect category against its original identifier in the remaining-issues sections rather than creating a duplicate finding.
@@ -349,6 +350,7 @@ Use this structure:
 - All findings approved for review fixes resolved: Yes/No
 - Test-only findings deferred to 09: IDs/None
 - Findings declined by human: IDs/None
+- Findings deferred to human: IDs/None
 - Documentation checkpoints complete: Yes/No
 - Ready to finalize review/walkthrough docs: Yes/No
 
@@ -372,7 +374,7 @@ Use this structure:
 ## Required Next Action
 ```
 
-The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09` or `Declined by human`. Deferral schedules work; it does not resolve or waive it. A decline records my decision; it does not resolve the finding, and it does not block readiness. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
+The all-findings verdict must be `No` while any valid finding is unresolved, including a finding marked `Deferred to 09`, `Declined by human`, or `Deferred to human`. Deferral schedules work; it does not resolve or waive it. A finding marked `Declined by human` or `Deferred to human` is not resolved, but it does not block readiness. The separate readiness verdict concerns only the current review-fix handoff, and may be `Yes` with explicitly recorded test-only deferrals only under the conditions below. Final completion still requires the test-writing and independent-audit gates.
 
 In `Fix Attempts`, record how many review-fix passes have attempted the finding, counting the pass under verification. A pass counts when its `REVIEW_FIX_PROMPT.md` assigned the finding to it. Establish the count from `REVIEW.md`, earlier `REVIEW_FIX_VERIFICATION.md` evidence, and the commit history; when it cannot be established, record the passes you can identify and state the limit. Write `-` for a finding that no pass attempted.
 
@@ -383,7 +385,7 @@ If a finding assigned to `Review fix` is still `Open` or `Partially Resolved` af
 - report to me, in `Required Next Action` and in chat, the finding identifier, what each attempt changed, and the evidence that the finding still fails,
 - stop and ask me how to proceed. This stop takes precedence over the return to `04` described below. Return to `04` for another pass on that finding only with my direction.
 
-If a finding approved for review fixes, a new issue assigned to `Review fix`, or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
+If a finding approved for review fixes and not marked `Deferred to human`, a new issue assigned to `Review fix`, or a documentation checkpoint remains unresolved, or a required current-phase check failed (other than an existing-test failure recorded as `Deferred to 09` because of an intended behavior change) or needs a code, documentation, or fix-prompt change:
 
 - do not create `REVIEW_FIX_PROMPT.md` in this phase,
 - state explicitly that the workflow must return to `04_review_branch_any_model.md`,
@@ -397,4 +399,4 @@ If the only unresolved items are required current-phase checks that cannot run b
 - report to me, in `Required Next Action` and in chat, the exact missing precondition and the check it blocks,
 - stop. Rerun this phase when the precondition is available.
 
-If all findings approved for review fixes are resolved, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved, and carry `Declined by human` identifiers forward as my decisions; final test completion still requires phases `09` and `10`.
+If every finding approved for review fixes is resolved or marked `Deferred to human`, required current-phase verification and documentation checkpoints are complete, and no new issue requiring review fixes remains, say the code is ready for final artifact refresh in phase `06`. Carry `Deferred to 09` identifiers forward without treating them as resolved, and carry `Declined by human` and `Deferred to human` identifiers forward for my decision after the loop; final test completion still requires phases `09` and `10`.

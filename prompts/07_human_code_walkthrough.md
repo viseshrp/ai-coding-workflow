@@ -116,7 +116,7 @@ Use ISO-style plain language and ASD-STE100-inspired technical writing as guidan
 - Maintain a primary checklist with one item per changed file, its review depth, and statuses such as pending, in review, and resolved. Track reviewed blocks and documentation results; show progress when a file is completed or I ask for it.
 - Re-read available original requirements and approved scope changes at the start, after long sessions or handoffs, and before completion to check for drift.
 - Read the actual code, referenced declarations and definitions, and relevant `WALKTHROUGH.md` sections. Use the manual diff against `main` only for verification/reference.
-- Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes.
+- Discard `REVIEW.md` completely. Do not agree with, disagree with, summarize, import, or otherwise use its findings. Base review judgments on inspected code and PR changes. When I raise a concern myself, including a finding from the unfixed-findings list that phase `06` handed me, treat it as my concern and check it against the code like any other point I raise. Do not bring up `REVIEW.md` findings yourself.
 - Use `WALKTHROUGH.md` only for supplemental context. Check it against actual code and the PR changes from `gh`, which take precedence. Do not let it replace or reorder the changed-file checklist, and do not use `FOLLOWUP.md` as that checklist.
 
 Use `show-me` only for focused diffs and pseudocode alongside the required code context. Keep presentation diffs, pseudocode, and example runs in chat only; do not save them in `WALKTHROUGH.md` or other files. Do not create diagrams, mindmaps, HTML, or additional visual artifacts, or require skill installation.
@@ -221,7 +221,7 @@ Do not include speculative items.
 
 Do not include optional suggestions unless I explicitly agree.
 
-Do not include an item from `REVIEW.md`. Discard the AI review completely in this phase.
+Do not include an item from `REVIEW.md` unless I raise it myself and type `AGREE` for it. Do not bring up the AI review's findings yourself in this phase.
 
 Do not add placeholder, draft, or "to discuss" items to `FOLLOWUP.md`.
 
